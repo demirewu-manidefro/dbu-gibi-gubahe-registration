@@ -19,20 +19,23 @@ const StudentList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSection, setFilterSection] = useState('All Sections');
     const isManager = user?.role === 'manager';
+    const isStudent = user?.role === 'student';
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState(null);
 
-    const filteredStudents = students.filter(student =>
-        // Manager can see all or filter by section. Admin sees only their section.
-        (isManager 
-            ? (filterSection === 'All Sections' || student.section === filterSection)
-            : student.section === user?.section
-        ) &&
-        (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.dept.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredStudents = isStudent
+        ? students.filter(s => s.username === user?.username || s.id === user?.id)
+        : students.filter(student =>
+            // Manager can see all or filter by section. Admin sees only their section.
+            (isManager
+                ? (filterSection === 'All Sections' || student.section === filterSection)
+                : student.section === user?.section
+            ) &&
+            (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.dept.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
 
     const openView = (student) => {
         setSelectedStudent(student);
@@ -76,9 +79,11 @@ const StudentList = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Student List</h1>
                     <p className="text-gray-500 font-medium">Manage and view all registered Gibi Gubae students</p>
                 </div>
-                <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                    <Download size={18} className="text-blue-600" /> Export to Excel
-                </button>
+                {!isStudent && (
+                    <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                        <Download size={18} className="text-blue-600" /> Export to Excel
+                    </button>
+                )}
             </div>
 
             {selectedStudent && (
@@ -170,7 +175,7 @@ const StudentList = () => {
                                             <div className="text-sm text-gray-600">Zone: {selectedStudent.zone || '-'}</div>
                                         </div>
                                     </div>
-                                    
+
                                     <div>
                                         <div className="text-xs text-gray-500 uppercase font-bold mt-2">Spiritual</div>
                                         <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
@@ -216,41 +221,43 @@ const StudentList = () => {
             )}
 
             <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-50 flex flex-wrap gap-4 items-center justify-between">
-                    <div className="relative flex-1 min-w-[300px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search by ID, Name, or Department..."
-                            className="pl-10 h-12 bg-gray-50/50 border-gray-200 rounded-2xl"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    {isManager && (
-                        <div className="flex gap-2">
-                            <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all">
-                                <Filter size={16} /> Filter
-                            </button>
-                            <select 
-                                className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4"
-                                value={filterSection}
-                                onChange={(e) => setFilterSection(e.target.value)}
-                            >
-                                <option value="ሁሉም ክፍላት">ሁሉም ክፍላት</option>
-                                <option value="እቅድ">እቅድ</option>
-                                <option value="ትምህርት">ትምህርት</option>
-                                <option value="ልማት">ልማት</option>
-                                <option value="ባች">ባች</option>
-                                <option value="ሙያ">ሙያ</option>
-                                <option value="ቋንቋ">ቋንቋ</option>
-                                <option value="አባላት">አባላት</option>
-                                <option value="ኦዲት">ኦዲት</option>
-                                <option value="ሂሳብ">ሂሳብ</option>
-                            </select>
+                {!isStudent && (
+                    <div className="p-6 border-b border-gray-50 flex flex-wrap gap-4 items-center justify-between">
+                        <div className="relative flex-1 min-w-[300px]">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search by ID, Name, or Department..."
+                                className="pl-10 h-12 bg-gray-50/50 border-gray-200 rounded-2xl"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
-                    )}
-                </div>
+                        {isManager && (
+                            <div className="flex gap-2">
+                                <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all">
+                                    <Filter size={16} /> Filter
+                                </button>
+                                <select
+                                    className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4"
+                                    value={filterSection}
+                                    onChange={(e) => setFilterSection(e.target.value)}
+                                >
+                                    <option value="ሁሉም ክፍላት">ሁሉም ክፍላት</option>
+                                    <option value="እቅድ">እቅድ</option>
+                                    <option value="ትምህርት">ትምህርት</option>
+                                    <option value="ልማት">ልማት</option>
+                                    <option value="ባች">ባች</option>
+                                    <option value="ሙያ">ሙያ</option>
+                                    <option value="ቋንቋ">ቋንቋ</option>
+                                    <option value="አባላት">አባላት</option>
+                                    <option value="ኦዲት">ኦዲት</option>
+                                    <option value="ሂሳብ">ሂሳብ</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
@@ -289,7 +296,7 @@ const StudentList = () => {
                                     <td className="px-8 py-5 font-medium text-gray-600">{student.dept}</td>
                                     <td className="px-8 py-5">
                                         <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-bold text-gray-600">
-                                            {student.year}th Year
+                                            {student.year || '-'}
                                         </span>
                                     </td>
                                     <td className="px-8 py-5">
@@ -320,12 +327,14 @@ const StudentList = () => {
                                             >
                                                 <Edit2 size={16} />
                                             </button>
-                                            <button
-                                                onClick={() => handleDelete(student.id)}
-                                                className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            {!isStudent && (
+                                                <button
+                                                    onClick={() => handleDelete(student.id)}
+                                                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -334,22 +343,24 @@ const StudentList = () => {
                     </table>
                 </div>
 
-                <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
-                    <div className="text-sm text-gray-500 font-medium">
-                        Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{students.length}</span> students
+                {!isStudent && (
+                    <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
+                        <div className="text-sm text-gray-500 font-medium">
+                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{students.length}</span> students
+                        </div>
+                        <div className="flex gap-2">
+                            <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>
+                                <ChevronLeft size={18} />
+                            </button>
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md">1</button>
+                            <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">2</button>
+                            <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">3</button>
+                            <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-600">
+                                <ChevronRight size={18} />
+                            </button>
+                        </div>
                     </div>
-                    <div className="flex gap-2">
-                        <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>
-                            <ChevronLeft size={18} />
-                        </button>
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md">1</button>
-                        <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">2</button>
-                        <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">3</button>
-                        <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-600">
-                            <ChevronRight size={18} />
-                        </button>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );
