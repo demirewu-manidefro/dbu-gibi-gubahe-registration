@@ -11,8 +11,12 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
+    const { registerStudent } = useAuth();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -89,9 +93,13 @@ const RegistrationForm = () => {
         setIsSubmitting(true);
         // Simulate API call
         setTimeout(() => {
+            registerStudent(formData);
             setIsSubmitting(false);
             setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 3000);
+            setTimeout(() => {
+                setShowSuccess(false);
+                navigate('/students');
+            }, 2000);
         }, 1500);
     };
 
@@ -107,8 +115,8 @@ const RegistrationForm = () => {
                         <div
                             key={tab.id}
                             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeTab === tab.id
-                                    ? 'bg-church-red text-white shadow-lg'
-                                    : 'bg-white text-gray-400 border border-gray-100'
+                                ? 'bg-church-red text-white shadow-lg'
+                                : 'bg-white text-gray-400 border border-gray-100'
                                 }`}
                         >
                             {tab.icon}
@@ -362,8 +370,8 @@ const RegistrationForm = () => {
                                                     <label
                                                         key={section}
                                                         className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.serviceSection === section
-                                                                ? 'bg-church-red text-white border-church-red shadow-lg'
-                                                                : 'bg-white border-gray-100 hover:border-church-gold'
+                                                            ? 'bg-church-red text-white border-church-red shadow-lg'
+                                                            : 'bg-white border-gray-100 hover:border-church-gold'
                                                             }`}
                                                     >
                                                         <input
@@ -432,8 +440,8 @@ const RegistrationForm = () => {
                         onClick={handleBack}
                         disabled={activeTab === 0}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 0
-                                ? 'text-gray-300 cursor-not-allowed'
-                                : 'text-gray-600 hover:bg-white shadow-sm'
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : 'text-gray-600 hover:bg-white shadow-sm'
                             }`}
                     >
                         <ChevronLeft size={20} /> Preview

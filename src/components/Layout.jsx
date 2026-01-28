@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
     UserPlus,
@@ -56,11 +57,17 @@ const Layout = ({ children }) => {
 
                 <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto no-scrollbar">
                     {menuItems.map((item) => (
-                        <div
+                        <NavLink
                             key={item.title}
-                            className="group flex items-center gap-4 p-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                            to={item.path}
+                            className={({ isActive }) =>
+                                `group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer ${isActive
+                                    ? 'bg-church-red text-white shadow-lg'
+                                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                                }`
+                            }
                         >
-                            <div className="text-church-gold group-hover:scale-110 transition-transform">
+                            <div className="transition-transform group-hover:scale-110">
                                 {item.icon}
                             </div>
                             {sidebarOpen && (
@@ -72,7 +79,7 @@ const Layout = ({ children }) => {
                                     {item.title}
                                 </motion.span>
                             )}
-                        </div>
+                        </NavLink>
                     ))}
                 </nav>
 
