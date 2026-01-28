@@ -13,16 +13,60 @@ import { useAuth } from '../context/AuthContext';
 import { formatEthiopianDateAmharic } from '../utils/ethiopianDateUtils';
 
 const Dashboard = () => {
-    const { activityLog, students } = useAuth();
+    const { activityLog, students, user } = useAuth();
+
+    // Filter data based on role
+    const isManager = user?.role === 'manager';
+    const mySection = user?.section;
+
+    const filteredStudents = isManager 
+        ? students 
+        : students.filter(s => s.section === mySection);
+
+    const filteredLogs = isManager
+        ? activityLog
+        : activityLog.filter(log => log.admin === user?.name || (students.find(s => s.name === log.student)?.section === mySection));
+
     const stats = [
-        { label: 'Total Students', value: students.length.toLocaleString(), sub: '+12% from last month', icon: <Users size={24} />, color: 'bg-blue-500' },
-        { label: 'Graduating Class', value: students.filter(s => s.status === 'Graduated').length.toLocaleString(), sub: 'Class of 2017/18', icon: <GraduationCap size={24} />, color: 'bg-church-red' },
-        { label: 'Active Servants', value: students.filter(s => s.status === 'Active' && s.section !== '').length.toLocaleString(), sub: 'Across 6 mahibers', icon: <Award size={24} />, color: 'bg-church-gold' },
-        { label: 'Avg. Attendance', value: '88%', sub: 'Weekly Gubaes', icon: <TrendingUp size={24} />, color: 'bg-green-500' },
+        { 
+            label: isManager ? 'Total Students' : `${mySection} Students`,
+            value: filteredStudents.length.toLocaleString(), 
+            sub: '+12% from last month', 
+            icon: <Users size={24} />, 
+            color: 'bg-blue-500' 
+        },
+        { 
+            label: 'Graduating Class', 
+            value: filteredStudents.filter(s => s.status === 'Graduated').length.toLocaleString(), 
+            sub: 'Class of 2017/18', 
+            icon: <GraduationCap size={24} />, 
+            color: 'bg-church-red' 
+        },
+        { 
+            label: 'Active Servants', 
+            value: filteredStudents.filter(s => s.status === 'Student').length.toLocaleString(), 
+            sub: isManager ? 'Across all mahibers' : `In ${mySection}`, 
+            icon: <Award size={24} />, 
+            color: 'bg-church-gold' 
+        },
+        { 
+            label: 'Avg. Attendance', 
+            value: '88%', 
+            sub: 'Weekly Gubaes', 
+            icon: <TrendingUp size={24} />, 
+            color: 'bg-green-500' 
+        },
     ];
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
+            {isManager && (
+                <div className="bg-church-dark/5 p-4 rounded-xl border border-church-dark/10 mb-6">
+                    <h2 className="text-lg font-bold text-church-dark">Manager Overview</h2>
+                    <p className="text-sm text-gray-600">You are viewing global statistics across all sections.</p>
+                </div>
+            )}
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
                     <motion.div
@@ -57,7 +101,7 @@ const Dashboard = () => {
 
                     <div className="bg-white rounded-3xl border border-gray-100 shadow-premium overflow-hidden">
                         <div className="divide-y divide-gray-50">
-                            {activityLog.map((log) => (
+                            {filteredLogs.map((log) => (
                                 <div key={log.id} className="p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 text-xs font-bold text-church-red">
@@ -102,7 +146,7 @@ const Dashboard = () => {
                                         <Users size={18} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-sm">Choir Audition</div>
+                                        <div className="font-bold text-sm">General Meeting</div>
                                         <div className="text-xs text-white/40">Feb 12 • 2:00 PM</div>
                                     </div>
                                 </div>
