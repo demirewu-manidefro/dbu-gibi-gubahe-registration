@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const AdminManagement = () => {
     const { user, admins, toggleAdminStatus, registerAdmin, sendNotification } = useAuth();
     const [isRegistering, setIsRegistering] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [broadcastTarget, setBroadcastTarget] = useState('all');
     const [broadcastMessage, setBroadcastMessage] = useState('');
     const [newAdminData, setNewAdminData] = useState({
@@ -26,6 +27,17 @@ const AdminManagement = () => {
     });
 
     const adminOptions = admins.filter((a) => a.role === 'admin');
+    const filteredAdmins = admins
+        .filter((a) => a.id !== 0)
+        .filter((admin) => {
+            const term = searchTerm.trim().toLowerCase();
+            if (!term) return true;
+            return (
+                admin.name?.toLowerCase().includes(term) ||
+                admin.section?.toLowerCase().includes(term) ||
+                admin.username?.toLowerCase().includes(term)
+            );
+        });
 
     const handleRegister = (e) => {
         e.preventDefault();
@@ -87,6 +99,8 @@ const AdminManagement = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Find admin by name..."
                             className="pl-10 h-10 bg-gray-50/50 border-gray-200"
                         />
@@ -112,7 +126,7 @@ const AdminManagement = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {admins.filter(a => a.id !== 0).map((admin) => (
+                            {filteredAdmins.map((admin) => (
                                 <motion.tr
                                     layout
                                     key={admin.id}

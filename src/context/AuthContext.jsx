@@ -67,13 +67,18 @@ export const AuthProvider = ({ children }) => {
             ? user.section 
             : studentData.serviceSection;
 
+        const photoUrl = studentData.profilePhoto
+            ? URL.createObjectURL(studentData.profilePhoto)
+            : '';
+
         const newStudent = {
-            id: `DBU${Math.floor(Math.random() * 900) + 100}/${new Date().getFullYear() % 100}`,
+            id: (studentData.studentId || '').trim() || `DBU/${Math.floor(Math.random() * 900) + 100}/${new Date().getFullYear() % 100}`,
             name: studentData.fullName,
             dept: studentData.department,
             year: studentData.batch,
             section: assignedSection,
-            status: 'Student'
+            status: 'Student',
+            photoUrl
         };
         setStudents(prev => [newStudent, ...prev]);
         recordActivity('registration', { student: newStudent.name, section: assignedSection });

@@ -63,16 +63,16 @@ const StudentList = () => {
                                 value={filterSection}
                                 onChange={(e) => setFilterSection(e.target.value)}
                             >
-                                <option value="All Sections">All Sections</option>
-                                <option value="Planning">Planning</option>
-                                <option value="Education">Education</option>
-                                <option value="Development">Development</option>
-                                <option value="Batch">Batch</option>
-                                <option value="Profession">Profession</option>
-                                <option value="Language">Language</option>
-                                <option value="Members">Members</option>
-                                <option value="Audit">Audit</option>
-                                <option value="Finance">Finance</option>
+                                <option value="ሁሉም ክፍላት">ሁሉም ክፍላት</option>
+                                <option value="እቅድ">እቅድ</option>
+                                <option value="ትምህርት">ትምህርት</option>
+                                <option value="ልማት">ልማት</option>
+                                <option value="ባች">ባች</option>
+                                <option value="ሙያ">ሙያ</option>
+                                <option value="ቋንቋ">ቋንቋ</option>
+                                <option value="አባላት">አባላት</option>
+                                <option value="ኦዲት">ኦዲት</option>
+                                <option value="ሂሳብ">ሂሳብ</option>
                             </select>
                         </div>
                     )}
@@ -95,9 +95,17 @@ const StudentList = () => {
                                 <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs">
-                                                {student.name.split(' ').map(n => n[0]).join('')}
-                                            </div>
+                                            {student.photoUrl ? (
+                                                <img
+                                                    src={student.photoUrl}
+                                                    alt={student.name}
+                                                    className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                                                />
+                                            ) : (
+                                                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs">
+                                                    {student.name.split(' ').map(n => n[0]).join('')}
+                                                </div>
+                                            )}
                                             <div>
                                                 <div className="font-bold text-gray-900">{student.name}</div>
                                                 <div className="text-xs text-gray-400">{student.id}</div>
