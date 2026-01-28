@@ -9,11 +9,14 @@ import {
 import EthiopianDatePicker from '../components/EthiopianDatePicker';
 
 const AttendanceSheet = () => {
-    const { students } = useAuth();
+    const { students, user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState({});
-    const [filterSection, setFilterSection] = useState('All Sections');
+    
+    // For admins, default to their section and disable changing. For manager, default to All.
+    const isManager = user?.role === 'manager';
+    const [filterSection, setFilterSection] = useState(isManager ? 'All Sections' : user?.section);
 
     const filteredStudents = students.filter(student =>
         (filterSection === 'All Sections' || student.section === filterSection) &&
@@ -88,18 +91,30 @@ const AttendanceSheet = () => {
                     </div>
                     <div className="flex gap-2">
                         <div className="relative">
-                            <select 
-                                className="appearance-none pl-10 pr-8 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600"
-                                value={filterSection}
-                                onChange={(e) => setFilterSection(e.target.value)}
-                            >
-                                <option>All Sections</option>
-                                <option>Choir</option>
-                                <option>Education</option>
-                                <option>Charity</option>
-                                <option>Development</option>
-                            </select>
-                            <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            {isManager ? (
+                                <select 
+                                    className="appearance-none pl-10 pr-8 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600"
+                                    value={filterSection}
+                                    onChange={(e) => setFilterSection(e.target.value)}
+                                >
+                                    <option value="All Sections">ሁሉም ክፍላት</option>
+                                    <option value="Planning">Planning (እቅድ)</option>
+                                    <option value="Education">Education (ትምህርት)</option>
+                                    <option value="Development">Development (ልማት)</option>
+                                    <option value="Batch">Batch (ባች)</option>
+                                    <option value="Profession">Profession (ሙያ)</option>
+                                    <option value="Language">Language (ቋንቋ)</option>
+                                    <option value="Members">Members (አባላት)</option>
+                                    <option value="Audit">Audit (ኦዲት)</option>
+                                    <option value="Finance">Finance (ሂሳብ)</option>
+                                </select>
+                            ) : (
+                                <div className="flex items-center gap-2 pl-4 pr-6 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600">
+                                    <span className="text-church-gold">●</span>
+                                    {user?.section} Only
+                                </div>
+                            )}
+                            {isManager && <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />}
                         </div>
                     </div>
                 </div>
@@ -109,7 +124,7 @@ const AttendanceSheet = () => {
                         <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-widest">
                             <tr>
                                 <th className="px-8 py-4">Student</th>
-                                <th className="px-8 py-4">Section</th>
+                                <th className="px-8 py-4">ክፍላት</th>
                                 <th className="px-8 py-4 text-center">ተገኝቷል</th>
                                 <th className="px-8 py-4 text-center">ቀርቷል</th>
                                 <th className="px-8 py-4 text-center">ፍቃድ</th>
