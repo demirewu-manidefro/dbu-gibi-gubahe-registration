@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { formatEthiopianDateAmharic } from '../utils/ethiopianDateUtils';
 
 const Dashboard = () => {
     const { activityLog, students } = useAuth();
@@ -66,7 +67,9 @@ const Dashboard = () => {
                                             <div className="font-bold text-gray-900">
                                                 {log.admin} registered <span className="text-church-red">{log.student}</span>
                                             </div>
-                                            <div className="text-xs text-gray-400 font-medium">{new Date(log.time).toLocaleTimeString()} • {log.type}</div>
+                                            <div className="text-xs text-gray-400 font-medium">
+                                                {formatEthiopianDateAmharic(log.time)} • {new Date(log.time).toLocaleTimeString()} • {log.type}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="text-[10px] font-bold uppercase tracking-widest text-green-500 bg-green-50 px-2 py-1 rounded-md border border-green-100">
