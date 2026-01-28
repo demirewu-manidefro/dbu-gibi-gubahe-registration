@@ -33,6 +33,14 @@ export const AuthProvider = ({ children }) => {
         { id: 2, type: 'registration', admin: 'Admin 2', student: 'Student #1022', time: new Date().toISOString(), status: 'success' },
     ]);
 
+    const [students, setStudents] = useState([
+        { id: 'DBU/123/15', name: 'Abebe Kebebe', dept: 'Mechanical', year: '3', section: 'Choir', status: 'Active' },
+        { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', dept: 'Economics', year: '2', section: 'Education', status: 'Active' },
+        { id: 'DBU/789/15', name: 'Hiwot Alemu', dept: 'Medicine', year: '1', section: 'Charity', status: 'Active' },
+        { id: 'DBU/101/14', name: 'Tewodros Kassahun', dept: 'Architecture', year: '4', section: 'Development', status: 'Active' },
+        { id: 'DBU/202/13', name: 'Selam Mengistu', dept: 'Journalism', year: '5', section: 'PR', status: 'Graduated' },
+    ]);
+
     const recordActivity = (type, details) => {
         const newLog = {
             id: Date.now(),
@@ -43,6 +51,19 @@ export const AuthProvider = ({ children }) => {
             status: 'success'
         };
         setActivityLog(prev => [newLog, ...prev].slice(0, 10));
+    };
+
+    const registerStudent = (studentData) => {
+        const newStudent = {
+            id: `DBU/${Math.floor(Math.random() * 900) + 100}/${new Date().getFullYear() % 100}`,
+            name: studentData.fullName,
+            dept: studentData.department,
+            year: studentData.batch,
+            section: studentData.serviceSection,
+            status: 'Active'
+        };
+        setStudents(prev => [newStudent, ...prev]);
+        recordActivity('registration', { student: newStudent.name });
     };
 
     const login = (username, password) => {
@@ -75,10 +96,12 @@ export const AuthProvider = ({ children }) => {
         user,
         admins,
         activityLog,
+        students,
         login,
         logout,
         toggleAdminStatus,
-        recordActivity
+        recordActivity,
+        registerStudent
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
