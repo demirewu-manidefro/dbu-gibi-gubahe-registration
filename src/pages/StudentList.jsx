@@ -13,20 +13,27 @@ import {
 } from 'lucide-react';
 
 const StudentList = () => {
-    const { students } = useAuth();
+    const { students, user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
+    const [filterSection, setFilterSection] = useState('All Sections');
+    const isManager = user?.role === 'manager';
 
     const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        // Manager can see all or filter by section. Admin sees only their section.
+        (isManager 
+            ? (filterSection === 'All Sections' || student.section === filterSection)
+            : student.section === user?.section
+        ) &&
+        (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.dept.toLowerCase().includes(searchTerm.toLowerCase())
+        student.dept.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Student Database</h1>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Student List</h1>
                     <p className="text-gray-500 font-medium">Manage and view all registered Gibi Gubae students</p>
                 </div>
                 <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
@@ -46,17 +53,29 @@ const StudentList = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <div className="flex gap-2">
-                        <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all">
-                            <Filter size={16} /> Filter
-                        </button>
-                        <select className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4">
-                            <option>All Sections</option>
-                            <option>Choir</option>
-                            <option>Education</option>
-                            <option>Charity</option>
-                        </select>
-                    </div>
+                    {isManager && (
+                        <div className="flex gap-2">
+                            <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all">
+                                <Filter size={16} /> Filter
+                            </button>
+                            <select 
+                                className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4"
+                                value={filterSection}
+                                onChange={(e) => setFilterSection(e.target.value)}
+                            >
+                                <option value="All Sections">All Sections</option>
+                                <option value="Planning">Planning</option>
+                                <option value="Education">Education</option>
+                                <option value="Development">Development</option>
+                                <option value="Batch">Batch</option>
+                                <option value="Profession">Profession</option>
+                                <option value="Language">Language</option>
+                                <option value="Members">Members</option>
+                                <option value="Audit">Audit</option>
+                                <option value="Finance">Finance</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className="overflow-x-auto">
@@ -66,7 +85,7 @@ const StudentList = () => {
                                 <th className="px-8 py-4">Student Name & ID</th>
                                 <th className="px-8 py-4">Department</th>
                                 <th className="px-8 py-4">Year</th>
-                                <th className="px-8 py-4">Service Section</th>
+                                <th className="px-8 py-4">ክፍላት</th>
                                 <th className="px-8 py-4">Status</th>
                                 <th className="px-8 py-4 text-right">Actions</th>
                             </tr>
@@ -98,7 +117,7 @@ const StudentList = () => {
                                         </span>
                                     </td>
                                     <td className="px-8 py-5">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Active'
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Student'
                                             ? 'bg-green-50 text-green-600 border-green-100'
                                             : 'bg-blue-50 text-blue-600 border-blue-100'
                                             }`}>
