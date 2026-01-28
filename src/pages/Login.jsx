@@ -31,25 +31,25 @@ const Login = () => {
             <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548625361-987dc79d6e50?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
-                
+
                 <div className="relative z-10 w-full h-full flex flex-col justify-between p-16 text-white">
                     <div>
                         <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-12 group">
                             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                             ወደ ዋናው ገጽ
                         </Link>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
                         >
                             <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
                             <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሀን ጊቢ ጉባኤ</h1>
-                            <p className="text-xl text-blue-400 font-medium tracking-wide">የአስተዳደር መግቢያ</p>
+                            <p className="text-xl text-blue-400 font-medium tracking-wide">መግቢያ (Login)</p>
                         </motion.div>
                     </div>
 
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
@@ -72,7 +72,7 @@ const Login = () => {
 
             {/* Right Side - Login Form */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 bg-gray-50">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="w-full max-w-md space-y-8"
@@ -111,7 +111,7 @@ const Login = () => {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         className="block w-full pl-11 pr-4 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
-                                        placeholder="የተጠቃሚ ስም ያስገቡ"
+                                        placeholder="Username / መታወቂያ / ክፍል (ለምሳሌ 'እቅድ')"
                                         required
                                     />
                                 </div>
@@ -168,6 +168,12 @@ const Login = () => {
                                 </>
                             )}
                         </button>
+
+                        <div className="text-center mt-6">
+                            <Link to="/register" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                                አካውንት የለኝም ልመዝገብ
+                            </Link>
+                        </div>
                     </form>
 
                     <p className="text-center text-sm text-gray-500 mt-8">
