@@ -36,6 +36,10 @@ body {
   color: #1f2937;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
 
   input,
