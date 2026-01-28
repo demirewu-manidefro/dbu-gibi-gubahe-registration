@@ -13,7 +13,8 @@ import {
     Search,
     Bell,
     MessageCircle,
-    Settings
+    Settings,
+    ClipboardCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -24,6 +25,7 @@ const Layout = ({ children }) => {
     const menuItems = [
         { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
         { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
+        { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
         { title: 'Student Database', icon: <Users size={20} />, path: '/students' },
         { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
     ];

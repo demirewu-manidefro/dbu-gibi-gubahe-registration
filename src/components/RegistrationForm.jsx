@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toEthiopian } from '../utils/ethiopianDateUtils';
 
 const RegistrationForm = () => {
     const { registerStudent } = useAuth();
@@ -55,7 +56,7 @@ const RegistrationForm = () => {
     useEffect(() => {
         if (formData.birthYear && formData.birthYear.length === 4) {
             const year = parseInt(formData.birthYear);
-            const currentYear = new Date().getFullYear(); // Gregorian for calculation simplicity, or could use Eth calendar
+            const currentYear = toEthiopian(new Date()).year; // Use Ethiopian year
             setFormData(prev => ({ ...prev, age: currentYear - year }));
         }
     }, [formData.birthYear]);
@@ -199,6 +200,7 @@ const RegistrationForm = () => {
                                                         value={formData.birthYear}
                                                         onChange={handleInputChange}
                                                         required
+                                                        min="1990" max={new Date().getFullYear()}
                                                     />
                                                 </div>
                                                 <div>
