@@ -10,10 +10,14 @@ import AttendanceSheet from './pages/AttendanceSheet';
 import AdminManagement from './pages/AdminManagement';
 import LandingPage from './pages/LandingPage';
 
+import PendingApprovals from './pages/PendingApprovals';
+
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? <Layout>{children}</Layout> : <Navigate to="/login" />;
 };
+
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -21,12 +25,14 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginWrapper />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/register" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
+          <Route path="/add-student" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
           <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
           <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
+          <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
         </Routes>
       </AuthProvider>

@@ -10,10 +10,10 @@ export const AuthProvider = ({ children }) => {
             'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ'
         ];
 
-        // Initial 9 admins + 1 manager
+
         const initialAdmins = sections.map((section, i) => ({
             id: i + 1,
-            username: `admin${i + 1}`,
+            username: section, // Username is now the Amharic section name (e.g., 'እቅድ')
             password: `pass${i + 1}`,
             name: `${section} ክፍል`,
             section: section,
@@ -61,28 +61,115 @@ export const AuthProvider = ({ children }) => {
         setActivityLog(prev => [newLog, ...prev].slice(0, 10));
     };
 
+    const checkUsernameUnique = (username) => {
+        const normalized = username.toLowerCase().trim();
+        const adminExists = admins.some(a => a.username.toLowerCase() === normalized);
+        const studentExists = students.some(s => s.username?.toLowerCase() === normalized);
+        return !adminExists && !studentExists;
+    };
+
     const registerStudent = (studentData) => {
-        // If user is admin (not manager), force their section
-        const assignedSection = user?.role === 'admin' && user?.section 
-            ? user.section 
-            : studentData.serviceSection;
+        const existingStudentIndex = students.findIndex(s => s.username === studentData.username || s.id === studentData.id);
 
-        const photoUrl = studentData.profilePhoto
+
+        const isStaff = user?.role === 'admin' || user?.role === 'manager';
+        const newStatus = isStaff ? 'Student' : 'Pending';
+
+        const assignedSection = user?.role === 'admin' && user?.section
+            ? user.section
+            : studentData.serviceSection || 'N/A';
+
+        const photoUrl = studentData.profilePhoto && typeof studentData.profilePhoto !== 'string'
             ? URL.createObjectURL(studentData.profilePhoto)
-            : '';
+            : (studentData.photoUrl || '');
 
-        const newStudent = {
-            ...studentData,
-            id: (studentData.studentId || '').trim() || `DBU/${Math.floor(Math.random() * 900) + 100}/${new Date().getFullYear() % 100}`,
-            name: studentData.fullName,
-            dept: studentData.department,
-            year: studentData.batch,
-            section: assignedSection,
-            status: 'Student',
-            photoUrl
-        };
-        setStudents(prev => [newStudent, ...prev]);
-        recordActivity('registration', { student: newStudent.name, section: assignedSection });
+        if (existingStudentIndex >= 0) {
+            // Update existing student
+            const updatedStudents = [...students];
+
+            // Explicit merging to ensure all fields are captured correctly
+            updatedStudents[existingStudentIndex] = {
+                ...updatedStudents[existingStudentIndex],
+                ...studentData, // Spread first to catch generic fields
+
+                // Critical Field Mappings
+                name: studentData.fullName || updatedStudents[existingStudentIndex].name,
+                dept: studentData.department || updatedStudents[existingStudentIndex].dept,
+                year: studentData.batch || updatedStudents[existingStudentIndex].year,
+                section: assignedSection, // Calculated above
+
+                // Contact Info
+                phone: studentData.phone || updatedStudents[existingStudentIndex].phone,
+                region: studentData.region || updatedStudents[existingStudentIndex].region,
+                zone: studentData.zone || updatedStudents[existingStudentIndex].zone,
+                woreda: studentData.woreda || updatedStudents[existingStudentIndex].woreda,
+                kebele: studentData.kebele || updatedStudents[existingStudentIndex].kebele,
+
+                // Emergency Contact
+                emergencyName: studentData.emergencyName || updatedStudents[existingStudentIndex].emergencyName,
+                emergencyPhone: studentData.emergencyPhone || updatedStudents[existingStudentIndex].emergencyPhone,
+
+                // Spiritual
+                baptismalName: studentData.baptismalName || updatedStudents[existingStudentIndex].baptismalName,
+                priesthoodRank: studentData.priesthoodRank || updatedStudents[existingStudentIndex].priesthoodRank,
+                courses: studentData.courses || updatedStudents[existingStudentIndex].courses,
+                graduationYear: studentData.graduationYear || updatedStudents[existingStudentIndex].graduationYear,
+
+                status: newStatus,
+                photoUrl: photoUrl || updatedStudents[existingStudentIndex].photoUrl
+            };
+            setStudents(updatedStudents);
+            recordActivity('registration_update', { student: updatedStudents[existingStudentIndex].name, section: assignedSection });
+        } else {
+            // Create New
+            if (studentData.username && !checkUsernameUnique(studentData.username)) {
+                throw new Error('Username already taken');
+            }
+
+            const newStudent = {
+                ...studentData,
+                id: (studentData.username || studentData.studentId || '').trim(),
+
+                // Explicit Mappings for New Student
+                name: studentData.fullName || studentData.username,
+                dept: studentData.department,
+                year: studentData.batch,
+                section: assignedSection,
+
+                phone: studentData.phone,
+                region: studentData.region,
+                zone: studentData.zone,
+                woreda: studentData.woreda,
+                kebele: studentData.kebele,
+
+                emergencyName: studentData.emergencyName,
+                emergencyPhone: studentData.emergencyPhone,
+
+                baptismalName: studentData.baptismalName,
+                priesthoodRank: studentData.priesthoodRank,
+                courses: studentData.courses,
+                graduationYear: studentData.graduationYear,
+
+                status: newStatus,
+                photoUrl,
+                username: studentData.username,
+                password: studentData.password
+            };
+            setStudents(prev => [newStudent, ...prev]);
+            recordActivity('registration', { student: newStudent.name, section: assignedSection });
+        }
+    };
+
+    const approveStudent = (studentId) => {
+        setStudents(prev => prev.map(s =>
+            s.id === studentId ? { ...s, status: 'Student' } : s
+        ));
+        recordActivity('approval', { studentId });
+    };
+
+    const declineStudent = (studentId) => {
+        setStudents(prev => prev.filter(s => s.id !== studentId));
+        recordActivity('decline', { studentId });
     };
 
     const registerAdmin = (adminData) => {
@@ -140,7 +227,7 @@ export const AuthProvider = ({ children }) => {
     const sendNotification = ({ target, message }) => {
         const newNotification = {
             id: Date.now(),
-            target, // 'all' or specific username
+            target,
             message,
             from: user?.name || 'Manager',
             time: new Date().toISOString(),
@@ -159,10 +246,13 @@ export const AuthProvider = ({ children }) => {
     const login = (username, password) => {
         const normalizedUsername = (username || '').trim().toLowerCase();
         const normalizedPassword = (password || '').trim();
+
+        // Check Admin
         const admin = admins.find(a =>
             (a.username || '').trim().toLowerCase() === normalizedUsername &&
             (a.password || '').trim() === normalizedPassword
         );
+
         if (admin) {
             if (admin.status === 'blocked') {
                 throw new Error('This account is blocked. Please contact the manager.');
@@ -173,6 +263,18 @@ export const AuthProvider = ({ children }) => {
             ));
             return true;
         }
+
+        // Check Student
+        const student = students.find(s =>
+            (s.username || '').trim().toLowerCase() === normalizedUsername &&
+            (s.password || '').trim() === normalizedPassword
+        );
+
+        if (student) {
+            setUser({ ...student, role: 'student' });
+            return true;
+        }
+
         throw new Error('Invalid username or password');
     };
 
@@ -200,6 +302,8 @@ export const AuthProvider = ({ children }) => {
         registerAdmin,
         updateStudent,
         deleteStudent,
+        approveStudent,
+        declineStudent,
         notifications,
         sendNotification,
         markNotificationsRead
