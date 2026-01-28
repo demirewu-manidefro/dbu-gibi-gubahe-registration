@@ -8,6 +8,7 @@ import RegistrationForm from './components/RegistrationForm';
 import StudentList from './pages/StudentList';
 import AttendanceSheet from './pages/AttendanceSheet';
 import AdminManagement from './pages/AdminManagement';
+import LandingPage from './pages/LandingPage';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -20,7 +21,8 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginWrapper />} />
-          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/register" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
           <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
           <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
@@ -34,7 +36,7 @@ function App() {
 
 const LoginWrapper = () => {
   const { user } = useAuth();
-  return user ? <Navigate to="/" /> : <Login />;
+  return user ? <Navigate to="/dashboard" /> : <Login />;
 };
 
 export default App;
