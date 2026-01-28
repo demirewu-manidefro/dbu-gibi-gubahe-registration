@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-    ChevronRight, 
-    Users, 
-    BookOpen, 
-    Heart, 
-    Music, 
-    Calendar, 
-    MapPin, 
-    Facebook, 
-    Twitter, 
-    Instagram, 
+import {
+    ChevronRight,
+    Users,
+    BookOpen,
+    Heart,
+    Music,
+    Calendar,
+    MapPin,
     ArrowRight,
     Cross,
-    Shield
+    Shield,
+    Link as LinkIcon
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -61,6 +59,10 @@ const LandingPage = () => {
                             </div>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
+                            <a href="#home" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                {lang === 'am' ? 'መነሻ' : 'Home'}
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                            </a>
                             <a href="#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'ስለ እኛ' : 'About'}</a>
                             <a href="#structure" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a>
                             <a href="#activities" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a>
@@ -69,7 +71,7 @@ const LandingPage = () => {
                                     {lang === 'am' ? 'መግቢያ' : 'Login'}
                                 </Link>
                                 <div className="relative">
-                                    <button onClick={() => setLangOpen(prev => !prev)} className="px-4 py-2.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 transition">
+                                    <button onClick={() => setLangOpen(prev => !prev)} className="px-4 py-2.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 transition transform hover:scale-105">
                                         {lang === 'am' ? 'አማ' : 'EN'}
                                     </button>
                                     {langOpen && (
@@ -86,7 +88,7 @@ const LandingPage = () => {
             </nav>
 
             {/* Hero Section */}
-            <section className="relative min-h-screen pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+            <section id="home" className="relative min-h-screen pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-[url('/hero_image.jpg')] bg-cover" style={{ backgroundPosition: `center ${-bgPosY}px` }} />
                     <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/10" />
@@ -135,6 +137,12 @@ const LandingPage = () => {
 
                         
                     </div>
+                </div>
+                <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
+                    <a href="#about" className="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/80 backdrop-blur border border-gray-200 text-gray-700 hover:bg-blue-50 transition shadow-sm">
+                        <span className="font-semibold">{lang === 'am' ? 'ወደ ተልዕኳችን ይውረዱ' : 'Scroll to Mission'}</span>
+                        <ChevronRight className="rotate-90 text-blue-600 group-hover:translate-y-0.5 transition-transform" size={18} />
+                    </a>
                 </div>
             </section>
 
@@ -348,13 +356,13 @@ const LandingPage = () => {
                             </p>
                             <div className="flex gap-4">
                                 <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <Facebook size={18} />
+                                    <LinkIcon size={18} />
                                 </a>
                                 <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <Twitter size={18} />
+                                    <LinkIcon size={18} />
                                 </a>
                                 <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <Instagram size={18} />
+                                    <LinkIcon size={18} />
                                 </a>
                             </div>
                         </div>
