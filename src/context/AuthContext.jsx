@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }) => {
             : '';
 
         const newStudent = {
+            ...studentData,
             id: (studentData.studentId || '').trim() || `DBU/${Math.floor(Math.random() * 900) + 100}/${new Date().getFullYear() % 100}`,
             name: studentData.fullName,
             dept: studentData.department,

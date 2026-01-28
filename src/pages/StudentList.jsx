@@ -156,10 +156,34 @@ const StudentList = () => {
                             ) : (
                                 <div className="space-y-3">
                                     <div className="text-xl font-bold text-gray-900">{selectedStudent.name}</div>
-                                    <div className="text-sm text-gray-600">Department: {selectedStudent.dept}</div>
-                                    <div className="text-sm text-gray-600">Year: {selectedStudent.year}</div>
-                                    <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
-                                    <div className="text-sm text-gray-600">Status: {selectedStudent.status}</div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase font-bold">Academic</div>
+                                            <div className="text-sm text-gray-600">Department: {selectedStudent.dept}</div>
+                                            <div className="text-sm text-gray-600">Year: {selectedStudent.year}</div>
+                                            <div className="text-sm text-gray-600">Status: {selectedStudent.status}</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase font-bold">Contact</div>
+                                            <div className="text-sm text-gray-600">Phone: {selectedStudent.phone || '-'}</div>
+                                            <div className="text-sm text-gray-600">Region: {selectedStudent.region || '-'}</div>
+                                            <div className="text-sm text-gray-600">Zone: {selectedStudent.zone || '-'}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div className="text-xs text-gray-500 uppercase font-bold mt-2">Spiritual</div>
+                                        <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
+                                        <div className="text-sm text-gray-600">
+                                            Courses: {selectedStudent.courses ? (
+                                                [
+                                                    selectedStudent.courses.level1 && 'Level 1',
+                                                    selectedStudent.courses.level2 && 'Level 2'
+                                                ].filter(Boolean).join(', ') || 'None'
+                                            ) : '-'}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Graduation Year: {selectedStudent.graduationYear || '-'}</div>
+                                    </div>
                                 </div>
                             )}
                         </div>
