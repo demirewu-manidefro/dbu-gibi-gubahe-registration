@@ -124,6 +124,18 @@ export const AuthProvider = ({ children }) => {
         recordActivity('admin_created', { adminName: newAdmin.name, section: newAdmin.section });
     };
 
+    const updateStudent = (studentId, updates) => {
+        setStudents(prev => prev.map(s =>
+            s.id === studentId ? { ...s, ...updates } : s
+        ));
+        recordActivity('student_updated', { student: updates?.name || studentId });
+    };
+
+    const deleteStudent = (studentId) => {
+        setStudents(prev => prev.filter(s => s.id !== studentId));
+        recordActivity('student_deleted', { student: studentId });
+    };
+
     const sendNotification = ({ target, message }) => {
         const newNotification = {
             id: Date.now(),
@@ -185,6 +197,8 @@ export const AuthProvider = ({ children }) => {
         recordActivity,
         registerStudent,
         registerAdmin,
+        updateStudent,
+        deleteStudent,
         notifications,
         sendNotification,
         markNotificationsRead

@@ -9,14 +9,19 @@ import {
     Edit2,
     Trash2,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    X,
+    Save
 } from 'lucide-react';
 
 const StudentList = () => {
-    const { students, user } = useAuth();
+    const { students, user, updateStudent, deleteStudent } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSection, setFilterSection] = useState('All Sections');
     const isManager = user?.role === 'manager';
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState(null);
 
     const filteredStudents = students.filter(student =>
         // Manager can see all or filter by section. Admin sees only their section.
@@ -29,6 +34,41 @@ const StudentList = () => {
         student.dept.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
+    const openView = (student) => {
+        setSelectedStudent(student);
+        setIsEditing(false);
+        setEditData(null);
+    };
+
+    const openEdit = (student) => {
+        setSelectedStudent(student);
+        setIsEditing(true);
+        setEditData({
+            name: student.name,
+            dept: student.dept,
+            year: student.year,
+            section: student.section,
+            status: student.status
+        });
+    };
+
+    const closeModal = () => {
+        setSelectedStudent(null);
+        setIsEditing(false);
+        setEditData(null);
+    };
+
+    const handleSave = () => {
+        if (!selectedStudent || !editData) return;
+        updateStudent(selectedStudent.id, editData);
+        closeModal();
+    };
+
+    const handleDelete = (studentId) => {
+        if (!window.confirm('Are you sure you want to delete this student?')) return;
+        deleteStudent(studentId);
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
@@ -40,6 +80,116 @@ const StudentList = () => {
                     <Download size={18} className="text-church-red" /> Export to Excel
                 </button>
             </div>
+
+            {selectedStudent && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                            <div>
+                                <div className="text-lg font-bold text-gray-900">Student Details</div>
+                                <div className="text-xs text-gray-500">{selectedStudent.id}</div>
+                            </div>
+                            <button onClick={closeModal} className="p-2 text-gray-400 hover:text-gray-600">
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            {isEditing ? (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
+                                        <input
+                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
+                                            value={editData.name}
+                                            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Department</label>
+                                        <input
+                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
+                                            value={editData.dept}
+                                            onChange={(e) => setEditData({ ...editData, dept: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Year</label>
+                                            <input
+                                                className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
+                                                value={editData.year}
+                                                onChange={(e) => setEditData({ ...editData, year: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Status</label>
+                                            <select
+                                                className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
+                                                value={editData.status}
+                                                onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                                            >
+                                                <option value="Student">Student</option>
+                                                <option value="Graduated">Graduated</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Section</label>
+                                        <select
+                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
+                                            value={editData.section}
+                                            onChange={(e) => setEditData({ ...editData, section: e.target.value })}
+                                        >
+                                            <option value="እቅድ">እቅድ</option>
+                                            <option value="ትምህርት">ትምህርት</option>
+                                            <option value="ልማት">ልማት</option>
+                                            <option value="ባች">ባች</option>
+                                            <option value="ሙያ">ሙያ</option>
+                                            <option value="ቋንቋ">ቋንቋ</option>
+                                            <option value="አባላት">አባላት</option>
+                                            <option value="ኦዲት">ኦዲት</option>
+                                            <option value="ሂሳብ">ሂሳብ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <div className="text-xl font-bold text-gray-900">{selectedStudent.name}</div>
+                                    <div className="text-sm text-gray-600">Department: {selectedStudent.dept}</div>
+                                    <div className="text-sm text-gray-600">Year: {selectedStudent.year}</div>
+                                    <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
+                                    <div className="text-sm text-gray-600">Status: {selectedStudent.status}</div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2">
+                            {isEditing ? (
+                                <button
+                                    onClick={handleSave}
+                                    className="flex items-center gap-2 px-4 py-2 bg-church-dark text-white rounded-xl font-bold"
+                                >
+                                    <Save size={16} /> Save
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => openEdit(selectedStudent)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-bold"
+                                >
+                                    <Edit2 size={16} /> Edit
+                                </button>
+                            )}
+                            <button
+                                onClick={closeModal}
+                                className="px-4 py-2 rounded-xl font-bold text-gray-500 hover:bg-gray-100"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-50 flex flex-wrap gap-4 items-center justify-between">
@@ -134,13 +284,22 @@ const StudentList = () => {
                                     </td>
                                     <td className="px-8 py-5 text-right">
                                         <div className="flex items-center justify-end gap-1">
-                                            <button className="p-2 text-gray-400 hover:text-church-red transition-colors">
+                                            <button
+                                                onClick={() => openView(student)}
+                                                className="p-2 text-gray-400 hover:text-church-red transition-colors"
+                                            >
                                                 <Eye size={18} />
                                             </button>
-                                            <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                                            <button
+                                                onClick={() => openEdit(student)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                            >
                                                 <Edit2 size={16} />
                                             </button>
-                                            <button className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                                            <button
+                                                onClick={() => handleDelete(student.id)}
+                                                className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                            >
                                                 <Trash2 size={18} />
                                             </button>
                                         </div>
