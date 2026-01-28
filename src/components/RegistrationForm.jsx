@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { toEthiopian } from '../utils/ethiopianDateUtils';
 
 const RegistrationForm = () => {
-    const { registerStudent } = useAuth();
+    const { registerStudent, user } = useAuth(); // Add user
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,6 +52,24 @@ const RegistrationForm = () => {
         courses: { level1: false, level2: false },
         graduationYear: ''
     });
+
+    // Populate data if student is logged in
+    useEffect(() => {
+        if (user && user.role === 'student') {
+            setFormData(prev => ({
+                ...prev,
+                studentId: user.username || user.id || '',
+                fullName: user.name || '',
+                // Other fields would be populated here if they exist in user object
+                department: user.dept || '',
+                batch: user.year || '',
+                serviceSection: user.section || '',
+                sex: user.sex || '',
+                phone: user.phone || '',
+                // In a real app, we would map all fields
+            }));
+        }
+    }, [user]);
 
     // Auto-calculate age
     useEffect(() => {
@@ -92,6 +110,14 @@ const RegistrationForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Basic validation
+        if (!formData.serviceSection) {
+            alert("Please select a Service Section (የአገልግሎት ክፍል) before saving.");
+            setActiveTab(3); // Go to Spiritual tab
+            return;
+        }
+
         setIsSubmitting(true);
         // Simulate API call
         setTimeout(() => {
@@ -109,8 +135,8 @@ const RegistrationForm = () => {
         <div className="max-w-5xl mx-auto pb-20">
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">የተማሪዎች ምዝገባ</h1>
-                    <p className="text-gray-500 font-medium">የተማሪ ምዝገባ ማውጫ</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{user?.role === 'student' ? 'የግል መረጃ ማስተካከያ' : 'የተማሪዎች ምዝገባ'}</h1>
+                    <p className="text-gray-500 font-medium">{user?.role === 'student' ? 'እባክዎ መረጃዎን በትክክል ይሙሉ' : 'የተማሪ ምዝገባ ማውጫ'}</p>
                 </div>
                 <div className="flex gap-2">
                     {tabs.map((tab) => (
@@ -249,7 +275,7 @@ const RegistrationForm = () => {
                                                 type="file"
                                                 className="absolute inset-0 opacity-0 cursor-pointer"
                                                 onChange={(e) => setFormData({ ...formData, profilePhoto: e.target.files[0] })}
-                                          required  />
+                                                required />
                                         </div>
                                         <p className="mt-4 text-xs text-center text-gray-500 leading-relaxed italic">
                                             ለማንነት መታወቂያ የሚሆን ግልጽ ፎቶ ይስቀሉ። (ከ 2MB ያልበለጠ)
@@ -310,7 +336,7 @@ const RegistrationForm = () => {
 
                                     <div className="space-y-6 bg-gray-50/50 p-8 rounded-2xl border border-gray-100">
                                         <h3 className="text-lg font-bold text-blue-600 flex items-center gap-2">
-                                            የቅርብ ተጠሪ መረጃ 
+                                            የቅርብ ተጠሪ መረጃ
                                         </h3>
                                         <div className="space-y-4">
                                             <div>
@@ -322,7 +348,7 @@ const RegistrationForm = () => {
                                                 <input name="emergencyPhone" value={formData.emergencyPhone} onChange={handleInputChange} required />
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             )}
@@ -358,7 +384,7 @@ const RegistrationForm = () => {
 
                                     <div className="space-y-6">
                                         <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                            የውጤት መረጃ 
+                                            የውጤት መረጃ
                                         </h3>
                                         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                                             {['y1', 'y2', 'y3', 'y4', 'y5'].map((year, idx) => (
