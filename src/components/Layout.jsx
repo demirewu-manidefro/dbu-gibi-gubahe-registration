@@ -5,6 +5,7 @@ import {
     UserPlus,
     Users,
     ShieldAlert,
+    ShieldCheck,
     FileText,
     LogOut,
     Menu,
@@ -20,19 +21,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { user, logout } = useAuth();
+    const { user, logout, notifications, markNotificationsRead } = useAuth();
+    const [showNotifications, setShowNotifications] = useState(false);
 
-    const menuItems = [
-        { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
-        { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
-        { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
-        { title: 'Student Database', icon: <Users size={20} />, path: '/students' },
-        { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
-    ];
+    const isManager = user?.role === 'manager';
 
-    if (user?.role === 'manager') {
-        menuItems.push({ title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' });
-    }
+    const menuItems = isManager
+        ? [
+            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
+            { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },
+            { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+        ]
+        : [
+            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
+            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
+            { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
+            { title: 'Student List', icon: <Users size={20} />, path: '/students' },
+            { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+        ];
 
     return (
         <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800">
@@ -128,14 +134,67 @@ const Layout = ({ children }) => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-gray-100 rounded-full relative">
-                            <Bell size={20} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-church-red rounded-full border-2 border-white"></span>
-                        </button>
-                        <button className="p-2 hover:bg-gray-100 rounded-full">
-                            <MessageCircle size={20} />
-                        </button>
+                    <div className="flex items-center gap-4 relative">
+                        {(() => {
+                            const username = user?.username;
+                            const userNotifications = notifications.filter(n =>
+                                n.target === 'all' || n.target === username
+                            );
+                            const unreadCount = userNotifications.filter(n => !n.readBy.includes(username)).length;
+                            return (
+                                <>
+                                    <button
+                                        onClick={() => setShowNotifications(prev => !prev)}
+                                        className="p-2 hover:bg-gray-100 rounded-full relative"
+                                    >
+                                        <Bell size={20} />
+                                        {unreadCount > 0 && (
+                                            <span className="absolute top-2 right-2 w-2 h-2 bg-church-red rounded-full border-2 border-white"></span>
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() => setShowNotifications(true)}
+                                        className="p-2 hover:bg-gray-100 rounded-full"
+                                    >
+                                        <MessageCircle size={20} />
+                                    </button>
+                                    {showNotifications && (
+                                        <div className="absolute right-0 top-12 w-80 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                                            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                                                <div className="font-bold text-sm text-gray-800">Notifications</div>
+                                                <button
+                                                    onClick={() => {
+                                                        if (username) markNotificationsRead(username);
+                                                    }}
+                                                    className="text-xs font-semibold text-church-red"
+                                                >
+                                                    Mark all read
+                                                </button>
+                                            </div>
+                                            <div className="max-h-80 overflow-y-auto">
+                                                {userNotifications.length === 0 ? (
+                                                    <div className="p-4 text-sm text-gray-500">No notifications</div>
+                                                ) : (
+                                                    userNotifications.map((n) => (
+                                                        <div key={n.id} className="px-4 py-3 border-b border-gray-50">
+                                                            <div className="text-xs text-gray-400">
+                                                                {new Date(n.time).toLocaleString()}
+                                                            </div>
+                                                            <div className="text-sm text-gray-800 mt-1">
+                                                                {n.message}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                From: {n.from}
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            );
+                        })()}
                         <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
                         <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 rounded-full border border-gray-100">
                             <div className="w-7 h-7 bg-church-red rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -154,23 +213,5 @@ const Layout = ({ children }) => {
         </div>
     );
 };
-
-// Simple mock for missing icon
-const ShieldCheck = ({ size, className }) => (
-    <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="m9 12 2 2 4-4" />
-    </svg>
-);
 
 export default Layout;
