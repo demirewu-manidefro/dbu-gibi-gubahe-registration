@@ -77,7 +77,7 @@ const StudentList = () => {
                     <p className="text-gray-500 font-medium">Manage and view all registered Gibi Gubae students</p>
                 </div>
                 <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                    <Download size={18} className="text-church-red" /> Export to Excel
+                    <Download size={18} className="text-blue-600" /> Export to Excel
                 </button>
             </div>
 
@@ -192,7 +192,7 @@ const StudentList = () => {
                             {isEditing ? (
                                 <button
                                     onClick={handleSave}
-                                    className="flex items-center gap-2 px-4 py-2 bg-church-dark text-white rounded-xl font-bold"
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-xl font-bold"
                                 >
                                     <Save size={16} /> Save
                                 </button>
@@ -294,7 +294,7 @@ const StudentList = () => {
                                     </td>
                                     <td className="px-8 py-5">
                                         <span className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-church-gold"></div>
+                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
                                             <span className="text-sm font-medium">{student.section}</span>
                                         </span>
                                     </td>
@@ -310,7 +310,7 @@ const StudentList = () => {
                                         <div className="flex items-center justify-end gap-1">
                                             <button
                                                 onClick={() => openView(student)}
-                                                className="p-2 text-gray-400 hover:text-church-red transition-colors"
+                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                                             >
                                                 <Eye size={18} />
                                             </button>
@@ -342,7 +342,7 @@ const StudentList = () => {
                         <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>
                             <ChevronLeft size={18} />
                         </button>
-                        <button className="px-4 py-2 bg-church-red text-white rounded-lg font-bold text-sm shadow-md">1</button>
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md">1</button>
                         <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">2</button>
                         <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">3</button>
                         <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-600">

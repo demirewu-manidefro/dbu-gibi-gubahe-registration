@@ -70,7 +70,7 @@ const AttendanceSheet = () => {
                     />
                     <button 
                         onClick={handleSaveAttendance}
-                        className="flex items-center gap-2 px-6 py-3 bg-church-red text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-md"
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md"
                     >
                         <Save size={18} /> Save Sheet
                     </button>
@@ -110,7 +110,7 @@ const AttendanceSheet = () => {
                                 </select>
                             ) : (
                                 <div className="flex items-center gap-2 pl-4 pr-6 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600">
-                                    <span className="text-church-gold">●</span>
+                                    <span className="text-blue-400">●</span>
                                     {user?.section} Only
                                 </div>
                             )}

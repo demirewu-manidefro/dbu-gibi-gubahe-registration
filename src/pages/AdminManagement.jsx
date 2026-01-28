@@ -107,7 +107,7 @@ const AdminManagement = () => {
                     </div>
                     <button 
                         onClick={() => setIsRegistering(true)}
-                        className="flex items-center gap-2 px-6 py-2 bg-church-dark text-white rounded-xl font-bold text-sm hover:bg-black transition-all"
+                        className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition-all"
                     >
                         <UserPlus size={16} /> Register New Admin
                     </button>
@@ -134,7 +134,7 @@ const AdminManagement = () => {
                                 >
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-church-gold/10 text-church-gold flex items-center justify-center font-bold border border-church-gold/20">
+                                            <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center font-bold border border-blue-400/20">
                                                 {admin.name.charAt(0)}
                                             </div>
                                             <div>
@@ -167,7 +167,7 @@ const AdminManagement = () => {
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => setBroadcastTarget(admin.username)}
-                                                className="p-2 text-gray-400 hover:text-church-red transition-colors"
+                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                                                 title="Message Admin"
                                             >
                                                 <MessageSquare size={18} />
@@ -192,7 +192,7 @@ const AdminManagement = () => {
             </div>
 
             {/* Broadcast Modal Mockup */}
-            <div className="bg-gradient-to-r from-church-red to-red-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 right-0 p-10 opacity-10">
                     <MessageSquare size={120} />
                 </div>
@@ -222,7 +222,7 @@ const AdminManagement = () => {
                             />
                             <button
                                 onClick={handleBroadcastSend}
-                                className="bg-church-gold text-church-dark px-6 py-2 rounded-xl font-bold hover:bg-yellow-400 transition-all"
+                                className="bg-blue-400 text-blue-900 px-6 py-2 rounded-xl font-bold hover:bg-blue-300 transition-all"
                             >
                                 Send
                             </button>
@@ -256,7 +256,7 @@ const AdminManagement = () => {
                             </div>
 
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-church-gold/10 text-church-gold flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-400/10 text-blue-400 flex items-center justify-center">
                                     <UserPlus size={24} />
                                 </div>
                                 <div>
@@ -273,7 +273,7 @@ const AdminManagement = () => {
                                         required
                                         value={newAdminData.name}
                                         onChange={(e) => setNewAdminData({ ...newAdminData, name: e.target.value })}
-                                        className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-church-gold focus:border-church-gold"
+                                        className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
                                         placeholder="e.g. Deacon Abebe"
                                     />
                                 </div>
@@ -286,7 +286,7 @@ const AdminManagement = () => {
                                             required
                                             value={newAdminData.username}
                                             onChange={(e) => setNewAdminData({ ...newAdminData, username: e.target.value })}
-                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-church-gold focus:border-church-gold"
+                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
                                             placeholder="username"
                                         />
                                     </div>
@@ -297,7 +297,7 @@ const AdminManagement = () => {
                                             required
                                             value={newAdminData.password}
                                             onChange={(e) => setNewAdminData({ ...newAdminData, password: e.target.value })}
-                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-church-gold focus:border-church-gold"
+                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -308,7 +308,7 @@ const AdminManagement = () => {
                                     <select
                                         value={newAdminData.section}
                                         onChange={(e) => setNewAdminData({ ...newAdminData, section: e.target.value })}
-                                        className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-church-gold focus:border-church-gold"
+                                        className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
                                     >
                                         <option value="እቅድ">እቅድ</option>
                                         <option value="ትምህርት">ትምህርት</option>
@@ -325,7 +325,7 @@ const AdminManagement = () => {
                                 <div className="pt-4">
                                     <button
                                         type="submit"
-                                        className="w-full bg-church-dark text-white py-3 rounded-xl font-bold hover:bg-black transition-all flex items-center justify-center gap-2"
+                                        className="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all flex items-center justify-center gap-2"
                                     >
                                         <UserPlus size={18} />
                                         Create Account

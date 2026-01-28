@@ -28,9 +28,9 @@ const Login = () => {
     return (
         <div className="min-h-screen w-full flex bg-white font-sans overflow-hidden">
             {/* Left Side - Image & Branding (Hidden on mobile) */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-church-dark overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548625361-987dc79d6e50?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-church-red/90 to-church-dark/90 mix-blend-multiply"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
                 
                 <div className="relative z-10 w-full h-full flex flex-col justify-between p-16 text-white">
                     <div>
@@ -45,7 +45,7 @@ const Login = () => {
                         >
                             <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
                             <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሀን ጊቢ ጉባኤ</h1>
-                            <p className="text-xl text-church-gold font-medium tracking-wide">የአስተዳደር መግቢያ</p>
+                            <p className="text-xl text-blue-400 font-medium tracking-wide">የአስተዳደር መግቢያ</p>
                         </motion.div>
                     </div>
 
@@ -66,8 +66,8 @@ const Login = () => {
                 </div>
 
                 {/* Decorative Circles */}
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-church-gold/10 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 -left-24 w-64 h-64 bg-church-red/20 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
             </div>
 
             {/* Right Side - Login Form */}
@@ -79,7 +79,7 @@ const Login = () => {
                 >
                     <div className="text-center lg:text-left">
                         <div className="lg:hidden flex justify-center mb-6">
-                            <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-church-red shadow-lg" />
+                            <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-blue-600 shadow-lg" />
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">እንኳን በደህና መጡ</h2>
                         <p className="mt-2 text-gray-600">
@@ -104,13 +104,13 @@ const Login = () => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">ተጠቃሚ ስም</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <User size={20} className="text-gray-400 group-focus-within:text-church-red transition-colors" />
+                                        <User size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                                     </div>
                                     <input
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className="block w-full pl-11 pr-4 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-church-red/20 focus:border-church-red transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
+                                        className="block w-full pl-11 pr-4 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
                                         placeholder="የተጠቃሚ ስም ያስገቡ"
                                         required
                                     />
@@ -121,13 +121,13 @@ const Login = () => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">የይለፍ ቃል</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock size={20} className="text-gray-400 group-focus-within:text-church-red transition-colors" />
+                                        <Lock size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                                     </div>
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full pl-11 pr-12 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-church-red/20 focus:border-church-red transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
+                                        className="block w-full pl-11 pr-12 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -145,11 +145,11 @@ const Login = () => {
                         <div className="flex items-center justify-between">
                             <label className="flex items-center gap-3 cursor-pointer group">
                                 <div className="relative flex items-center">
-                                    <input type="checkbox" className="peer h-5 w-5 rounded border-gray-300 text-church-red focus:ring-church-red transition-all cursor-pointer" />
+                                    <input type="checkbox" className="peer h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 transition-all cursor-pointer" />
                                 </div>
                                 <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">አስታውሰኝ</span>
                             </label>
-                            <a href="#" className="text-sm font-semibold text-church-red hover:text-red-800 transition-colors">
+                            <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
                                 የይለፍ ቃል ጠፋብዎ?
                             </a>
                         </div>
@@ -157,7 +157,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-xl text-white bg-church-red hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-church-red/20 font-bold text-lg shadow-lg shadow-church-red/30 transition-all transform hover:-translate-y-0.5 active:scale-[0.98]"
+                            className="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 font-bold text-lg shadow-lg shadow-blue-900/30 transition-all transform hover:-translate-y-0.5 active:scale-[0.98]"
                         >
                             {loading ? (
                                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

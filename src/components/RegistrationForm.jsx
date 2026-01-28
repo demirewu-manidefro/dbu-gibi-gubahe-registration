@@ -117,7 +117,7 @@ const RegistrationForm = () => {
                         <div
                             key={tab.id}
                             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeTab === tab.id
-                                ? 'bg-church-red text-white shadow-lg'
+                                ? 'bg-blue-600 text-white shadow-lg'
                                 : 'bg-white text-gray-400 border border-gray-100'
                                 }`}
                         >
@@ -143,7 +143,7 @@ const RegistrationForm = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-6 py-4 flex flex-col items-center gap-1 transition-all relative ${activeTab === tab.id ? 'text-church-red' : 'text-gray-400 hover:text-gray-600'
+                            className={`px-6 py-4 flex flex-col items-center gap-1 transition-all relative ${activeTab === tab.id ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
                             <span className="text-xs font-bold uppercase tracking-wider">{tab.subLabel}</span>
@@ -151,7 +151,7 @@ const RegistrationForm = () => {
                             {activeTab === tab.id && (
                                 <motion.div
                                     layoutId="tab-indicator"
-                                    className="absolute bottom-0 left-0 w-full h-1 bg-church-red"
+                                    className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"
                                 />
                             )}
                         </button>
@@ -236,7 +236,7 @@ const RegistrationForm = () => {
                                     </div>
 
                                     <div className="w-full md:w-64 flex flex-col items-center">
-                                        <div className="w-48 h-56 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 group hover:border-church-gold transition-colors cursor-pointer relative overflow-hidden">
+                                        <div className="w-48 h-56 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 group hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden">
                                             {formData.profilePhoto ? (
                                                 <img src={URL.createObjectURL(formData.profilePhoto)} className="w-full h-full object-cover" />
                                             ) : (
@@ -262,7 +262,7 @@ const RegistrationForm = () => {
                             {activeTab === 1 && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     <div className="space-y-6">
-                                        <h3 className="text-lg font-bold text-church-red flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-blue-600 flex items-center gap-2">
                                             <MapPin size={18} /> አድራሻ
                                         </h3>
                                         <div className="space-y-4">
@@ -309,7 +309,7 @@ const RegistrationForm = () => {
                                     </div>
 
                                     <div className="space-y-6 bg-gray-50/50 p-8 rounded-2xl border border-gray-100">
-                                        <h3 className="text-lg font-bold text-church-red flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-blue-600 flex items-center gap-2">
                                             የቅርብ ተጠሪ መረጃ 
                                         </h3>
                                         <div className="space-y-4">
@@ -371,7 +371,7 @@ const RegistrationForm = () => {
                                                         placeholder="1.45"
                                                         value={formData.gpa[year]}
                                                         onChange={handleInputChange}
-                                                        className="text-center font-bold text-church-red"
+                                                        className="text-center font-bold text-blue-600"
                                                     />
                                                 </div>
                                             ))}
@@ -401,8 +401,8 @@ const RegistrationForm = () => {
                                                     <label
                                                         key={section.id}
                                                         className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.serviceSection === section.id
-                                                            ? 'bg-church-red text-white border-church-red shadow-lg'
-                                                            : 'bg-white border-gray-100 hover:border-church-gold'
+                                                            ? 'bg-blue-600 text-white border-blue-600 shadow-lg'
+                                                            : 'bg-white border-gray-100 hover:border-blue-400'
                                                             }`}
                                                     >
                                                         <input
@@ -424,26 +424,26 @@ const RegistrationForm = () => {
                                         <div>
                                             <label className="label-amharic font-bold text-lg mb-4 block">የተማረው ኮርስ</label>
                                             <div className="space-y-4">
-                                                <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-white border-2 border-transparent hover:border-church-gold transition-all">
+                                                <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-400 transition-all">
                                                     <input
                                                         type="checkbox"
                                                         name="level1"
                                                         checked={formData.courses.level1}
                                                         onChange={handleInputChange}
-                                                        className="w-5 h-5 rounded text-church-red focus:ring-church-red border-gray-300"
+                                                        className="w-5 h-5 rounded text-blue-600 focus:ring-blue-600 border-gray-300"
                                                     />
                                                     <div>
                                                         <span className="font-bold block">የመጀመሪያ ደረጃ</span>
                                                         <span className="text-xs text-gray-500">የዶግማ እና የቅዳሴ መርሆዎች</span>
                                                     </div>
                                                 </label>
-                                                <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-white border-2 border-transparent hover:border-church-gold transition-all">
+                                                <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-400 transition-all">
                                                     <input
                                                         type="checkbox"
                                                         name="level2"
                                                         checked={formData.courses.level2}
                                                         onChange={handleInputChange}
-                                                        className="w-5 h-5 rounded text-church-red focus:ring-church-red border-gray-300"
+                                                        className="w-5 h-5 rounded text-blue-600 focus:ring-blue-600 border-gray-300"
                                                     />
                                                     <div>
                                                         <span className="font-bold block">ሁለተኛ ደረጃ</span>
@@ -482,7 +482,7 @@ const RegistrationForm = () => {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-church-dark text-white shadow-lg hover:shadow-xl hover:bg-black transition-all transform active:scale-[0.98]"
+                            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-blue-900 text-white shadow-lg hover:shadow-xl hover:bg-blue-800 transition-all transform active:scale-[0.98]"
                         >
                             ቀጥል <ChevronRight size={20} />
                         </button>
@@ -490,7 +490,7 @@ const RegistrationForm = () => {
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="flex items-center gap-2 px-10 py-3 rounded-xl font-bold bg-church-red text-white shadow-lg shadow-red-900/20 hover:bg-red-800 transition-all transform active:scale-[0.98]"
+                            className="flex items-center gap-2 px-10 py-3 rounded-xl font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-700 transition-all transform active:scale-[0.98]"
                         >
                             {isSubmitting ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

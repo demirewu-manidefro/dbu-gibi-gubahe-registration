@@ -53,7 +53,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
 
     return (
         <div className={`flex items-center gap-2 bg-white px-4 py-2 border border-gray-200 rounded-xl shadow-sm ${className}`}>
-            <Calendar size={18} className="text-church-red" />
+            <Calendar size={18} className="text-blue-600" />
             <div className="flex gap-2">
                  <select 
                     value={ethDate.day}

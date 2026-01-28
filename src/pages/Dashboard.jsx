@@ -40,14 +40,14 @@ const Dashboard = () => {
             value: filteredStudents.filter(s => s.status === 'Graduated').length.toLocaleString(), 
             sub: 'Class of 2017/18', 
             icon: <GraduationCap size={24} />, 
-            color: 'bg-church-red' 
+            color: 'bg-blue-600' 
         },
         { 
             label: 'Active Servants', 
             value: filteredStudents.filter(s => s.status === 'Student').length.toLocaleString(), 
             sub: isManager ? 'Across all mahibers' : `In ${mySection}`, 
             icon: <Award size={24} />, 
-            color: 'bg-church-gold' 
+            color: 'bg-blue-400' 
         },
         { 
             label: 'Avg. Attendance', 
@@ -61,8 +61,8 @@ const Dashboard = () => {
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
             {isManager && (
-                <div className="bg-church-dark/5 p-4 rounded-xl border border-church-dark/10 mb-6">
-                    <h2 className="text-lg font-bold text-church-dark">Manager Overview</h2>
+                <div className="bg-blue-900/5 p-4 rounded-xl border border-blue-900/10 mb-6">
+                    <h2 className="text-lg font-bold text-blue-900">Manager Overview</h2>
                     <p className="text-sm text-gray-600">You are viewing global statistics across all sections.</p>
                 </div>
             )}
@@ -74,7 +74,7 @@ const Dashboard = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.1 }}
                         key={stat.label}
-                        className="bg-white p-6 rounded-3xl shadow-premium border border-gray-100 group hover:border-church-gold transition-all cursor-default"
+                        className="bg-white p-6 rounded-3xl shadow-premium border border-gray-100 group hover:border-blue-400 transition-all cursor-default"
                     >
                         <div className={`p-4 rounded-2xl ${stat.color} text-white w-fit mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-${stat.color.split('-')[1]}-200`}>
                             {stat.icon}
@@ -92,9 +92,9 @@ const Dashboard = () => {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold flex items-center gap-2">
-                            <Clock className="text-church-red" size={20} /> Recent Registration Activity
+                            <Clock className="text-blue-600" size={20} /> Recent Registration Activity
                         </h2>
-                        <button className="text-sm font-bold text-church-red flex items-center gap-1 hover:underline">
+                        <button className="text-sm font-bold text-blue-600 flex items-center gap-1 hover:underline">
                             View All Activity <ChevronRight size={16} />
                         </button>
                     </div>
@@ -104,12 +104,12 @@ const Dashboard = () => {
                             {filteredLogs.map((log) => (
                                 <div key={log.id} className="p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 text-xs font-bold text-church-red">
+                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 text-xs font-bold text-blue-600">
                                             {log.admin.split(' ').map(n => n[0]).join('')}
                                         </div>
                                         <div>
                                             <div className="font-bold text-gray-900">
-                                                {log.admin} registered <span className="text-church-red">{log.student}</span>
+                                                {log.admin} registered <span className="text-blue-600">{log.student}</span>
                                             </div>
                                             <div className="text-xs text-gray-400 font-medium">
                                                 {formatEthiopianDateAmharic(log.time)} • {new Date(log.time).toLocaleTimeString()} • {log.type}
@@ -127,22 +127,22 @@ const Dashboard = () => {
 
                 <div className="space-y-6">
                     <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Calendar className="text-church-gold" size={20} /> Upcoming Events
+                        <Calendar className="text-blue-400" size={20} /> Upcoming Events
                     </h2>
-                    <div className="bg-church-dark rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[400px]">
+                    <div className="bg-blue-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[400px]">
                         <div className="absolute top-0 right-0 p-10 opacity-10">
                             <Church size={120} />
                         </div>
                         <div className="relative z-10 space-y-8">
                             <div className="space-y-2">
-                                <div className="text-church-gold font-bold text-xs uppercase tracking-widest">Ongoing Registration</div>
+                                <div className="text-blue-400 font-bold text-xs uppercase tracking-widest">Ongoing Registration</div>
                                 <h3 className="text-2xl font-bold">2017 E.C. Batch One Enrollment</h3>
                                 <p className="text-white/60 text-sm leading-relaxed">Please ensure all 1st year students are registered before the fasting season starts.</p>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                                    <div className="bg-church-gold p-2 rounded-xl text-church-dark">
+                                    <div className="bg-blue-400 p-2 rounded-xl text-blue-900">
                                         <Users size={18} />
                                     </div>
                                     <div>
@@ -151,7 +151,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                                    <div className="bg-church-red p-2 rounded-xl text-white">
+                                    <div className="bg-blue-600 p-2 rounded-xl text-white">
                                         <Calendar size={18} />
                                     </div>
                                     <div>
@@ -161,7 +161,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full py-3 bg-white text-church-dark rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
+                            <button className="w-full py-3 bg-white text-blue-900 rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
                                 + Add Schedule
                             </button>
                         </div>

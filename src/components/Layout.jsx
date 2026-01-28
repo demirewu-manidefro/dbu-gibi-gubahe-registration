@@ -48,11 +48,11 @@ const Layout = ({ children }) => {
             <motion.aside
                 initial={false}
                 animate={{ width: sidebarOpen ? 260 : 80 }}
-                className="bg-church-dark text-white flex flex-col relative z-30"
+                className="bg-blue-900 text-white flex flex-col relative z-30"
             >
                 <div className="p-6 flex items-center gap-3 border-b border-white/10">
-                    <div className="bg-church-red p-2 rounded-lg flex-shrink-0">
-                        <ShieldCheck size={24} className="text-church-gold" />
+                    <div className="bg-blue-600 p-2 rounded-lg flex-shrink-0">
+                        <ShieldCheck size={24} className="text-blue-400" />
                     </div>
                     {sidebarOpen && (
                         <motion.div
@@ -72,7 +72,7 @@ const Layout = ({ children }) => {
                             to={item.path}
                             className={({ isActive }) =>
                                 `group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer ${isActive
-                                    ? 'bg-church-red text-white shadow-lg'
+                                    ? 'bg-blue-600 text-white shadow-lg'
                                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                                 }`
                             }
@@ -95,7 +95,7 @@ const Layout = ({ children }) => {
 
                 <div className="p-4 border-t border-white/10 space-y-4">
                     <div className="flex items-center gap-3 p-2">
-                        <div className="w-10 h-10 rounded-full bg-church-gold flex items-center justify-center text-church-dark font-bold">
+                        <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold">
                             {user?.name.charAt(0)}
                         </div>
                         {sidebarOpen && (
@@ -107,7 +107,7 @@ const Layout = ({ children }) => {
                     </div>
                     <button
                         onClick={logout}
-                        className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-red-900/40 text-red-400 transition-colors"
+                        className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40 text-blue-400 transition-colors"
                     >
                         <LogOut size={20} />
                         {sidebarOpen && <span className="font-medium">Sign Out</span>}
@@ -151,7 +151,7 @@ const Layout = ({ children }) => {
                                     >
                                         <Bell size={20} />
                                         {unreadCount > 0 && (
-                                            <span className="absolute top-2 right-2 w-2 h-2 bg-church-red rounded-full border-2 border-white"></span>
+                                            <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
                                         )}
                                     </button>
                                     <button
@@ -168,7 +168,7 @@ const Layout = ({ children }) => {
                                                     onClick={() => {
                                                         if (username) markNotificationsRead(username);
                                                     }}
-                                                    className="text-xs font-semibold text-church-red"
+                                                    className="text-xs font-semibold text-blue-600"
                                                 >
                                                     Mark all read
                                                 </button>
@@ -199,7 +199,7 @@ const Layout = ({ children }) => {
                         })()}
                         <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
                         <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 rounded-full border border-gray-100">
-                            <div className="w-7 h-7 bg-church-red rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 {user?.name.charAt(0)}
                             </div>
                             <span className="text-sm font-medium hidden sm:inline">{user?.name.split(' ')[0]}</span>
