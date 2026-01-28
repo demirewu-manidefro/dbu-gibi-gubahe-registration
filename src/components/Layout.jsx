@@ -15,7 +15,8 @@ import {
     Bell,
     MessageCircle,
     Settings,
-    ClipboardCheck
+    ClipboardCheck,
+    Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,22 +26,29 @@ const Layout = ({ children }) => {
     const [showNotifications, setShowNotifications] = useState(false);
 
     const isManager = user?.role === 'manager';
+    const isStudent = user?.role === 'student';
 
     const menuItems = isManager
         ? [
             { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
+            { title: 'Approvals', icon: <Clock size={20} />, path: '/approvals' },
+            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
             { title: 'Student List', icon: <Users size={20} />, path: '/students' },
             { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },
             { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
         ]
-        : [
-            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
-            { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
-            { title: 'Student List', icon: <Users size={20} />, path: '/students' },
-            { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
-        ];
+        : isStudent
+            ? [
+                { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
+            ]
+            : [
+                { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+                { title: 'Approvals', icon: <Clock size={20} />, path: '/approvals' },
+                { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
+                { title: 'Student List', icon: <Users size={20} />, path: '/students' },
+                { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+            ];
 
     return (
         <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800">
@@ -126,14 +134,16 @@ const Layout = ({ children }) => {
                         >
                             <Menu size={20} />
                         </button>
-                        <div className="relative hidden md:block w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search students by name or ID..."
-                                className="pl-10 pr-4 py-2 bg-gray-50 border-gray-200 rounded-full text-sm"
-                            />
-                        </div>
+                        {!isStudent && (
+                            <div className="relative hidden md:block w-96">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search students by name or ID..."
+                                    className="pl-10 pr-4 py-2 bg-gray-50 border-gray-200 rounded-full text-sm"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-4 relative">
