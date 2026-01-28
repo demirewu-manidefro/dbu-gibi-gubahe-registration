@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import RegistrationForm from './components/RegistrationForm';
 import StudentList from './pages/StudentList';
+import AttendanceSheet from './pages/AttendanceSheet';
 import AdminManagement from './pages/AdminManagement';
 
 const PrivateRoute = ({ children }) => {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/register" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
+          <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
           <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
