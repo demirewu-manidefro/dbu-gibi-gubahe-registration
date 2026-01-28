@@ -35,6 +35,8 @@ const LandingPage = () => {
 
     const [scrolled, setScrolled] = useState(false);
     const [bgPosY, setBgPosY] = useState(0);
+    const [lang, setLang] = useState('am');
+    const [langOpen, setLangOpen] = useState(false);
     useEffect(() => {
         const onScroll = () => {
             const s = window.scrollY > 10;
@@ -59,12 +61,25 @@ const LandingPage = () => {
                             </div>
                         </div>
                         <div className="hidden md:flex items-center space-x-8">
-                            <a href="#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">ስለ እኛ</a>
-                            <a href="#structure" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">መዋቅር</a>
-                            <a href="#activities" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">መርሐ ግብሮች</a>
-                            <Link to="/login" className="px-6 py-2.5 rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 transition-all transform hover:scale-105 shadow-lg shadow-gray-200">
-                                መግቢያ
-                            </Link>
+                            <a href="#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'ስለ እኛ' : 'About'}</a>
+                            <a href="#structure" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a>
+                            <a href="#activities" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a>
+                            <div className="flex items-center gap-3">
+                                <Link to="/login" className="px-6 py-2.5 rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 transition-all transform hover:scale-105 shadow-lg shadow-gray-200">
+                                    {lang === 'am' ? 'መግቢያ' : 'Login'}
+                                </Link>
+                                <div className="relative">
+                                    <button onClick={() => setLangOpen(prev => !prev)} className="px-4 py-2.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 transition">
+                                        {lang === 'am' ? 'አማ' : 'EN'}
+                                    </button>
+                                    {langOpen && (
+                                        <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-xl shadow-lg py-1">
+                                            <button onClick={() => { setLang('en'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50">EN</button>
+                                            <button onClick={() => { setLang('am'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50">አማ</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,24 +109,26 @@ const LandingPage = () => {
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                                 </span>
-                                ተመስርቷል 1977 ዓ.ም.
+                                {lang === 'am' ? 'ተመስርቷል 1977 ዓ.ም.' : 'Founded 1977 E.C.'}
                             </motion.div>
                             
                             <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
-                                መንፈሳዊ አንድነት በ<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">ዩኒቨርሲቲ</span>
+                                {lang === 'am' ? 'መንፈሳዊ አንድነት በ' : 'Spiritual Unity in '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">{lang === 'am' ? 'ዩኒቨርሲቲ' : 'University'}</span>
                             </motion.h1>
                             
                             <motion.p variants={fadeIn} className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                                ለተማሪዎች መንፈሳዊ መጠለያ፣ በኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ሥርዓት ላይ የተመሠረተ። "ትምህርትህ እምነትህን ያጠናክረው።"
+                                {lang === 'am' 
+                                    ? 'ለተማሪዎች መንፈሳዊ መጠለያ፣ በኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ሥርዓት ላይ የተመሠረተ። "ትምህርትህ እምነትህን ያጠናክረው።"'
+                                    : 'A spiritual refuge for students, rooted in the Ethiopian Orthodox Tewahedo tradition. "Let your education strengthen your faith."'}
                             </motion.p>
                             
                             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                 <Link to="/register" className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-2 group">
-                                    ቤተሰብ ይሁኑ
+                                    {lang === 'am' ? 'ቤተሰብ ይሁኑ' : 'Join the Family'}
                                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 <a href="#about" className="px-8 py-4 rounded-2xl bg-white border border-gray-200 text-gray-700 font-bold text-lg hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
-                                    ተጨማሪ ይወቁ
+                                    {lang === 'am' ? 'ተጨማሪ ይወቁ' : 'Learn More'}
                                 </a>
                             </motion.div>
                         </motion.div>
@@ -125,8 +142,8 @@ const LandingPage = () => {
             <section id="about" className="py-20 bg-gray-50">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">ተልዕኳችን</h2>
-                        <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">እምነትን በትምህርት ማሳደግ</h3>
+                        <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'ተልዕኳችን' : 'Our Mission'}</h2>
+                        <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'እምነትን በትምህርት ማሳደግ' : 'Nurturing Faith through Education'}</h3>
                         <p className="text-gray-600 text-lg">
                             "ያለ መንፈሳዊ መሰረት ትምህርት በአሸዋ ላይ እንደተሰራ ቤት ነው።" — ቅዱስ ያሬድ። 
                             ተማሪዎች መንፈሳዊ ህይወታቸውን እንዲጠብቁ እና የቤተሰብነት ስሜት እንዲሰማቸው እንሰራለን።
@@ -163,9 +180,15 @@ const LandingPage = () => {
                                 <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6">
                                     {feature.icon}
                                 </div>
-                                <h4 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h4>
+                                <h4 className="text-xl font-bold text-gray-900 mb-3">
+                                    {idx === 0 ? (lang === 'am' ? 'መንፈሳዊ እድገት' : 'Spiritual Growth')
+                                        : idx === 1 ? (lang === 'am' ? 'የቤተክርስቲያን ትምህርት' : 'Church Education')
+                                        : (lang === 'am' ? 'የማህበረሰብ ድጋፍ' : 'Community Support')}
+                                </h4>
                                 <p className="text-gray-600 leading-relaxed">
-                                    {feature.desc}
+                                    {idx === 0 ? (lang === 'am' ? 'በጸሎት እና በጾም ከእግዚአብሔር ጋር ያለንን ግንኙነት ማጠናከር።' : 'Deepening our relationship with God through prayer and fasting.')
+                                        : idx === 1 ? (lang === 'am' ? 'የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያንን አስተምህሮ ማጥናት እና መረዳት።' : 'Studying and understanding the Orthodox Tewahedo Church.')
+                                        : (lang === 'am' ? 'በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።' : 'Mutual support in faith, study, and life.')}
                                 </p>
                             </motion.div>
                         ))}
@@ -207,8 +230,8 @@ const LandingPage = () => {
                         </div>
                         
                         <div className="order-1 lg:order-2">
-                            <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">መዋቅራችን</h2>
-                            <h3 className="text-4xl font-extrabold text-gray-900 mb-6">ለመንፈሳዊ እድገት የተዋቀረ</h3>
+                            <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'መዋቅራችን' : 'Our Structure'}</h2>
+                            <h3 className="text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'ለመንፈሳዊ እድገት የተዋቀረ' : 'Designed for Spiritual Growth'}</h3>
                             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
                                 ማህበረሰባችን ሁለንተናዊ መንፈሳዊ ድጋፍ ለመስጠት የተዋቀረ ነው። ከመዘምራን እስከ መምህራን፣ እያንዳንዱ ክፍል የተማሪዎችን እምነት ለማጠናከር ያገለግላል።
                             </p>
@@ -233,11 +256,11 @@ const LandingPage = () => {
                 <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 className="text-blue-400 font-bold tracking-widest uppercase text-sm mb-3">ይሳተፉ</h2>
-                            <h3 className="text-3xl md:text-4xl font-extrabold">ሳምንታዊ መርሐ ግብሮች</h3>
+                            <h2 className="text-blue-400 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'ይሳተፉ' : 'Participate'}</h2>
+                            <h3 className="text-3xl md:text-4xl font-extrabold">{lang === 'am' ? 'ሳምንታዊ መርሐ ግብሮች' : 'Weekly Activities'}</h3>
                         </div>
                         <Link to="/register" className="hidden md:flex items-center gap-2 text-blue-400 hover:text-white transition-colors font-bold">
-                            ሙሉ መርሐ ግብር ይመልከቱ <ArrowRight size={20} />
+                            {lang === 'am' ? 'ሙሉ መርሐ ግብር ይመልከቱ' : 'View Full Schedule'} <ArrowRight size={20} />
                         </Link>
                     </div>
 
