@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import {
     Search,
     Filter,
@@ -12,16 +13,14 @@ import {
 } from 'lucide-react';
 
 const StudentList = () => {
+    const { students } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Mock data
-    const students = [
-        { id: 'DBU/123/15', name: 'Abebe Kebebe', dept: 'Mechanical', year: '3', section: 'Choir', status: 'Active' },
-        { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', dept: 'Economics', year: '2', section: 'Education', status: 'Active' },
-        { id: 'DBU/789/15', name: 'Hiwot Alemu', dept: 'Medicine', year: '1', section: 'Charity', status: 'Active' },
-        { id: 'DBU/101/14', name: 'Tewodros Kassahun', dept: 'Architecture', year: '4', section: 'Development', status: 'Active' },
-        { id: 'DBU/202/13', name: 'Selam Mengistu', dept: 'Journalism', year: '5', section: 'PR', status: 'Graduated' },
-    ];
+    const filteredStudents = students.filter(student =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.dept.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -73,7 +72,7 @@ const StudentList = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {students.map((student) => (
+                            {filteredStudents.map((student) => (
                                 <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-3">
@@ -100,8 +99,8 @@ const StudentList = () => {
                                     </td>
                                     <td className="px-8 py-5">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Active'
-                                                ? 'bg-green-50 text-green-600 border-green-100'
-                                                : 'bg-blue-50 text-blue-600 border-blue-100'
+                                            ? 'bg-green-50 text-green-600 border-green-100'
+                                            : 'bg-blue-50 text-blue-600 border-blue-100'
                                             }`}>
                                             {student.status}
                                         </span>
@@ -127,7 +126,7 @@ const StudentList = () => {
 
                 <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                     <div className="text-sm text-gray-500 font-medium">
-                        Showing <span className="text-gray-900 font-bold">5</span> of <span className="text-gray-900 font-bold">1,240</span> students
+                        Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{students.length}</span> students
                     </div>
                     <div className="flex gap-2">
                         <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>

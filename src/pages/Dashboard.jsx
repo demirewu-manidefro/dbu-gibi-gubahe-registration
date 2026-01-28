@@ -12,11 +12,11 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-    const { activityLog } = useAuth();
+    const { activityLog, students } = useAuth();
     const stats = [
-        { label: 'Total Students', value: '1,240', sub: '+12% from last month', icon: <Users size={24} />, color: 'bg-blue-500' },
-        { label: 'Graduating Class', value: '312', sub: 'Class of 2017/18', icon: <GraduationCap size={24} />, color: 'bg-church-red' },
-        { label: 'Active Servants', value: '450', sub: 'Across 6 mahibers', icon: <Award size={24} />, color: 'bg-church-gold' },
+        { label: 'Total Students', value: students.length.toLocaleString(), sub: '+12% from last month', icon: <Users size={24} />, color: 'bg-blue-500' },
+        { label: 'Graduating Class', value: students.filter(s => s.status === 'Graduated').length.toLocaleString(), sub: 'Class of 2017/18', icon: <GraduationCap size={24} />, color: 'bg-church-red' },
+        { label: 'Active Servants', value: students.filter(s => s.status === 'Active' && s.section !== '').length.toLocaleString(), sub: 'Across 6 mahibers', icon: <Award size={24} />, color: 'bg-church-gold' },
         { label: 'Avg. Attendance', value: '88%', sub: 'Weekly Gubaes', icon: <TrendingUp size={24} />, color: 'bg-green-500' },
     ];
 
