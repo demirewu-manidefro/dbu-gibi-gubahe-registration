@@ -28,12 +28,14 @@ const Layout = ({ children }) => {
 
     const menuItems = isManager
         ? [
-            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
+            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
+            { title: 'Student List', icon: <Users size={20} />, path: '/students' },
             { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },
             { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
         ]
         : [
-            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
+            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
             { title: 'New Registration', icon: <UserPlus size={20} />, path: '/register' },
             { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
             { title: 'Student List', icon: <Users size={20} />, path: '/students' },
