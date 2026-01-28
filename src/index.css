@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-church-red: #8E1B1B;
+  --color-church-gold: #C5A059;
+  --color-church-dark: #1A1A1A;
+  --color-church-light: #F5F5F5;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-content: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+@layer base {
+
+  input,
+  select,
+  textarea {
+    @apply bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-church-red focus:border-church-red block w-full p-2.5;
+  }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
