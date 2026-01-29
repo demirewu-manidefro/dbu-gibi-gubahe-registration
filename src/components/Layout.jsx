@@ -50,19 +50,52 @@ const Layout = ({ children }) => {
                 { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
             ];
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (mobile && sidebarOpen) setSidebarOpen(false);
+            if (!mobile && !sidebarOpen) setSidebarOpen(true);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Mobile Overlay
+    const Overlay = () => (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black z-40 md:hidden"
+        />
+    );
+
     return (
         <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800">
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {isMobile && sidebarOpen && <Overlay />}
+            </AnimatePresence>
+
             {/* Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{ width: sidebarOpen ? 260 : 80 }}
-                className="bg-blue-900 text-white flex flex-col relative z-30"
+                animate={{
+                    width: isMobile ? 280 : (sidebarOpen ? 260 : 80),
+                    x: isMobile ? (sidebarOpen ? 0 : -280) : 0
+                }}
+                transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                className={`bg-blue-900 text-white flex flex-col z-50 ${isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative'}`}
             >
                 <div className="p-6 flex items-center gap-3 border-b border-white/10">
                     <div className="bg-blue-600 p-2 rounded-lg flex-shrink-0">
                         <ShieldCheck size={24} className="text-blue-400" />
                     </div>
-                    {sidebarOpen && (
+                    {(!isMobile && !sidebarOpen) ? null : (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -71,6 +104,11 @@ const Layout = ({ children }) => {
                             DBU Gibi Gubae
                         </motion.div>
                     )}
+                    {isMobile && (
+                        <button onClick={() => setSidebarOpen(false)} className="ml-auto text-white/50 hover:text-white">
+                            <X size={24} />
+                        </button>
+                    )}
                 </div>
 
                 <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto no-scrollbar">
@@ -78,6 +116,7 @@ const Layout = ({ children }) => {
                         <NavLink
                             key={item.title}
                             to={item.path}
+                            onClick={() => isMobile && setSidebarOpen(false)}
                             className={({ isActive }) =>
                                 `group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer ${isActive
                                     ? 'bg-blue-600 text-white shadow-lg'
@@ -85,14 +124,14 @@ const Layout = ({ children }) => {
                                 }`
                             }
                         >
-                            <div className="transition-transform group-hover:scale-110">
+                            <div className="transition-transform group-hover:scale-110 flex-shrink-0">
                                 {item.icon}
                             </div>
-                            {sidebarOpen && (
+                            {(!isMobile && !sidebarOpen) ? null : (
                                 <motion.span
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="font-medium"
+                                    className="font-medium whitespace-nowrap"
                                 >
                                     {item.title}
                                 </motion.span>
@@ -102,23 +141,23 @@ const Layout = ({ children }) => {
                 </nav>
 
                 <div className="p-4 border-t border-white/10 space-y-4">
-                    <div className="flex items-center gap-3 p-2">
-                        <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold">
+                    <div className={`flex items-center gap-3 p-2 ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}>
+                        <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold flex-shrink-0">
                             {user?.name.charAt(0)}
                         </div>
-                        {sidebarOpen && (
+                        {(!isMobile && !sidebarOpen) ? null : (
                             <div className="overflow-hidden">
-                                <div className="font-semibold truncate text-sm">{user?.name}</div>
+                                <div className="font-semibold truncate text-sm max-w-[140px]">{user?.name}</div>
                                 <div className="text-xs text-gray-400 capitalize">{user?.role}</div>
                             </div>
                         )}
                     </div>
                     <button
                         onClick={logout}
-                        className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40 text-blue-400 transition-colors"
+                        className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
                     >
-                        <LogOut size={20} />
-                        {sidebarOpen && <span className="font-medium">Sign Out</span>}
+                        <LogOut size={20} className="flex-shrink-0" />
+                        {(!isMobile && !sidebarOpen) ? null : <span className="font-medium whitespace-nowrap">Sign Out</span>}
                     </button>
                 </div>
             </motion.aside>
