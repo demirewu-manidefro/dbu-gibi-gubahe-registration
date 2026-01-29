@@ -9,11 +9,11 @@ import {
 import EthiopianDatePicker from '../components/EthiopianDatePicker';
 
 const AttendanceSheet = () => {
-    const { students, user } = useAuth();
+    const { students, user, saveAttendanceBatch } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState({});
-    
+
     // For admins, default to their section and disable changing. For manager, default to All.
     const isManager = user?.role === 'manager';
     const [filterSection, setFilterSection] = useState(isManager ? 'All Sections' : user?.section);
@@ -21,7 +21,7 @@ const AttendanceSheet = () => {
     const filteredStudents = students.filter(student =>
         (filterSection === 'All Sections' || student.section === filterSection) &&
         (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.id.toLowerCase().includes(searchTerm.toLowerCase()))
+            student.id.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleAttendanceChange = (studentId, status) => {
@@ -32,10 +32,14 @@ const AttendanceSheet = () => {
     };
 
     const handleSaveAttendance = () => {
-        
-        console.log('Saving attendance for date:', selectedDate);
-        console.log('Data:', attendanceData);
+        if (Object.keys(attendanceData).length === 0) {
+            alert('No attendance marked!');
+            return;
+        }
+
+        saveAttendanceBatch(selectedDate, attendanceData);
         alert('Attendance saved successfully!');
+        // Ideally reset data or redirect, but for now we keep it
     };
 
     const getStatusColor = (status) => {
@@ -64,11 +68,11 @@ const AttendanceSheet = () => {
                     <p className="text-gray-500 font-medium">Track student attendance for events and services</p>
                 </div>
                 <div className="flex gap-4">
-                    <EthiopianDatePicker 
-                        value={selectedDate} 
-                        onChange={setSelectedDate} 
+                    <EthiopianDatePicker
+                        value={selectedDate}
+                        onChange={setSelectedDate}
                     />
-                    <button 
+                    <button
                         onClick={handleSaveAttendance}
                         className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md"
                     >
@@ -92,7 +96,7 @@ const AttendanceSheet = () => {
                     <div className="flex gap-2">
                         <div className="relative">
                             {isManager ? (
-                                <select 
+                                <select
                                     className="appearance-none pl-10 pr-8 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600"
                                     value={filterSection}
                                     onChange={(e) => setFilterSection(e.target.value)}
@@ -186,7 +190,7 @@ const AttendanceSheet = () => {
                         </tbody>
                     </table>
                 </div>
-                 <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
+                <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                     <div className="text-sm text-gray-500 font-medium">
                         Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> students
                     </div>

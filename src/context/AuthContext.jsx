@@ -58,6 +58,97 @@ export const AuthProvider = ({ children }) => {
 
     const [notifications, setNotifications] = useState([]);
 
+    const [attendanceHistory, setAttendanceHistory] = useState(() => {
+        // Mock Attendance Data for Analytics
+        // Generate 4 weeks of data for each section
+        const history = [];
+        const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ'];
+
+        // Mock dates (last 4 Sundays)
+        const today = new Date();
+        const dates = [];
+        for (let i = 0; i < 4; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - (i * 7));
+            dates.push(d.toISOString().split('T')[0]);
+        }
+
+        sections.forEach(section => {
+            dates.forEach(date => {
+                // Random attendance
+                const totalStudents = 30 + Math.floor(Math.random() * 20);
+                const presentCount = Math.floor(totalStudents * (0.6 + Math.random() * 0.3));
+                const excusedCount = Math.floor((totalStudents - presentCount) * 0.3); // Roughly 30% of non-present are excused
+                const absentCount = totalStudents - presentCount - excusedCount;
+
+                history.push({
+                    id: Date.now() + Math.random(),
+                    date: date,
+                    section: section,
+                    present: presentCount,
+                    absent: absentCount,
+                    excused: excusedCount,
+                    total: totalStudents,
+                    percentage: Math.round((presentCount / totalStudents) * 100)
+                });
+            });
+        });
+
+        return history.sort((a, b) => new Date(a.date) - new Date(b.date));
+    });
+
+    const saveAttendanceBatch = (date, attendanceMap) => {
+        // 1. Group new attendance by section
+        const sectionStats = {}; // { sectionName: { present: 0, absent: 0, excused: 0, total: 0 } }
+
+        // Initialize sections
+        const allSections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ'];
+        allSections.forEach(s => sectionStats[s] = { present: 0, absent: 0, excused: 0, total: 0 });
+
+        Object.entries(attendanceMap).forEach(([studentId, status]) => {
+            const student = students.find(s => s.id === studentId);
+            if (student && student.section && sectionStats[student.section]) {
+                sectionStats[student.section].total++;
+                if (status === 'present') sectionStats[student.section].present++;
+                else if (status === 'absent') sectionStats[student.section].absent++;
+                else if (status === 'excused') sectionStats[student.section].excused++;
+            }
+        });
+
+        // 2. Create history records
+        const newRecords = [];
+        Object.entries(sectionStats).forEach(([section, stats]) => {
+            if (stats.total > 0) {
+                newRecords.push({
+                    id: Date.now() + Math.random(),
+                    date: date,
+                    section: section,
+                    present: stats.present,
+                    absent: stats.absent,
+                    excused: stats.excused,
+                    total: stats.total,
+                    percentage: Math.round((stats.present / stats.total) * 100)
+                });
+            }
+        });
+
+        // 3. Update State (Remove old records for this date/section if any, then add new)
+        setAttendanceHistory(prev => {
+            const filtered = prev.filter(r => r.date !== date); // Simple replacement for the date
+            // Note: In a real app, you might want to merge, but replacing for the date is cleaner for now
+            // However, since we process ALL sections here, replacing by date is fine if we submitted ALL.
+            // If we only submitted one section, we should only replace that section.
+
+            // Let's replace only sections that have new data
+            const sectionsUpdated = newRecords.map(r => r.section);
+            const keptRecords = prev.filter(r => !(r.date === date && sectionsUpdated.includes(r.section)));
+
+            return [...keptRecords, ...newRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
+        });
+
+        recordActivity('attendance_submission', { date, count: Object.keys(attendanceMap).length });
+    };
+
     const [students, setStudents] = useState([
         { id: 'DBU/123/15', name: 'Abebe Kebebe', sex: 'Male', dept: 'Mechanical', year: '3', section: 'ቋንቋ', status: 'Student' },
         { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', sex: 'Male', dept: 'Economics', year: '2', section: 'ትምህርት', status: 'Student' },
@@ -318,7 +409,9 @@ export const AuthProvider = ({ children }) => {
         declineStudent,
         notifications,
         sendNotification,
-        markNotificationsRead
+        markNotificationsRead,
+        attendanceHistory,
+        saveAttendanceBatch
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
