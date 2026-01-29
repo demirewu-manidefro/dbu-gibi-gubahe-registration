@@ -11,6 +11,7 @@ import AdminManagement from './pages/AdminManagement';
 import LandingPage from './pages/LandingPage';
 
 import PendingApprovals from './pages/PendingApprovals';
+import NotFound from './pages/NotFound';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
           <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>
