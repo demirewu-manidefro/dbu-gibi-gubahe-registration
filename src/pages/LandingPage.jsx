@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
     ChevronRight,
@@ -12,7 +12,12 @@ import {
     ArrowRight,
     Cross,
     Shield,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Menu,
+    X,
+    Facebook,
+    Instagram,
+    Send
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -35,6 +40,8 @@ const LandingPage = () => {
     const [bgPosY, setBgPosY] = useState(0);
     const [lang, setLang] = useState('am');
     const [langOpen, setLangOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     useEffect(() => {
         const onScroll = () => {
             const s = window.scrollY > 10;
@@ -45,27 +52,53 @@ const LandingPage = () => {
         return () => window.removeEventListener('scroll', onScroll);
     }, [scrolled]);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [mobileMenuOpen]);
+
     return (
         <div className="min-h-screen bg-white font-sans overflow-x-hidden">
-            {/* Navigation */}
-            <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled ? 'bg-white' : 'bg-transparent'}`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
-                        <div className="flex items-center gap-2">
+                        <a href="#home" className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-90">
                             <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                             <div>
                                 <h1 className="text-xl font-bold text-gray-900 leading-none">ደብረ ብርሀን</h1>
                                 <p className="text-xs text-blue-600 font-medium tracking-widest">ግቢ ጉባኤ</p>
                             </div>
-                        </div>
+                        </a>
+
+                        <button
+                            onClick={() => setMobileMenuOpen(true)}
+                            className="md:hidden p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                            aria-label="Open menu"
+                        >
+                            <Menu size={24} className="text-gray-700" />
+                        </button>
+
                         <div className="hidden md:flex items-center space-x-8">
                             <a href="#home" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
                                 {lang === 'am' ? 'መነሻ' : 'Home'}
                                 <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
                             </a>
-                            <a href="#about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'ስለ እኛ' : 'About'}</a>
-                            <a href="#structure" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a>
-                            <a href="#activities" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a>
+                            <a href="#about" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                {lang === 'am' ? 'ስለ እኛ' : 'About'}
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                            </a>
+                            <a href="#structure" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                {lang === 'am' ? 'መዋቅር' : 'Structure'}
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                            </a>
+                            <a href="#activities" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                {lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                            </a>
                             <div className="flex items-center gap-3">
                                 <Link to="/login" className="px-6 py-2.5 rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 transition-all transform hover:scale-105 shadow-lg shadow-gray-200">
                                     {lang === 'am' ? 'መግቢያ' : 'Login'}
@@ -87,20 +120,102 @@ const LandingPage = () => {
                 </div>
             </nav>
 
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 shadow-2xl md:hidden"
+                        >
+                            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
+                                    <span className="font-bold text-gray-900">ግቢ ጉባኤ</span>
+                                </div>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                                    aria-label="Close menu"
+                                >
+                                    <X size={24} className="text-gray-700" />
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-2">
+                                {[
+                                    { href: '#home', label: lang === 'am' ? 'መነሻ' : 'Home' },
+                                    { href: '#about', label: lang === 'am' ? 'ስለ እኛ' : 'About' },
+                                    { href: '#structure', label: lang === 'am' ? 'መዋቅር' : 'Structure' },
+                                    { href: '#activities', label: lang === 'am' ? 'መርሐ ግብሮች' : 'Activities' }
+                                ].map((item) => (
+                                    <a
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="block px-4 py-3 rounded-xl text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                    >
+                                        {item.label}
+                                    </a>
+                                ))}
+                            </div>
+                            <div className="p-6 border-t border-gray-100 space-y-3">
+                                <Link
+                                    to="/login"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block w-full py-3 rounded-xl bg-blue-900 text-white font-bold text-center hover:bg-blue-800 transition-colors"
+                                >
+                                    {lang === 'am' ? 'መግቢያ' : 'Login'}
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block w-full py-3 rounded-xl bg-blue-100 text-blue-900 font-bold text-center hover:bg-blue-200 transition-colors"
+                                >
+                                    {lang === 'am' ? 'ይመዝገቡ' : 'Register'}
+                                </Link>
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        onClick={() => { setLang('am'); }}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'am' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                    >
+                                        አማርኛ
+                                    </button>
+                                    <button
+                                        onClick={() => { setLang('en'); }}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                    >
+                                        English
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
             {/* Hero Section */}
             <section id="home" className="relative min-h-screen pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-[url('/hero_image.jpg')] bg-cover" style={{ backgroundPosition: `center ${-bgPosY}px` }} />
                     <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/10" />
                 </div>
-                
+
                 {/* Abstract Background Shapes */}
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-400/5 blur-3xl rounded-full transform translate-x-1/3 -translate-y-1/4" />
                 <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-600/5 blur-3xl rounded-full transform -translate-x-1/4 translate-y-1/4" />
 
                 <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="grid grid-cols-1 gap-12 items-center">
-                        <motion.div 
+                        <motion.div
                             initial="hidden"
                             animate="visible"
                             variants={staggerContainer}
@@ -108,22 +223,22 @@ const LandingPage = () => {
                         >
                             <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 text-blue-600 font-semibold text-sm mb-6">
                                 <span className="relative flex h-2 w-2">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                                 </span>
                                 {lang === 'am' ? 'ተመስርቷል 1977 ዓ.ም.' : 'Founded 1977 E.C.'}
                             </motion.div>
-                            
+
                             <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
                                 {lang === 'am' ? 'መንፈሳዊ አንድነት በ' : 'Spiritual Unity in '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">{lang === 'am' ? 'ዩኒቨርሲቲ' : 'University'}</span>
                             </motion.h1>
-                            
-                            <motion.p variants={fadeIn} className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                                {lang === 'am' 
+
+                            <motion.p variants={fadeIn} className="text-xl text-white mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 drop-shadow-md">
+                                {lang === 'am'
                                     ? 'ለተማሪዎች መንፈሳዊ መጠለያ፣ በኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ሥርዓት ላይ የተመሠረተ። "ትምህርትህ እምነትህን ያጠናክረው።"'
                                     : 'A spiritual refuge for students, rooted in the Ethiopian Orthodox Tewahedo tradition. "Let your education strengthen your faith."'}
                             </motion.p>
-                            
+
                             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                 <Link to="/register" className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-2 group">
                                     {lang === 'am' ? 'ቤተሰብ ይሁኑ' : 'Join the Family'}
@@ -135,13 +250,12 @@ const LandingPage = () => {
                             </motion.div>
                         </motion.div>
 
-                        
+
                     </div>
                 </div>
-                <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
-                    <a href="#about" className="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/80 backdrop-blur border border-gray-200 text-gray-700 hover:bg-blue-50 transition shadow-sm">
-                        <span className="font-semibold">{lang === 'am' ? 'ወደ ተልዕኳችን ይውረዱ' : 'Scroll to Mission'}</span>
-                        <ChevronRight className="rotate-90 text-blue-600 group-hover:translate-y-0.5 transition-transform" size={18} />
+                <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
+                    <a href="#about" className="animate-bounce">
+                        <ChevronRight className="rotate-90 text-white drop-shadow-lg" size={32} />
                     </a>
                 </div>
             </section>
@@ -153,8 +267,9 @@ const LandingPage = () => {
                         <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'ተልዕኳችን' : 'Our Mission'}</h2>
                         <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'እምነትን በትምህርት ማሳደግ' : 'Nurturing Faith through Education'}</h3>
                         <p className="text-gray-600 text-lg">
-                            "ያለ መንፈሳዊ መሰረት ትምህርት በአሸዋ ላይ እንደተሰራ ቤት ነው።" — ቅዱስ ያሬድ። 
-                            ተማሪዎች መንፈሳዊ ህይወታቸውን እንዲጠብቁ እና የቤተሰብነት ስሜት እንዲሰማቸው እንሰራለን።
+                            {lang === 'am'
+                                ? '"ያለ መንፈሳዊ መሰረት ትምህርት በአሸዋ ላይ እንደተሰራ ቤት ነው።" — ቅዱስ ያሬድ። ተማሪዎች መንፈሳዊ ህይወታቸውን እንዲጠብቁ እና የቤተሰብነት ስሜት እንዲሰማቸው እንሰራለን።'
+                                : '"Education without spiritual foundation is like a house built on sand." — St. Yared. We work to help students maintain their spiritual life and feel a sense of family.'}
                         </p>
                     </div>
 
@@ -176,7 +291,7 @@ const LandingPage = () => {
                                 desc: "በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።"
                             }
                         ].map((feature, idx) => (
-                            <motion.div 
+                            <motion.div
                                 key={idx}
                                 variants={fadeIn}
                                 initial="hidden"
@@ -191,12 +306,12 @@ const LandingPage = () => {
                                 <h4 className="text-xl font-bold text-gray-900 mb-3">
                                     {idx === 0 ? (lang === 'am' ? 'መንፈሳዊ እድገት' : 'Spiritual Growth')
                                         : idx === 1 ? (lang === 'am' ? 'የቤተክርስቲያን ትምህርት' : 'Church Education')
-                                        : (lang === 'am' ? 'የማህበረሰብ ድጋፍ' : 'Community Support')}
+                                            : (lang === 'am' ? 'የማህበረሰብ ድጋፍ' : 'Community Support')}
                                 </h4>
                                 <p className="text-gray-600 leading-relaxed">
                                     {idx === 0 ? (lang === 'am' ? 'በጸሎት እና በጾም ከእግዚአብሔር ጋር ያለንን ግንኙነት ማጠናከር።' : 'Deepening our relationship with God through prayer and fasting.')
                                         : idx === 1 ? (lang === 'am' ? 'የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያንን አስተምህሮ ማጥናት እና መረዳት።' : 'Studying and understanding the Orthodox Tewahedo Church.')
-                                        : (lang === 'am' ? 'በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።' : 'Mutual support in faith, study, and life.')}
+                                            : (lang === 'am' ? 'በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።' : 'Mutual support in faith, study, and life.')}
                                 </p>
                             </motion.div>
                         ))}
@@ -213,38 +328,43 @@ const LandingPage = () => {
                                 <div className="space-y-4 mt-8">
                                     <div className="bg-blue-900 p-6 rounded-3xl text-white h-48 flex flex-col justify-end">
                                         <Music size={32} className="mb-4 text-blue-400" />
-                                        <h4 className="text-xl font-bold">መዘምራን</h4>
-                                        <p className="text-white/60 text-sm">ያሬዳዊ ዝማሬዎች</p>
+                                        <h4 className="text-xl font-bold">{lang === 'am' ? 'መዘምራን' : 'Choir'}</h4>
+                                        <p className="text-white/60 text-sm">{lang === 'am' ? 'ያሬዳዊ ዝማሬዎች' : 'Yaredic Hymns'}</p>
                                     </div>
                                     <div className="bg-gray-100 p-6 rounded-3xl h-64 flex flex-col justify-end">
                                         <BookOpen size={32} className="mb-4 text-gray-400" />
-                                        <h4 className="text-xl font-bold text-gray-900">መምህራን</h4>
-                                        <p className="text-gray-500 text-sm">መንፈሳዊ ትምህርት</p>
+                                        <h4 className="text-xl font-bold text-gray-900">{lang === 'am' ? 'መምህራን' : 'Teachers'}</h4>
+                                        <p className="text-gray-500 text-sm">{lang === 'am' ? 'መንፈሳዊ ትምህርት' : 'Spiritual Education'}</p>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="bg-blue-600 p-6 rounded-3xl text-white h-64 flex flex-col justify-end">
                                         <Cross size={32} className="mb-4 text-white/80" />
-                                        <h4 className="text-xl font-bold">ቅዱሳን ማህበራት</h4>
-                                        <p className="text-white/80 text-sm">የቅዱሳን ህይወት</p>
+                                        <h4 className="text-xl font-bold">{lang === 'am' ? 'ቅዱሳን ማህበራት' : 'Holy Associations'}</h4>
+                                        <p className="text-white/80 text-sm">{lang === 'am' ? 'የቅዱሳን ህይወት' : 'Lives of Saints'}</p>
                                     </div>
                                     <div className="bg-white border-2 border-dashed border-gray-200 p-6 rounded-3xl h-48 flex flex-col justify-center items-center text-center">
                                         <Users size={32} className="mb-2 text-gray-400" />
-                                        <h4 className="text-lg font-bold text-gray-900">ምዕመናን</h4>
-                                        <p className="text-gray-500 text-xs">የጉባኤው መሰረት</p>
+                                        <h4 className="text-lg font-bold text-gray-900">{lang === 'am' ? 'ምዕመናን' : 'Members'}</h4>
+                                        <p className="text-gray-500 text-xs">{lang === 'am' ? 'የጉባኤው መሰረት' : 'Foundation of the Assembly'}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="order-1 lg:order-2">
                             <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'መዋቅራችን' : 'Our Structure'}</h2>
                             <h3 className="text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'ለመንፈሳዊ እድገት የተዋቀረ' : 'Designed for Spiritual Growth'}</h3>
                             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                                ማህበረሰባችን ሁለንተናዊ መንፈሳዊ ድጋፍ ለመስጠት የተዋቀረ ነው። ከመዘምራን እስከ መምህራን፣ እያንዳንዱ ክፍል የተማሪዎችን እምነት ለማጠናከር ያገለግላል።
+                                {lang === 'am'
+                                    ? 'ማህበረሰባችን ሁለንተናዊ መንፈሳዊ ድጋፍ ለመስጠት የተዋቀረ ነው። ከመዘምራን እስከ መምህራን፣ እያንዳንዱ ክፍል የተማሪዎችን እምነት ለማጠናከር ያገለግላል።'
+                                    : 'Our community is structured to provide holistic spiritual support. From choir to teachers, each department serves to strengthen students\' faith.'}
                             </p>
                             <ul className="space-y-4">
-                                {['ሥርዓተ ቅዳሴ', 'አጽዋማት', 'የጸሎት መርሐ ግብሮች', 'የማህበረሰብ አገልግሎት'].map((item, i) => (
+                                {(lang === 'am'
+                                    ? ['ሥርዓተ ቅዳሴ', 'አጽዋማት', 'የጸሎት መርሐ ግብሮች', 'የማህበረሰብ አገልግሎት']
+                                    : ['Holy Liturgy', 'Fasting', 'Prayer Programs', 'Community Service']
+                                ).map((item, i) => (
                                     <li key={i} className="flex items-center gap-3">
                                         <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
                                             <div className="w-2 h-2 rounded-full bg-green-600" />
@@ -273,57 +393,22 @@ const LandingPage = () => {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                title: "የጥምቀት በዓል",
-                                sub: "ዓመታዊ በዓል",
-                                desc: "የጌታችን ኢየሱስ ክርስቶስን ጥምቀት በድምቀት ማክበር።",
-                                color: "bg-blue-600"
-                            },
-                            {
-                                title: "የጸሎት ሥርዓት",
-                                sub: "ዕለታዊ",
-                                desc: "ከጥንታዊ ሥርዓታችን ጋር የሚያገናኘን የጸሎት ጊዜ።",
-                                color: "bg-blue-500"
-                            },
-                            {
-                                title: "መዝሙር ጥናት",
-                                sub: "ሳምንታዊ",
-                                desc: "የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ዝማሬዎችን መማር እና ማቅረብ።",
-                                color: "bg-blue-400"
-                            },
-                            {
-                                title:"የሂዎት ት/ት",
-                                sub: "ሳምንታዊ",
-                                desc: "ሙሉ ከርስቶስን የምንማርበት",
-                                color: "bg-blue-400"
-                            },
-                              {
-                                title:"የሂዎት ት/ት",
-                                sub: "ሳምንታዊ",
-                                desc: "ሙሉ ከርስቶስን የምንማርበት",
-                                color: "bg-blue-400"
-                            },
-                              {
-                                title:"የሂዎት ት/ት",
-                                sub: "ሳምንታዊ",
-                                desc: "ሙሉ ከርስቶስን የምንማርበት",
-                                color: "bg-blue-400"
-                            },
-                              {
-                                title:"የሂዎት ት/ት",
-                                sub: "ሳምንታዊ",
-                                desc: "ሙሉ ከርስቶስን የምንማርበት",
-                                color: "bg-blue-400"
-                            },  {
-                                title:"የሂዎት ት/ት",
-                                sub: "ሳምንታዊ",
-                                desc: "ሙሉ ከርስቶስን የምንማርበት",
-                                color: "bg-blue-400"
-                            }
-
-                        ].map((activity, idx) => (
-                            <motion.div 
+                        {(lang === 'am' ? [
+                            { title: "የጥምቀት በዓል", sub: "ዓመታዊ በዓል", desc: "የጌታችን ኢየሱስ ክርስቶስን ጥምቀት በድምቀት ማክበር።", color: "bg-blue-600" },
+                            { title: "የጸሎት ሥርዓት", sub: "ዕለታዊ", desc: "ከጥንታዊ ሥርዓታችን ጋር የሚያገናኘን የጸሎት ጊዜ።", color: "bg-blue-500" },
+                            { title: "መዝሙር ጥናት", sub: "ሳምንታዊ", desc: "የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ዝማሬዎችን መማር እና ማቅረብ።", color: "bg-blue-400" },
+                            { title: "የሕይወት ትምህርት", sub: "ሳምንታዊ", desc: "ሙሉ ክርስቶስን የምንማርበት ጊዜ።", color: "bg-blue-400" },
+                            { title: "የቅዱሳን ታሪክ", sub: "ሳምንታዊ", desc: "የቅዱሳን አባቶቻችንን ህይወት እና ተአምራት መማር።", color: "bg-blue-400" },
+                            { title: "ማህበረሰብ አገልግሎት", sub: "ወርሃዊ", desc: "ለህብረተሰብ የምናደርገው የፍቅር አገልግሎት።", color: "bg-blue-400" }
+                        ] : [
+                            { title: "Epiphany Celebration", sub: "Annual Festival", desc: "Celebrating the baptism of our Lord Jesus Christ.", color: "bg-blue-600" },
+                            { title: "Prayer Service", sub: "Daily", desc: "Prayer time connecting us with our ancient traditions.", color: "bg-blue-500" },
+                            { title: "Hymn Study", sub: "Weekly", desc: "Learning and presenting Ethiopian Orthodox Tewahedo hymns.", color: "bg-blue-400" },
+                            { title: "Life Education", sub: "Weekly", desc: "Time to learn about living in Christ.", color: "bg-blue-400" },
+                            { title: "Saints' History", sub: "Weekly", desc: "Learning the lives and miracles of our holy fathers.", color: "bg-blue-400" },
+                            { title: "Community Service", sub: "Monthly", desc: "Acts of love and service to the community.", color: "bg-blue-400" }
+                        ]).map((activity, idx) => (
+                            <motion.div
                                 key={idx}
                                 whileHover={{ y: -5 }}
                                 className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-all"
@@ -349,54 +434,69 @@ const LandingPage = () => {
                         <div className="col-span-2">
                             <div className="flex items-center gap-2 mb-6">
                                 <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
-                                <span className="text-xl font-bold text-gray-900">ደብረ ብርሀን ጊቢ ጉባኤ</span>
+                                <span className="text-xl font-bold text-gray-900">
+                                    {lang === 'am' ? 'ደብረ ብርሀን ጊቢ ጉባኤ' : 'Debre Berhan Gibi Gubae'}
+                                </span>
                             </div>
                             <p className="text-gray-500 mb-6 max-w-sm">
-                                የተማሪዎችን እምነት የሚያጎለብት ንቁ መንፈሳዊ ማህበረሰብ መፍጠር።
+                                {lang === 'am'
+                                    ? 'የተማሪዎችን እምነት የሚያጎለብት ንቁ መንፈሳዊ ማህበረሰብ መፍጠር።'
+                                    : 'Creating an active spiritual community that strengthens students\' faith.'}
                             </p>
                             <div className="flex gap-4">
-                                <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <LinkIcon size={18} />
+                                <a href="#" className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
+                                    <Facebook size={20} />
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <LinkIcon size={18} />
+                                <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
+                                    <Instagram size={20} />
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all">
-                                    <LinkIcon size={18} />
+                                <a href="#" className="w-10 h-10 rounded-full bg-[#0088CC] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
+                                    <Send size={20} />
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
+                                    <X size={20} />
                                 </a>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h4 className="font-bold text-gray-900 mb-6">ፈጣን አገናኞች</h4>
+                            <h4 className="font-bold text-gray-900 mb-6">{lang === 'am' ? 'ፈጣን አገናኞች' : 'Quick Links'}</h4>
                             <ul className="space-y-3 text-gray-600 text-sm">
-                                <li><a href="#" className="hover:text-blue-600">ስለ እኛ</a></li>
-                                <li><a href="#" className="hover:text-blue-600">መዋቅር</a></li>
-                                <li><a href="#" className="hover:text-blue-600">መርሐ ግብሮች</a></li>
-                                <li><Link to="/login" className="hover:text-blue-600">መግቢያ</Link></li>
+                                <li><a href="#about" className="hover:text-blue-600">{lang === 'am' ? 'ስለ እኛ' : 'About Us'}</a></li>
+                                <li><a href="#structure" className="hover:text-blue-600">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a></li>
+                                <li><a href="#activities" className="hover:text-blue-600">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a></li>
+                                <li><Link to="/login" className="hover:text-blue-600">{lang === 'am' ? 'መግቢያ' : 'Login'}</Link></li>
                             </ul>
                         </div>
-                        
+
                         <div>
-                            <h4 className="font-bold text-gray-900 mb-6">አድራሻ</h4>
+                            <h4 className="font-bold text-gray-900 mb-6">{lang === 'am' ? 'አድራሻ' : 'Contact'}</h4>
                             <ul className="space-y-3 text-gray-600 text-sm">
                                 <li className="flex items-start gap-3">
                                     <MapPin size={18} className="text-blue-600 shrink-0" />
-                                    <span>ደብረ ብርሀን<br />ቅዱስ ገብርኤል ቤተክርስቲያን ጀርባ</span>
+                                    <span>
+                                        {lang === 'am'
+                                            ? <>ደብረ ብርሀን<br />ቅዱስ ገብርኤል ቤተክርስቲያን ጀርባ</>
+                                            : <>Debre Berhan<br />Behind St. Gabriel Church</>}
+                                    </span>
                                 </li>
                                 <li className="flex items-center gap-3">
                                     <Users size={18} className="text-blue-600 shrink-0" />
-                                    <span>+251 951 21 911</span>
+                                    <span>+251 *** *** ***</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    
+
                     <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-                        <p>© 2018 ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።</p>
+                        <p>
+                            {lang === 'am'
+                                ? `© ${new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።`
+                                : `© ${new Date().getFullYear()} Debre Berhan Gibi Gubae. All rights reserved.`}
+                        </p>
                         <div className="flex gap-6">
-                            <a href="#" className="hover:text-blue-600">የግላዊነት መመሪያ</a>
-                            <a href="#" className="hover:text-blue-600">የአገልግሎት ውል</a>
+                            <a href="#" className="hover:text-blue-600">{lang === 'am' ? 'የግላዊነት መመሪያ' : 'Privacy Policy'}</a>
+                            <a href="#" className="hover:text-blue-600">{lang === 'am' ? 'የአገልግሎት ውል' : 'Terms of Service'}</a>
                         </div>
                     </div>
                 </div>
