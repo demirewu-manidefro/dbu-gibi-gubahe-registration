@@ -27,7 +27,6 @@ const Login = () => {
 
     return (
         <div className="min-h-screen w-full flex bg-white font-sans overflow-hidden">
-            {/* Left Side - Image & Branding (Hidden on mobile) */}
             <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548625361-987dc79d6e50?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
@@ -65,12 +64,10 @@ const Login = () => {
                     </motion.div>
                 </div>
 
-                {/* Decorative Circles */}
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
             </div>
 
-            {/* Right Side - Login Form */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 bg-gray-50">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}

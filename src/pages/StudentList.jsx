@@ -2,39 +2,40 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
     Search,
-    Filter,
     Download,
-    MoreVertical,
     Eye,
-    Edit2,
-    Trash2,
+    Edit,
+    Trash,
     ChevronLeft,
     ChevronRight,
     X,
-    Save
+    Save,
+    Upload,
+    Key
 } from 'lucide-react';
 
 const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent } = useAuth();
+    const { students, user, updateStudent, deleteStudent, importStudents } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterSection, setFilterSection] = useState('All Sections');
+    const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState(null);
 
+    const safeStudents = students || [];
+
     const filteredStudents = isStudent
-        ? students.filter(s => s.username === user?.username || s.id === user?.id)
-        : students.filter(student =>
-            // Manager can see all or filter by section. Admin sees only their section.
+        ? safeStudents.filter(s => s.username === user?.username || s.id === user?.id)
+        : safeStudents.filter(student =>
             (isManager
-                ? (filterSection === 'All Sections' || student.section === filterSection)
+                ? (filterSection === 'All' || student.section === filterSection)
                 : student.section === user?.section
             ) &&
-            (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                student.dept.toLowerCase().includes(searchTerm.toLowerCase()))
+            ((student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (student.dept || '').toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
     const openView = (student) => {
@@ -72,6 +73,120 @@ const StudentList = () => {
         deleteStudent(studentId);
     };
 
+    const [activeModal, setActiveModal] = useState(null);
+
+    const handleExport = () => {
+        const headers = ['ID', 'Name', 'Sex', 'Department', 'Year', 'Section', 'Status', 'Phone'];
+        const csvContent = [
+            headers.join(','),
+            ...filteredStudents.map(s => [
+                s.id,
+                `"${s.name}"`,
+                s.sex || '-',
+                `"${s.dept}"`,
+                s.year,
+                s.section,
+                s.status,
+                s.phone || '-'
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'student_list.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    const handleImport = () => {
+        document.getElementById('file-upload').click();
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const text = event.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+
+                if (lines.length < 2) {
+                    alert('CSV file is empty or has no data rows');
+                    return;
+                }
+
+                // Parse headers (first line)
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+
+                // Map common header variations to our field names
+                const headerMap = {
+                    'id': 'id',
+                    'student id': 'id',
+                    'studentid': 'id',
+                    'name': 'name',
+                    'full name': 'name',
+                    'fullname': 'name',
+                    'student name': 'name',
+                    'sex': 'sex',
+                    'gender': 'sex',
+                    'department': 'dept',
+                    'dept': 'dept',
+                    'year': 'year',
+                    'batch': 'year',
+                    'section': 'section',
+                    'status': 'status',
+                    'phone': 'phone',
+                    'telephone': 'phone'
+                };
+
+                // Parse data rows
+                const parsedStudents = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+
+                    if (values.length < 2) continue; // Skip empty rows
+
+                    const student = {};
+                    headers.forEach((header, index) => {
+                        const fieldName = headerMap[header] || header;
+                        student[fieldName] = values[index] || '';
+                    });
+
+                    // Ensure required fields
+                    if (student.id || student.name) {
+                        student.id = student.id || `IMPORT-${Date.now()}-${i}`;
+                        student.status = student.status || 'Student';
+                        parsedStudents.push(student);
+                    }
+                }
+
+                if (parsedStudents.length === 0) {
+                    alert('No valid students found in CSV');
+                    return;
+                }
+
+                // Import students
+                importStudents(parsedStudents);
+                alert(`Successfully imported ${parsedStudents.length} student(s)!`);
+
+                // Reset file input
+                e.target.value = '';
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Error parsing CSV file. Please check the format.');
+            }
+        };
+        reader.readAsText(file);
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
@@ -79,12 +194,61 @@ const StudentList = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Student List</h1>
                     <p className="text-gray-500 font-medium">Manage and view all registered Gibi Gubae students</p>
                 </div>
-                {!isStudent && (
-                    <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                        <Download size={18} className="text-blue-600" /> Export to Excel
-                    </button>
-                )}
             </div>
+
+            <input type="file" id="file-upload" className="hidden" accept=".csv" onChange={handleFileUpload} />
+
+            <div className="flex flex-wrap gap-3 pb-4">
+                <button
+                    onClick={handleExport}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
+                >
+                    <Download size={18} className="text-emerald-500 group-hover:text-emerald-600" />
+                    <span>Export CSV</span>
+                </button>
+                <button
+                    onClick={handleImport}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
+                >
+                    <Upload size={18} className="text-blue-500 group-hover:text-blue-600" />
+                    <span>Import Data</span>
+                </button>
+            </div>
+
+            {activeModal?.startsWith('password-') && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                            <Key size={28} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">Reset Password</h3>
+                        <p className="text-gray-500 text-sm mb-4">
+                            Reset password for student:
+                        </p>
+                        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                            <div className="font-bold text-gray-900">{safeStudents.find(s => s.id === activeModal.replace('password-', ''))?.name || 'Unknown'}</div>
+                            <div className="text-xs text-gray-500">{activeModal.replace('password-', '')}</div>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setActiveModal(null)}
+                                className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    alert(`Password reset for ${activeModal.replace('password-', '')} (stub function)`);
+                                    setActiveModal(null);
+                                }}
+                                className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {selectedStudent && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -206,7 +370,7 @@ const StudentList = () => {
                                     onClick={() => openEdit(selectedStudent)}
                                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-bold"
                                 >
-                                    <Edit2 size={16} /> Edit
+                                    <Edit size={16} /> Edit
                                 </button>
                             )}
                             <button
@@ -222,28 +386,26 @@ const StudentList = () => {
 
             <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
                 {!isStudent && (
-                    <div className="p-6 border-b border-gray-50 flex flex-wrap gap-4 items-center justify-between">
-                        <div className="relative flex-1 min-w-[300px]">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <div className="p-6 border-b border-gray-50 space-y-4">
+                        <div className="relative w-full">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                             <input
                                 type="text"
-                                placeholder="Search by ID, Name, or Department..."
-                                className="pl-10 h-12 bg-gray-50/50 border-gray-200 rounded-2xl"
+                                placeholder="Search by ID, Name..."
+                                className="w-full pl-14 pr-6 h-12 bg-white border border-gray-200 rounded-full shadow-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+
                         {isManager && (
-                            <div className="flex gap-2">
-                                <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all">
-                                    <Filter size={16} /> Filter
-                                </button>
+                            <div className="flex flex-wrap gap-2">
                                 <select
-                                    className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4"
+                                    className="bg-gray-50 border-gray-200 rounded-xl text-sm font-bold text-gray-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
                                     value={filterSection}
                                     onChange={(e) => setFilterSection(e.target.value)}
                                 >
-                                    <option value="ሁሉም ክፍላት">ሁሉም ክፍላት</option>
+                                    <option value="All">ክፍላት: All</option>
                                     <option value="እቅድ">እቅድ</option>
                                     <option value="ትምህርት">ትምህርት</option>
                                     <option value="ልማት">ልማት</option>
@@ -318,21 +480,33 @@ const StudentList = () => {
                                             <button
                                                 onClick={() => openView(student)}
                                                 className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="View Details"
                                             >
                                                 <Eye size={18} />
                                             </button>
                                             <button
                                                 onClick={() => openEdit(student)}
                                                 className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="Edit Student"
                                             >
-                                                <Edit2 size={16} />
+                                                <Edit size={16} />
                                             </button>
+                                            {!isStudent && (
+                                                <button
+                                                    onClick={() => setActiveModal(`password-${student.id}`)}
+                                                    className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
+                                                    title="Reset Password"
+                                                >
+                                                    <Key size={16} />
+                                                </button>
+                                            )}
                                             {!isStudent && (
                                                 <button
                                                     onClick={() => handleDelete(student.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                    title="Delete Student"
                                                 >
-                                                    <Trash2 size={18} />
+                                                    <Trash size={18} />
                                                 </button>
                                             )}
                                         </div>
@@ -346,7 +520,7 @@ const StudentList = () => {
                 {!isStudent && (
                     <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                         <div className="text-sm text-gray-500 font-medium">
-                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{students.length}</span> students
+                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{safeStudents.length}</span> students
                         </div>
                         <div className="flex gap-2">
                             <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>
