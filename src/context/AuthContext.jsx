@@ -51,51 +51,11 @@ export const AuthProvider = ({ children }) => {
         return initialAdmins;
     });
 
-    const [activityLog, setActivityLog] = useState([
-        { id: 1, type: 'registration', admin: 'Admin 1', student: 'Student #1021', time: new Date().toISOString(), status: 'success' },
-        { id: 2, type: 'registration', admin: 'Admin 2', student: 'Student #1022', time: new Date().toISOString(), status: 'success' },
-    ]);
+    const [activityLog, setActivityLog] = useState([]);
 
     const [notifications, setNotifications] = useState([]);
 
-    const [attendanceHistory, setAttendanceHistory] = useState(() => {
-        // Mock Attendance Data for Analytics
-        // Generate 4 weeks of data for each section
-        const history = [];
-        const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ'];
-
-        // Mock dates (last 4 Sundays)
-        const today = new Date();
-        const dates = [];
-        for (let i = 0; i < 4; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - (i * 7));
-            dates.push(d.toISOString().split('T')[0]);
-        }
-
-        sections.forEach(section => {
-            dates.forEach(date => {
-                // Random attendance
-                const totalStudents = 30 + Math.floor(Math.random() * 20);
-                const presentCount = Math.floor(totalStudents * (0.6 + Math.random() * 0.3));
-                const excusedCount = Math.floor((totalStudents - presentCount) * 0.3); // Roughly 30% of non-present are excused
-                const absentCount = totalStudents - presentCount - excusedCount;
-
-                history.push({
-                    id: Date.now() + Math.random(),
-                    date: date,
-                    section: section,
-                    present: presentCount,
-                    absent: absentCount,
-                    excused: excusedCount,
-                    total: totalStudents,
-                    percentage: Math.round((presentCount / totalStudents) * 100)
-                });
-            });
-        });
-
-        return history.sort((a, b) => new Date(a.date) - new Date(b.date));
-    });
+    const [attendanceHistory, setAttendanceHistory] = useState([]);
 
     const saveAttendanceBatch = (date, attendanceMap) => {
         // 1. Group new attendance by section
@@ -149,13 +109,7 @@ export const AuthProvider = ({ children }) => {
         recordActivity('attendance_submission', { date, count: Object.keys(attendanceMap).length });
     };
 
-    const [students, setStudents] = useState([
-        { id: 'DBU/123/15', name: 'Abebe Kebebe', sex: 'Male', dept: 'Mechanical', year: '3', section: 'ቋንቋ', status: 'Student' },
-        { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', sex: 'Male', dept: 'Economics', year: '2', section: 'ትምህርት', status: 'Student' },
-        { id: 'DBU/789/15', name: 'Hiwot Alemu', sex: 'Female', dept: 'Medicine', year: '1', section: 'አባላት', status: 'Student' },
-        { id: 'DBU/101/14', name: 'Tewodros Kassahun', sex: 'Male', dept: 'Architecture', year: '4', section: 'ልማት', status: 'Student' },
-        { id: 'DBU/202/13', name: 'Selam Mengistu', sex: 'Female', dept: 'Journalism', year: '5', section: 'ሙያ', status: 'Graduated' },
-    ]);
+    const [students, setStudents] = useState([]);
 
     const recordActivity = (type, details) => {
         const newLog = {
