@@ -16,7 +16,8 @@ import {
     MessageCircle,
     Settings,
     ClipboardCheck,
-    Clock
+    Clock,
+    BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -31,7 +32,7 @@ const Layout = ({ children }) => {
     const menuItems = isManager
         ? [
             { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-            { title: 'Approvals', icon: <Clock size={20} />, path: '/approvals' },
+            { title: 'Analytics', icon: <BarChart3 size={20} />, path: '/analytics' },
             { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
             { title: 'Student List', icon: <Users size={20} />, path: '/students' },
             { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },

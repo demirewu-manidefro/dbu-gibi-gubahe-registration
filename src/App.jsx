@@ -11,6 +11,7 @@ import AdminManagement from './pages/AdminManagement';
 import LandingPage from './pages/LandingPage';
 
 import PendingApprovals from './pages/PendingApprovals';
+import Analytics from './pages/Analytics';
 import NotFound from './pages/NotFound';
 
 const PrivateRoute = ({ children }) => {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
           <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
+          <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
           <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
