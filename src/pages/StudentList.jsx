@@ -79,7 +79,9 @@ const StudentList = () => {
         const headers = [
             'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
             'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
-            'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ', 'የተጠሪ ስም', 'የተጠሪ ስልክ',
+            'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ',
+            'ማእከለ እና ወረዳ ማእከል', 'የግቢ ጉባኤው ስም',
+            'የተጠሪ ስም', 'የተጠሪ ስልክ',
             'አጥቢያ ቤተክርስቲያን', 'መንፈሳዊ ትምህርት ደረጃ', 'ልዩ ተሰጥኦ (CET)',
             'የ1ኛ ዓመት ተሳትፎ', 'የ2ኛ ዓመት ተሳትፎ', 'የ3ኛ ዓመት ተሳትፎ',
             'የ4ኛ ዓመት ተሳትፎ', 'የ5ኛ ዓመት ተሳትፎ', 'የ6ኛ ዓመት ተሳትፎ',
@@ -131,6 +133,8 @@ const StudentList = () => {
                 `"${s.woreda || ''}"`,
                 `"${s.kebele || ''}"`,
                 `"${s.phone || ''}"`,
+                `"${s.centerAndWoredaCenter || ''}"`,
+                `"${s.gibiName || ''}"`,
                 `"${s.emergencyName || ''}"`,
                 `"${s.emergencyPhone || ''}"`,
                 `"${s.parishChurch || ''}"`,
@@ -230,7 +234,15 @@ const StudentList = () => {
                     'section': 'section',
                     'status': 'status',
                     'phone': 'phone',
-                    'telephone': 'phone'
+                    'telephone': 'phone',
+                    'center': 'centerAndWoredaCenter',
+                    'woreda center': 'centerAndWoredaCenter',
+                    'maekel': 'centerAndWoredaCenter',
+                    'gibi': 'gibiName',
+                    'gibi name': 'gibiName',
+                    'gibigubae': 'gibiName',
+                    'parish': 'parishChurch',
+                    'church': 'parishChurch'
                 };
 
                 // Parse data rows
@@ -284,22 +296,24 @@ const StudentList = () => {
 
             <input type="file" id="file-upload" className="hidden" accept=".csv" onChange={handleFileUpload} />
 
-            <div className="flex flex-wrap gap-3 pb-4">
-                <button
-                    onClick={handleExport}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
-                >
-                    <Download size={18} className="text-emerald-500 group-hover:text-emerald-600" />
-                    <span>Export CSV</span>
-                </button>
-                <button
-                    onClick={handleImport}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
-                >
-                    <Upload size={18} className="text-blue-500 group-hover:text-blue-600" />
-                    <span>Import Data</span>
-                </button>
-            </div>
+            {!isStudent && (
+                <div className="flex flex-wrap gap-3 pb-4">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
+                    >
+                        <Download size={18} className="text-emerald-500 group-hover:text-emerald-600" />
+                        <span>Export CSV</span>
+                    </button>
+                    <button
+                        onClick={handleImport}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
+                    >
+                        <Upload size={18} className="text-blue-500 group-hover:text-blue-600" />
+                        <span>Import Data</span>
+                    </button>
+                </div>
+            )}
 
             {activeModal?.startsWith('password-') && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -509,14 +523,14 @@ const StudentList = () => {
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                        <thead className="bg-gray-200 text-gray-800 text-sm font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
                             <tr>
-                                <th className="px-8 py-4">Student Name & ID</th>
-                                <th className="px-8 py-4">Department</th>
-                                <th className="px-8 py-4">Year</th>
-                                <th className="px-8 py-4">ክፍላት</th>
-                                <th className="px-8 py-4">Status</th>
-                                <th className="px-8 py-4 text-right">Actions</th>
+                                <th className="px-8 py-5">Student Name & ID</th>
+                                <th className="px-8 py-5">Department</th>
+                                <th className="px-8 py-5">Year</th>
+                                <th className="px-8 py-5">ክፍላት</th>
+                                <th className="px-8 py-5">Status</th>
+                                <th className="px-8 py-5 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
