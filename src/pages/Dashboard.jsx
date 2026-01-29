@@ -13,7 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatEthiopianDateAmharic } from '../utils/ethiopianDateUtils';
 
 const Dashboard = () => {
-    const { activityLog, students, user } = useAuth();
+    const { activityLog, students, user, attendanceHistory } = useAuth();
 
     // Filter data based on role
     const isManager = user?.role === 'manager';
@@ -93,7 +93,9 @@ const Dashboard = () => {
         },
         {
             label: 'Avg. Attendance',
-            value: '88%',
+            value: `${attendanceHistory && attendanceHistory.length > 0
+                ? Math.round(attendanceHistory.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / attendanceHistory.length)
+                : 0}%`,
             sub: 'Weekly Gubaes',
             icon: <TrendingUp size={24} />,
             color: 'bg-green-500'
