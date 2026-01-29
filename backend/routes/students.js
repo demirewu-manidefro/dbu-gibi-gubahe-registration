@@ -21,6 +21,14 @@ router.put('/:id', [auth, authorize(['admin', 'manager'])], studentController.up
 // @route   DELETE api/students/:id
 // @desc    Delete a student
 // @access  Private (Manager only)
-router.delete('/:id', [auth, authorize(['manager'])], studentController.deleteStudent);
+// @route   POST api/students/:id/approve
+// @desc    Approve a student registration
+// @access  Private (Admin/Manager)
+router.post('/:id/approve', [auth, authorize(['admin', 'manager'])], studentController.approveStudent);
+
+// @route   POST api/students/:id/decline
+// @desc    Decline a student registration
+// @access  Private (Admin/Manager)
+router.post('/:id/decline', [auth, authorize(['admin', 'manager'])], studentController.declineStudent);
 
 module.exports = router;

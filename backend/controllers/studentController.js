@@ -105,7 +105,7 @@ exports.registerStudent = async (req, res) => {
             studentData.otherTrainings || studentData.other_trainings,
             studentData.additionalInfo || studentData.additional_info,
             studentData.filledBy || studentData.filled_by || fullName,
-            studentData.status || 'Student',
+            studentData.status || 'Pending',
             studentData.photoUrl || studentData.photo_url,
             ownerUserId
         ];
@@ -166,6 +166,48 @@ exports.deleteStudent = async (req, res) => {
         const { rowCount } = await query('DELETE FROM students WHERE id = $1', [id]);
         if (rowCount === 0) return res.status(404).json({ message: 'Student not found' });
         res.json({ message: 'Student deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.approveStudent = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rows } = await query('SELECT service_section FROM students WHERE id = $1', [id]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Student not found' });
+
+        const studentSection = rows[0].service_section;
+
+        // Authorization: Admin must match section OR be Manager
+        if (req.user.role === 'admin' && req.user.section !== studentSection) {
+            return res.status(403).json({ message: 'You are not authorized to approve students for this section' });
+        }
+
+        await query("UPDATE students SET status = 'Student' WHERE id = $1", [id]);
+        res.json({ message: 'Student approved successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.declineStudent = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rows } = await query('SELECT service_section FROM students WHERE id = $1', [id]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Student not found' });
+
+        const studentSection = rows[0].service_section;
+
+        // Authorization: Admin must match section OR be Manager
+        if (req.user.role === 'admin' && req.user.section !== studentSection) {
+            return res.status(403).json({ message: 'You are not authorized to decline students for this section' });
+        }
+
+        await query('DELETE FROM students WHERE id = $1', [id]);
+        res.json({ message: 'Student registration declined' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

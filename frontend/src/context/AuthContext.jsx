@@ -37,9 +37,14 @@ export const AuthProvider = ({ children }) => {
                 headers: { 'x-auth-token': token }
             });
             const data = await res.json();
-            setAttendanceHistory(data);
+            if (res.ok) {
+                setAttendanceHistory(Array.isArray(data) ? data : []);
+            } else {
+                setAttendanceHistory([]);
+            }
         } catch (err) {
             console.error('Error fetching attendance history:', err);
+            setAttendanceHistory([]);
         }
     };
 
@@ -100,9 +105,15 @@ export const AuthProvider = ({ children }) => {
                 headers: { 'x-auth-token': token }
             });
             const data = await res.json();
-            setStudents(data);
+            if (res.ok) {
+                setStudents(Array.isArray(data) ? data : []);
+            } else {
+                console.error('Fetch students error:', data.message);
+                setStudents([]);
+            }
         } catch (err) {
             console.error('Error fetching students:', err);
+            setStudents([]);
         }
     };
 
@@ -114,9 +125,14 @@ export const AuthProvider = ({ children }) => {
                 headers: { 'x-auth-token': token }
             });
             const data = await res.json();
-            setActivityLog(data);
+            if (res.ok) {
+                setActivityLog(Array.isArray(data) ? data : []);
+            } else {
+                setActivityLog([]);
+            }
         } catch (err) {
             console.error('Error fetching activity log:', err);
+            setActivityLog([]);
         }
     };
 
@@ -198,16 +214,46 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const approveStudent = (studentId) => {
-        setStudents(prev => prev.map(s =>
-            s.id === studentId ? { ...s, status: 'Student' } : s
-        ));
-        recordActivity('approval', { studentId });
+    const approveStudent = async (studentId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/${studentId}/approve`, {
+                method: 'POST',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setStudents(prev => prev.map(s =>
+                    s.id === studentId ? { ...s, status: 'Student' } : s
+                ));
+                recordActivity('approval', { studentId });
+            } else {
+                const error = await res.json();
+                throw new Error(error.message);
+            }
+        } catch (err) {
+            console.error('Approval Error:', err);
+            throw err;
+        }
     };
 
-    const declineStudent = (studentId) => {
-        setStudents(prev => prev.filter(s => s.id !== studentId));
-        recordActivity('decline', { studentId });
+    const declineStudent = async (studentId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/${studentId}/decline`, {
+                method: 'POST',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setStudents(prev => prev.filter(s => s.id !== studentId));
+                recordActivity('decline', { studentId });
+            } else {
+                const error = await res.json();
+                throw new Error(error.message);
+            }
+        } catch (err) {
+            console.error('Decline Error:', err);
+            throw err;
+        }
     };
 
     const registerAdmin = (adminData) => {
@@ -221,6 +267,7 @@ export const AuthProvider = ({ children }) => {
             Members: 'አባላት',
             Audit: 'ኦዲት',
             Finance: 'ሂሳብ',
+            Choir: 'መዝሙር',
             'እቅድ': 'እቅድ',
             'ትምህርት': 'ትምህርት',
             'ልማት': 'ልማት',
@@ -229,7 +276,8 @@ export const AuthProvider = ({ children }) => {
             'ቋንቋ': 'ቋንቋ',
             'አባላት': 'አባላት',
             'ኦዲት': 'ኦዲት',
-            'ሂሳብ': 'ሂሳብ'
+            'ሂሳብ': 'ሂሳብ',
+            'መዝሙር': 'መዝሙር'
         };
 
         const sectionLabel = sectionLabelMap[adminData.section] || adminData.section;

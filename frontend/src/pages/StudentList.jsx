@@ -33,9 +33,9 @@ const StudentList = () => {
                 ? (filterSection === 'All' || student.section === filterSection)
                 : (student.section === user?.section)
             ) &&
-            (((student.name || '').toLowerCase().includes(searchTerm.toLowerCase())) ||
-                ((student.id || '').toLowerCase().includes(searchTerm.toLowerCase())) ||
-                ((student.dept || student.department || '').toLowerCase().includes(searchTerm.toLowerCase())))
+            ((student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (student.dept || student.department || '').toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
     const openView = (student) => {
@@ -572,7 +572,9 @@ const StudentList = () => {
                                     <td className="px-8 py-5">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Student'
                                             ? 'bg-green-50 text-green-600 border-green-100'
-                                            : 'bg-blue-50 text-blue-600 border-blue-100'
+                                            : student.status === 'Pending'
+                                                ? 'bg-orange-50 text-orange-600 border-orange-100'
+                                                : 'bg-blue-50 text-blue-600 border-blue-100'
                                             }`}>
                                             {student.status}
                                         </span>
