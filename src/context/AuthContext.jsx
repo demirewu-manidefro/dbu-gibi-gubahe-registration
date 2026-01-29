@@ -3,7 +3,24 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        try {
+            const savedUser = localStorage.getItem('user');
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch (error) {
+            console.error('Failed to parse user from local storage:', error);
+            return null;
+        }
+    });
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
+
     const [admins, setAdmins] = useState(() => {
         const sections = [
             'እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ',
@@ -13,7 +30,7 @@ export const AuthProvider = ({ children }) => {
 
         const initialAdmins = sections.map((section, i) => ({
             id: i + 1,
-            username: section, // Username is now the Amharic section name (e.g., 'እቅድ')
+            username: section,
             password: `pass${i + 1}`,
             name: `${section} ክፍል`,
             section: section,
@@ -42,11 +59,11 @@ export const AuthProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
 
     const [students, setStudents] = useState([
-        { id: 'DBU/123/15', name: 'Abebe Kebebe', dept: 'Mechanical', year: '3', section: 'Language', status: 'Student' },
-        { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', dept: 'Economics', year: '2', section: 'Education', status: 'Student' },
-        { id: 'DBU/789/15', name: 'Hiwot Alemu', dept: 'Medicine', year: '1', section: 'Members', status: 'Student' },
-        { id: 'DBU/101/14', name: 'Tewodros Kassahun', dept: 'Architecture', year: '4', section: 'Development', status: 'Student' },
-        { id: 'DBU/202/13', name: 'Selam Mengistu', dept: 'Journalism', year: '5', section: 'Profession', status: 'Graduated' },
+        { id: 'DBU/123/15', name: 'Abebe Kebebe', sex: 'Male', dept: 'Mechanical', year: '3', section: 'ቋንቋ', status: 'Student' },
+        { id: 'DBU/456/15', name: 'Mulugeta Tesfaye', sex: 'Male', dept: 'Economics', year: '2', section: 'ትምህርት', status: 'Student' },
+        { id: 'DBU/789/15', name: 'Hiwot Alemu', sex: 'Female', dept: 'Medicine', year: '1', section: 'አባላት', status: 'Student' },
+        { id: 'DBU/101/14', name: 'Tewodros Kassahun', sex: 'Male', dept: 'Architecture', year: '4', section: 'ልማት', status: 'Student' },
+        { id: 'DBU/202/13', name: 'Selam Mengistu', sex: 'Female', dept: 'Journalism', year: '5', section: 'ሙያ', status: 'Graduated' },
     ]);
 
     const recordActivity = (type, details) => {
@@ -84,32 +101,21 @@ export const AuthProvider = ({ children }) => {
             : (studentData.photoUrl || '');
 
         if (existingStudentIndex >= 0) {
-            // Update existing student
             const updatedStudents = [...students];
-
-            // Explicit merging to ensure all fields are captured correctly
             updatedStudents[existingStudentIndex] = {
                 ...updatedStudents[existingStudentIndex],
-                ...studentData, // Spread first to catch generic fields
-
-                // Critical Field Mappings
+                ...studentData,
                 name: studentData.fullName || updatedStudents[existingStudentIndex].name,
                 dept: studentData.department || updatedStudents[existingStudentIndex].dept,
                 year: studentData.batch || updatedStudents[existingStudentIndex].year,
-                section: assignedSection, // Calculated above
-
-                // Contact Info
+                section: assignedSection,
                 phone: studentData.phone || updatedStudents[existingStudentIndex].phone,
                 region: studentData.region || updatedStudents[existingStudentIndex].region,
                 zone: studentData.zone || updatedStudents[existingStudentIndex].zone,
                 woreda: studentData.woreda || updatedStudents[existingStudentIndex].woreda,
                 kebele: studentData.kebele || updatedStudents[existingStudentIndex].kebele,
-
-                // Emergency Contact
                 emergencyName: studentData.emergencyName || updatedStudents[existingStudentIndex].emergencyName,
                 emergencyPhone: studentData.emergencyPhone || updatedStudents[existingStudentIndex].emergencyPhone,
-
-                // Spiritual
                 baptismalName: studentData.baptismalName || updatedStudents[existingStudentIndex].baptismalName,
                 priesthoodRank: studentData.priesthoodRank || updatedStudents[existingStudentIndex].priesthoodRank,
                 courses: studentData.courses || updatedStudents[existingStudentIndex].courses,
@@ -121,7 +127,6 @@ export const AuthProvider = ({ children }) => {
             setStudents(updatedStudents);
             recordActivity('registration_update', { student: updatedStudents[existingStudentIndex].name, section: assignedSection });
         } else {
-            // Create New
             if (studentData.username && !checkUsernameUnique(studentData.username)) {
                 throw new Error('Username already taken');
             }
@@ -129,27 +134,21 @@ export const AuthProvider = ({ children }) => {
             const newStudent = {
                 ...studentData,
                 id: (studentData.username || studentData.studentId || '').trim(),
-
-                // Explicit Mappings for New Student
                 name: studentData.fullName || studentData.username,
                 dept: studentData.department,
                 year: studentData.batch,
                 section: assignedSection,
-
                 phone: studentData.phone,
                 region: studentData.region,
                 zone: studentData.zone,
                 woreda: studentData.woreda,
                 kebele: studentData.kebele,
-
                 emergencyName: studentData.emergencyName,
                 emergencyPhone: studentData.emergencyPhone,
-
                 baptismalName: studentData.baptismalName,
                 priesthoodRank: studentData.priesthoodRank,
                 courses: studentData.courses,
                 graduationYear: studentData.graduationYear,
-
                 status: newStatus,
                 photoUrl,
                 username: studentData.username,
@@ -174,7 +173,6 @@ export const AuthProvider = ({ children }) => {
 
     const registerAdmin = (adminData) => {
         const sectionLabelMap = {
-            // English inputs
             Planning: 'እቅድ',
             Education: 'ትምህርት',
             Development: 'ልማት',
@@ -184,7 +182,6 @@ export const AuthProvider = ({ children }) => {
             Members: 'አባላት',
             Audit: 'ኦዲት',
             Finance: 'ሂሳብ',
-            // Amharic inputs (pass-through for safety)
             'እቅድ': 'እቅድ',
             'ትምህርት': 'ትምህርት',
             'ልማት': 'ልማት',
@@ -224,6 +221,22 @@ export const AuthProvider = ({ children }) => {
         recordActivity('student_deleted', { student: studentId });
     };
 
+    const importStudents = (newStudents) => {
+        setStudents(prev => {
+            const updatedStudents = [...prev];
+            newStudents.forEach(newStudent => {
+                const existingIndex = updatedStudents.findIndex(s => s.id === newStudent.id);
+                if (existingIndex >= 0) {
+                    updatedStudents[existingIndex] = { ...updatedStudents[existingIndex], ...newStudent };
+                } else {
+                    updatedStudents.push(newStudent);
+                }
+            });
+            return updatedStudents;
+        });
+        recordActivity('bulk_import', { count: newStudents.length });
+    };
+
     const sendNotification = ({ target, message }) => {
         const newNotification = {
             id: Date.now(),
@@ -247,7 +260,6 @@ export const AuthProvider = ({ children }) => {
         const normalizedUsername = (username || '').trim().toLowerCase();
         const normalizedPassword = (password || '').trim();
 
-        // Check Admin
         const admin = admins.find(a =>
             (a.username || '').trim().toLowerCase() === normalizedUsername &&
             (a.password || '').trim() === normalizedPassword
@@ -264,7 +276,6 @@ export const AuthProvider = ({ children }) => {
             return true;
         }
 
-        // Check Student
         const student = students.find(s =>
             (s.username || '').trim().toLowerCase() === normalizedUsername &&
             (s.password || '').trim() === normalizedPassword
@@ -302,6 +313,7 @@ export const AuthProvider = ({ children }) => {
         registerAdmin,
         updateStudent,
         deleteStudent,
+        importStudents,
         approveStudent,
         declineStudent,
         notifications,
