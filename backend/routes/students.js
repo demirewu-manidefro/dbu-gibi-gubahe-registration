@@ -1,0 +1,26 @@
+const express = require('express');
+const router = express.Router();
+const studentController = require('../controllers/studentController');
+const { auth, authorize, softAuth } = require('../middleware/auth');
+
+// @route   GET api/students
+// @desc    Get all students
+// @access  Private (Admin/Manager)
+router.get('/', [auth, authorize(['admin', 'manager'])], studentController.getStudents);
+
+// @route   POST api/students
+// @desc    Register a student (Public for Sign-up, or Admin-led)
+// @access  Public (Optional Auth)
+router.post('/', softAuth, studentController.registerStudent);
+
+// @route   PUT api/students/:id
+// @desc    Update a student
+// @access  Private (Admin/Manager)
+router.put('/:id', [auth, authorize(['admin', 'manager'])], studentController.updateStudent);
+
+// @route   DELETE api/students/:id
+// @desc    Delete a student
+// @access  Private (Manager only)
+router.delete('/:id', [auth, authorize(['manager'])], studentController.deleteStudent);
+
+module.exports = router;
