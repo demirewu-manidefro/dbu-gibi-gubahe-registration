@@ -66,6 +66,7 @@ const RegistrationForm = () => {
 
         // Updated Address Fields
         gibiName: '',
+        centerAndWoredaCenter: '',
         parishChurch: '',
 
         emergencyName: '',
@@ -90,6 +91,7 @@ const RegistrationForm = () => {
         // New Training Sections
         teacherTraining: { level1: '', level2: '', level3: '' },
         leadershipTraining: { level1: '', level2: '', level3: '' },
+        otherTrainings: '',
 
         additionalInfo: '',
         filledBy: '',
@@ -502,19 +504,54 @@ const RegistrationForm = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div>
-                                                <label className="label-amharic">የግቢ ጉባኤው ሥም (Write only English)</label>
-                                                <input
-                                                    name="gibiName"
-                                                    value={formData.gibiName}
-                                                    onChange={handleInputChange}
-                                                    placeholder="Example: DBU Gibi Gubae"
-                                                    className="uppercase placeholder:normal-case"
-                                                />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="label-amharic">የግቢ ጉባኤው ሥም</label>
+                                                    <select
+                                                        name="gibiName"
+                                                        value={formData.gibiName}
+                                                        onChange={handleInputChange}
+                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    >
+                                                        <option value="">ምረጥ...</option>
+                                                        <option value="ደ/ቀ/ግ/ጉባኤ">ደ/ቀ/ግ/ጉባኤ</option>
+                                                        <option value="ቭክትሪ">ቭክትሪ</option>
+                                                        <option value="ተና">ተና</option>
+                                                        <option value="ወረዳ">ወረዳ</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="label-amharic">ማእከለ እና ወረዳ ማእከል</label>
+                                                    <input
+                                                        name="centerAndWoredaCenter"
+                                                        value={formData.centerAndWoredaCenter}
+                                                        onChange={handleInputChange}
+                                                        placeholder="ማእከል/ወረዳ"
+                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
                                             </div>
                                             <div>
                                                 <label className="label-amharic">የሚማሩበት አጥቢያ ቤ/ክ</label>
-                                                <input name="parishChurch" value={formData.parishChurch} onChange={handleInputChange} placeholder="ደብረ..." />
+                                                <select
+                                                    name="parishChurch"
+                                                    value={formData.parishChurch}
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="">ምረጥ...</option>
+                                                    <option value="ቅዱስ ገብራኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
+                                                    <option value="ቅዱስ መዳኔአለም ቤተ ክርስቲያን">ቅዱስ መዳኔአለም ቤተ ክርስቲያን</option>
+                                                    <option value="Other">ሌላ (Other)</option>
+                                                </select>
+                                                {formData.parishChurch === 'Other' && (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Specify Church Name"
+                                                        className="mt-2 w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, parishChurch: e.target.value }))}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -749,6 +786,16 @@ const RegistrationForm = () => {
                                                     ))}
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="mt-4 pt-4 border-t border-blue-200/50">
+                                            <label className="label-amharic">ሌሎች ስልጠናዎች</label>
+                                            <input
+                                                name="otherTrainings"
+                                                value={formData.otherTrainings}
+                                                onChange={handleInputChange}
+                                                placeholder="ሌላ የወሰዱት ስልጠና ካለ ይጥቀሱ..."
+                                                className="w-full bg-white border border-blue-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
                                         </div>
                                     </div>
 
