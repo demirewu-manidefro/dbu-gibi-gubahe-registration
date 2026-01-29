@@ -76,27 +76,113 @@ const StudentList = () => {
     const [activeModal, setActiveModal] = useState(null);
 
     const handleExport = () => {
-        const headers = ['ID', 'Name', 'Sex', 'Department', 'Year', 'Section', 'Status', 'Phone'];
+        const headers = [
+            'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
+            'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
+            'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ', 'የተጠሪ ስም', 'የተጠሪ ስልክ',
+            'አጥቢያ ቤተክርስቲያን', 'መንፈሳዊ ትምህርት ደረጃ', 'ልዩ ተሰጥኦ (CET)',
+            'የ1ኛ ዓመት ተሳትፎ', 'የ2ኛ ዓመት ተሳትፎ', 'የ3ኛ ዓመት ተሳትፎ',
+            'የ4ኛ ዓመት ተሳትፎ', 'የ5ኛ ዓመት ተሳትፎ', 'የ6ኛ ዓመት ተሳትፎ',
+            'የትምህርት ክፍል',
+            '1ኛ ዓመት GPA', '2ኛ ዓመት GPA', '3ኛ ዓመት GPA',
+            '4ኛ ዓመት GPA', '5ኛ ዓመት GPA', '6ኛ ዓመት GPA',
+            'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የምረቃ ዓመት',
+            '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
+            '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
+            'ፎቶ',
+            '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
+            '4ኛ ዓመት ትምህርት', '5ኛ ዓመት ትምህርት', '6ኛ ዓመት ትምህርት',
+            'የመምህራን ስልጠና 1', 'የመምህራን ስልጠና 2', 'የመምህራን ስልጠና 3',
+            'የአመራር ስልጠና 1', 'የአመራር ስልጠና 2', 'የአመራር ስልጠና 3',
+            'ሌሎች ስልጠናዎች', 'የአብነት ትምህርት', 'ልዩ ፍላጎት', 'ተጨማሪ መረጃ',
+            'የመዘገበው አካል', 'ያረጋገጠው አካል', 'የተሰጠበት ቀን'
+        ];
+
+        const getPriesthoodLabel = (rank) => {
+            const labels = { 'lay': 'ምእመን', 'diakon': 'ዲያቆን', 'kahin': 'ካህን' };
+            return labels[rank] || rank || '';
+        };
+
+        const getSexLabel = (sex) => {
+            if (!sex) return '';
+            const s = sex.toLowerCase();
+            if (s.startsWith('m')) return 'M';
+            if (s.startsWith('f')) return 'F';
+            return sex;
+        };
+
         const csvContent = [
             headers.join(','),
-            ...filteredStudents.map(s => [
-                s.id,
-                `"${s.name}"`,
-                s.sex || '-',
-                `"${s.dept}"`,
-                s.year,
-                s.section,
-                s.status,
-                s.phone || '-'
+            ...filteredStudents.map((s, index) => [
+                index + 1,
+                `"${s.id || ''}"`,
+                `"${s.name || s.fullName || ''}"`,
+                getSexLabel(s.sex),
+                s.age || '',
+                s.birthYear || '',
+                `"${s.baptismalName || ''}"`,
+                `"${getPriesthoodLabel(s.priesthoodRank)}"`,
+                `"${s.motherTongue || ''}"`,
+                `"${s.otherLanguages?.l1 || ''}"`,
+                `"${s.otherLanguages?.l2 || ''}"`,
+                `"${s.otherLanguages?.l3 || ''}"`,
+                `"${s.region || ''}"`,
+                `"${s.zone || ''}"`,
+                `"${s.woreda || ''}"`,
+                `"${s.kebele || ''}"`,
+                `"${s.phone || ''}"`,
+                `"${s.emergencyName || ''}"`,
+                `"${s.emergencyPhone || ''}"`,
+                `"${s.parishChurch || ''}"`,
+                `"${s.specialEducation || ''}"`,
+                `"${s.specialPlace || ''}"`,
+                '', // Year_Responsibility_1 (Placeholder)
+                '', // 2
+                '', // 3
+                '', // 4
+                '', // 5
+                '', // 6
+                `"${s.dept || s.department || ''}"`,
+                s.gpa?.y1 || '',
+                s.gpa?.y2 || '',
+                s.gpa?.y3 || '',
+                s.gpa?.y4 || '',
+                s.gpa?.y5 || '',
+                s.gpa?.y6 || '',
+                s.cumulativeGPA || '',
+                s.membershipYear || '',
+                s.graduationYear || '',
+                '', // Follow-ups
+                '', '', '', '', '',
+                `"${s.photoUrl || ''}"`,
+                `"${s.participation?.y1 || ''}"`,
+                `"${s.participation?.y2 || ''}"`,
+                `"${s.participation?.y3 || ''}"`,
+                `"${s.participation?.y4 || ''}"`,
+                `"${s.participation?.y5 || ''}"`,
+                `"${s.participation?.y6 || ''}"`,
+                `"${s.teacherTraining?.level1 || ''}"`,
+                `"${s.teacherTraining?.level2 || ''}"`,
+                `"${s.teacherTraining?.level3 || ''}"`,
+                `"${s.leadershipTraining?.level1 || ''}"`,
+                `"${s.leadershipTraining?.level2 || ''}"`,
+                `"${s.leadershipTraining?.level3 || ''}"`,
+                '', // other_Training
+                `"${s.specialEducation || ''}"`, // Abnet_Course
+                '', // Special_need
+                `"${s.additionalInfo || ''}"`,
+                `"${s.filledBy || ''}"`,
+                `"${s.verifiedBy || ''}"`,
+                `"${s.submissionDate || ''}"`
             ].join(','))
         ].join('\n');
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         if (link.download !== undefined) {
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', 'student_list.csv');
+            link.setAttribute('download', `student_list_${new Date().toLocaleDateString()}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();

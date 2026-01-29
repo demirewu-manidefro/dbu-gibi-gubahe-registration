@@ -444,7 +444,7 @@ const LandingPage = () => {
                                     : 'Creating an active spiritual community that strengthens students\' faith.'}
                             </p>
                             <div className="flex gap-4">
-                                <a href="#" className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
+                                <a href="https://web.facebook.com/debbirunigibygubaye/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
                                     <Facebook size={20} />
                                 </a>
                                 <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center text-white hover:opacity-80 transition-all shadow-md">
