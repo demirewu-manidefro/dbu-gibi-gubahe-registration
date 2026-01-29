@@ -205,7 +205,7 @@ const LandingPage = () => {
             {/* Hero Section */}
             <section id="home" className="relative min-h-screen pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-[url('/hero_image.jpg')] bg-cover" style={{ backgroundPosition: `center ${-bgPosY}px` }} />
+                    <div className="absolute inset-0 bg-[url('/hero_image.jpeg')] bg-cover" style={{ backgroundPosition: `center ${-bgPosY}px` }} />
                     <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/10" />
                 </div>
 
