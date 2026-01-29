@@ -24,17 +24,18 @@ const Analytics = () => {
     const [selectedDate, setSelectedDate] = React.useState(new Date().toISOString().split('T')[0]);
 
     // Filter History based on Selected Month/Year
-    const targetDate = new Date(selectedDate);
-    const targetMonth = targetDate.getMonth();
-    const targetYear = targetDate.getFullYear();
+    // selectedDate is "YYYY-MM-DD", we want to match by year and month
+    const [selYear, selMonth] = selectedDate.split('-').map(Number);
 
     const filteredHistory = attendanceHistory.filter(d => {
-        const dDate = new Date(d.date);
-        return dDate.getMonth() === targetMonth && dDate.getFullYear() === targetYear;
+        if (!d.date) return false;
+        // Postgres DATE type usually comes as "YYYY-MM-DD..." or ISO
+        const [dYear, dMonth] = d.date.split('T')[0].split('-').map(Number);
+        return dYear === selYear && dMonth === selMonth;
     });
 
     // 1. Calculate Average Attendance per Section (Filtered Data)
-    const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ'];
+    const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
 
     // 2. Prepare Data for "Average Attendance by Section" (Bar Chart)
     const sectionAverages = sections.map(section => {
@@ -50,12 +51,12 @@ const Analytics = () => {
     }).sort((a, b) => b.average - a.average);
 
     // 3. Prepare Data for "Attendance Trends" (Line Chart)
-    const uniqueDates = [...new Set(filteredHistory.map(d => d.date))].sort();
+    const uniqueDates = [...new Set(filteredHistory.map(d => d.date.split('T')[0]))].sort();
     const trendData = uniqueDates.map(date => {
-        const dayRecords = filteredHistory.filter(d => d.date === date);
-        const dayAvg = dayRecords.reduce((acc, curr) => acc + curr.percentage, 0) / dayRecords.length;
+        const dayRecords = filteredHistory.filter(d => d.date.startsWith(date));
+        const dayAvg = dayRecords.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / (dayRecords.length || 1);
         return {
-            date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            date: date.split('-').slice(1).join('/'), // MM/DD format
             average: Math.round(dayAvg)
         };
     });
@@ -84,7 +85,7 @@ const Analytics = () => {
                     <div>
                         <div className="text-gray-500 text-xs font-bold uppercase tracking-widest">Avg. Attendance</div>
                         <div className="text-2xl font-extrabold text-gray-900">
-                            {Math.round(sectionAverages.reduce((acc, curr) => acc + curr.average, 0) / sectionAverages.length)}%
+                            {sectionAverages.length > 0 ? Math.round(sectionAverages.reduce((acc, curr) => acc + curr.average, 0) / sectionAverages.length) : 0}%
                         </div>
                     </div>
                 </div>
@@ -208,7 +209,7 @@ const Analytics = () => {
                         <PieChart>
                             <Pie
                                 data={(() => {
-                                    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316'];
+                                    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#0ea5e9'];
 
                                     // Aggregate data for the pie chart using filteredHistory
                                     const pieData = sections.map((section, index) => {
@@ -236,10 +237,12 @@ const Analytics = () => {
                                 dataKey="value"
                                 label={({ name, rate }) => `${name} (${rate}%)`}
                             >
-                                {sections.map((entry, index) => {
-                                    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316'];
-                                    return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
-                                })}
+                                {(() => {
+                                    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#0ea5e9'];
+                                    return sections.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ));
+                                })()}
                             </Pie>
                             <Tooltip
                                 formatter={(value, name, props) => [

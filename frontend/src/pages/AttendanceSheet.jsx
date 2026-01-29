@@ -20,8 +20,8 @@ const AttendanceSheet = () => {
 
     const filteredStudents = students.filter(student =>
         (filterSection === 'All Sections' || student.section === filterSection) &&
-        (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.id.toLowerCase().includes(searchTerm.toLowerCase()))
+        ((student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleAttendanceChange = (studentId, status) => {
@@ -102,15 +102,16 @@ const AttendanceSheet = () => {
                                     onChange={(e) => setFilterSection(e.target.value)}
                                 >
                                     <option value="All Sections">ሁሉም ክፍላት</option>
-                                    <option value="Planning">Planning (እቅድ)</option>
-                                    <option value="Education">Education (ትምህርት)</option>
-                                    <option value="Development">Development (ልማት)</option>
-                                    <option value="Batch">Batch (ባች)</option>
-                                    <option value="Profession">Profession (ሙያ)</option>
-                                    <option value="Language">Language (ቋንቋ)</option>
-                                    <option value="Members">Members (አባላት)</option>
-                                    <option value="Audit">Audit (ኦዲት)</option>
-                                    <option value="Finance">Finance (ሂሳብ)</option>
+                                    <option value="እቅድ">እቅድ (Planning)</option>
+                                    <option value="ትምህርት">ትምህርት (Education)</option>
+                                    <option value="ልማት">ልማት (Development)</option>
+                                    <option value="ባች">ባች (Batch)</option>
+                                    <option value="ሙያ">ሙያ (Profession)</option>
+                                    <option value="ቋንቋ">ቋንቋ (Language)</option>
+                                    <option value="አባላት">አባላት (Members)</option>
+                                    <option value="ኦዲት">ኦዲት (Audit)</option>
+                                    <option value="ሂሳብ">ሂሳብ (Finance)</option>
+                                    <option value="መዝሙር">መዝሙር (Choir)</option>
                                 </select>
                             ) : (
                                 <div className="flex items-center gap-2 pl-4 pr-6 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-600">
