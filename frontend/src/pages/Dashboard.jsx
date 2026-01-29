@@ -6,7 +6,8 @@ import {
     TrendingUp,
     Clock,
     ChevronRight,
-    Award
+    Award,
+    Church
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -224,25 +225,6 @@ const Dashboard = () => {
     );
 };
 
-// Mock Church Icon
-const Church = ({ size, className }) => (
-    <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <path d="M10 20v-6h4v6" />
-        <path d="M6 20V10l6-5 6 5v10" />
-        <path d="m9 7 3-3 3 3" />
-        <path d="M12 22V4" />
-        <path d="M8 8h8" />
-    </svg>
-);
+
 
 export default Dashboard;

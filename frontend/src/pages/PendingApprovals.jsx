@@ -20,12 +20,11 @@ const PendingApprovals = () => {
             s.section === mySection ||
             !s.section ||
             s.section === 'N/A' ||
-            // Handle case where section might be English vs Amharic mismatch, though usually strict
             (s.section && mySection && s.section.trim() === mySection.trim())
         )
     ).filter(s =>
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.id.toLowerCase().includes(searchTerm.toLowerCase())
+        (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (s.id || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -76,11 +75,11 @@ const PendingApprovals = () => {
                                             {student.photoUrl ? (
                                                 <img src={student.photoUrl} alt="" className="w-full h-full object-cover" />
                                             ) : (
-                                                student.name.charAt(0)
+                                                (student.name || 'A').charAt(0)
                                             )}
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-gray-900 line-clamp-1">{student.name}</h3>
+                                            <h3 className="font-bold text-gray-900 line-clamp-1">{student.name || 'Anonymous'}</h3>
                                             <div className="text-xs text-gray-500 font-mono">{student.id}</div>
                                         </div>
                                     </div>
