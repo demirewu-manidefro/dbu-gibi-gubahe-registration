@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import {
     ShieldCheck,
     Ban,
@@ -105,7 +105,7 @@ const AdminManagement = () => {
                             className="pl-10 h-10 bg-gray-50/50 border-gray-200"
                         />
                     </div>
-                    <button 
+                    <button
                         onClick={() => setIsRegistering(true)}
                         className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition-all"
                     >
@@ -151,8 +151,8 @@ const AdminManagement = () => {
                                     </td>
                                     <td className="px-8 py-5">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${admin.status === 'active'
-                                                ? 'bg-green-50 text-green-600 border-green-100'
-                                                : 'bg-red-50 text-red-600 border-red-100'
+                                            ? 'bg-green-50 text-green-600 border-green-100'
+                                            : 'bg-red-50 text-red-600 border-red-100'
                                             }`}>
                                             {admin.status}
                                         </span>
@@ -175,8 +175,8 @@ const AdminManagement = () => {
                                             <button
                                                 onClick={() => toggleAdminStatus(admin.id)}
                                                 className={`p-2 rounded-lg transition-all ${admin.status === 'active'
-                                                        ? 'text-gray-400 hover:bg-red-50 hover:text-red-600'
-                                                        : 'text-red-600 bg-red-50 hover:bg-green-50 hover:text-green-600'
+                                                    ? 'text-gray-400 hover:bg-red-50 hover:text-red-600'
+                                                    : 'text-red-600 bg-red-50 hover:bg-green-50 hover:text-green-600'
                                                     }`}
                                                 title={admin.status === 'active' ? 'Block Admin' : 'Unblock Admin'}
                                             >
@@ -232,7 +232,7 @@ const AdminManagement = () => {
             </div>
 
             {/* Registration Modal */}
-             <AnimatePresence>
+            <AnimatePresence>
                 {isRegistering && (
                     <motion.div
                         initial={{ opacity: 0 }}

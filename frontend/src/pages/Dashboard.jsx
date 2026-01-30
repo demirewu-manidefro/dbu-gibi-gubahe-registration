@@ -10,7 +10,7 @@ import {
     Church
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import { formatEthiopianDateAmharic } from '../utils/ethiopianDateUtils';
 
 const Dashboard = () => {
@@ -102,9 +102,12 @@ const Dashboard = () => {
         },
         {
             label: 'Avg. Attendance',
-            value: `${attendanceHistory && attendanceHistory.length > 0
-                ? Math.round(attendanceHistory.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / attendanceHistory.length)
-                : 0}%`,
+            value: `${(() => {
+                if (!attendanceHistory || attendanceHistory.length === 0) return 0;
+                const totalPresent = attendanceHistory.reduce((acc, curr) => acc + (curr.present || 0), 0);
+                const totalPotential = attendanceHistory.reduce((acc, curr) => acc + (curr.total || 0), 0);
+                return totalPotential > 0 ? Math.round((totalPresent / totalPotential) * 100) : 0;
+            })()}%`,
             sub: 'Weekly Gubaes',
             icon: <TrendingUp size={24} />,
             color: 'bg-green-500'

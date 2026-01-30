@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AuthContext } from './auth';
 
-const AuthContext = createContext();
 const API_BASE_URL = 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
@@ -141,6 +141,32 @@ export const AuthProvider = ({ children }) => {
             fetchStudents();
             fetchHistory();
             fetchActivityLog();
+
+            // Session Timeout Logic (15 minutes)
+            const TIMEOUT_DURATION = 1 * 60 * 1000;
+            let timeoutId;
+
+            const resetTimer = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    logout();
+                    // Optional: You could show a notification or redirect
+                    console.log('Session expired due to inactivity');
+                }, TIMEOUT_DURATION);
+            };
+
+            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+            // Set up listeners
+            events.forEach(event => window.addEventListener(event, resetTimer));
+
+            // Initial timer start
+            resetTimer();
+
+            return () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                events.forEach(event => window.removeEventListener(event, resetTimer));
+            };
         }
     }, [user]);
 
@@ -403,4 +429,4 @@ export const AuthProvider = ({ children }) => {
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+// useAuth is now exported from ./auth.js

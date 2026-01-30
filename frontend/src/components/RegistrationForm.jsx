@@ -12,7 +12,7 @@ import {
     AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import { useNavigate } from 'react-router-dom';
 import { toEthiopian } from '../utils/ethiopianDateUtils';
 
