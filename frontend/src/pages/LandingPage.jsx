@@ -226,7 +226,7 @@ const LandingPage = () => {
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                                 </span>
-                                {lang === 'am' ? 'ተመስርቷል 1977 ዓ.ም.' : 'Founded 1977 E.C.'}
+                                {lang === 'en' && 'Founded 1977 E.C.'}
                             </motion.div>
 
                             <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
