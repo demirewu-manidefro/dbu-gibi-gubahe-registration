@@ -30,8 +30,9 @@ const ethiopianRegions = {
     "Dire Dawa": ["Dire Dawa"]
 };
 
-const EditStudentModal = ({ student, onClose, onSave }) => {
+const EditStudentModal = ({ student, onClose }) => {
     const { updateStudent } = useAuth();
+    const currentEthYear = toEthiopian(new Date()).year;
     const [activeTab, setActiveTab] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -46,6 +47,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         baptismalName: student.baptismalName || '',
         priesthoodRank: student.priesthoodRank || '',
         profilePhoto: null,
+        photoUrl: student.photoUrl || '',
         motherTongue: student.motherTongue || '',
         otherLanguages: student.otherLanguages || { l1: '', l2: '', l3: '' },
 
@@ -80,7 +82,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         additionalInfo: student.additionalInfo || '',
         filledBy: student.filledBy || '',
         verifiedBy: student.verifiedBy || '',
-        submissionDate: student.submissionDate || ''
+        submissionDate: student.submissionDate || '',
+        attendance: student.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        educationYearly: student.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        abinetEducation: student.abinetEducation || '',
+        specialNeed: student.specialNeed || '',
+        traineeType: student.traineeType || ''
     });
 
     // Auto-calculate age
@@ -136,6 +143,18 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                 ...prev,
                 participation: { ...prev.participation, [year]: value }
             }));
+        } else if (name.startsWith('attendance-')) {
+            const year = name.split('-')[1];
+            setFormData(prev => ({
+                ...prev,
+                attendance: { ...prev.attendance, [year]: value }
+            }));
+        } else if (name.startsWith('educationYearly-')) {
+            const year = name.split('-')[1];
+            setFormData(prev => ({
+                ...prev,
+                educationYearly: { ...prev.educationYearly, [year]: value }
+            }));
         } else {
             if (name === 'region') {
                 setFormData(prev => ({ ...prev, region: value, zone: '', woreda: '', kebele: '' }));
@@ -154,14 +173,14 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
         // Basic validation
         if (!/^DBU\d{7}$/.test(formData.studentId)) {
-            setError("Invalid Student ID! Must be DBU followed by 7 digits");
+            setError("የተማሪው መለያ ቁጥር ትክክል አይደለም። DBU እና ከዛ በኋላ 7 ቁጥሮች መሆን አለበት");
             setTimeout(() => setError(""), 3000);
             setActiveTab(0);
             return;
         }
 
         if (!formData.serviceSection) {
-            setError("Please select a Service Section (የአገልግሎት ክፍል)");
+            setError("እባክዎን የአገልግሎት ክፍሉን ይምረጡ");
             setTimeout(() => setError(""), 3000);
             setActiveTab(3);
             return;
@@ -169,49 +188,68 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
         setIsSubmitting(true);
         setTimeout(() => {
+
+            const schoolInfo = {
+                gpa: formData.gpa,
+                participation: formData.participation,
+                specialEducation: formData.specialEducation,
+                specialPlace: formData.specialPlace,
+                attendance: formData.attendance,
+                educationYearly: formData.educationYearly,
+                abinetEducation: formData.abinetEducation,
+                specialNeed: formData.specialNeed,
+                cumulativeGPA: formData.cumulativeGPA
+            };
+
             const updatedData = {
                 id: formData.studentId,
-                name: formData.fullName,
-                sex: formData.sex,
-                birthYear: formData.birthYear,
+                full_name: formData.fullName,
+                gender: formData.sex,
+                birth_date: formData.birthYear,
                 age: formData.age,
-                baptismalName: formData.baptismalName,
-                priesthoodRank: formData.priesthoodRank,
-                motherTongue: formData.motherTongue,
-                otherLanguages: formData.otherLanguages,
+                baptismal_name: formData.baptismalName,
+                priesthood_rank: formData.priesthoodRank,
+                mother_tongue: formData.motherTongue,
+                other_languages: formData.otherLanguages,
                 phone: formData.phone,
                 region: formData.region,
                 zone: formData.zone,
                 woreda: formData.woreda,
                 kebele: formData.kebele,
-                gibiName: formData.gibiName,
-                centerAndWoredaCenter: formData.centerAndWoredaCenter,
-                parishChurch: formData.parishChurch,
-                emergencyName: formData.emergencyName,
-                emergencyPhone: formData.emergencyPhone,
-                dept: formData.department,
-                year: formData.batch,
-                gpa: formData.gpa,
-                cumulativeGPA: formData.cumulativeGPA,
-                section: formData.serviceSection,
-                graduationYear: formData.graduationYear,
-                membershipYear: formData.membershipYear,
-                specialEducation: formData.specialEducation,
-                specialPlace: formData.specialPlace,
-                participation: formData.participation,
-                teacherTraining: formData.teacherTraining,
-                leadershipTraining: formData.leadershipTraining,
-                otherTrainings: formData.otherTrainings,
-                additionalInfo: formData.additionalInfo,
-                filledBy: formData.filledBy,
-                verifiedBy: formData.verifiedBy,
-                submissionDate: formData.submissionDate
+                gibi_name: formData.gibiName,
+                center_and_woreda: formData.centerAndWoredaCenter,
+                parish_church: formData.parishChurch,
+                emergency_name: formData.emergencyName,
+                emergency_phone: formData.emergencyPhone,
+                department: formData.department,
+                batch: formData.batch,
+                school_info: schoolInfo,
+                service_section: formData.serviceSection,
+                graduation_year: formData.graduationYear,
+                membership_year: formData.membershipYear,
+
+                teacher_training: formData.teacherTraining,
+                leadership_training: formData.leadershipTraining,
+                other_trainings: formData.otherTrainings,
+
+                additional_info: formData.additionalInfo,
+                filled_by: formData.filledBy,
+                verified_by: formData.verifiedBy,
+                status: 'Student',
+                photo_url: formData.photoUrl,
+                trainee_type: formData.traineeType
             };
 
-            updateStudent(student.id, updatedData);
-            setIsSubmitting(false);
-            onSave(updatedData);
-            onClose();
+            updateStudent(student.id, updatedData)
+                .then(() => {
+                    if (onSave) onSave(updatedData);
+                    onClose();
+                })
+                .catch(err => {
+                    console.error("ውሂቡን ማስቀመጥ አልተቻለም", err);
+                    setError("ውሂቡን ማስቀመጥ አልተቻለም። እባክዎን እንደገና ይሞክሩ");
+                })
+                .finally(() => setIsSubmitting(false));
         }, 500);
     };
 
@@ -252,8 +290,8 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeTab === tab.id
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-white text-gray-400 border border-gray-100 hover:border-blue-300'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-white text-gray-400 border border-gray-100 hover:border-blue-300'
                                 }`}
                         >
                             {tab.icon}
@@ -315,7 +353,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="label-amharic">የትውልድ ዘመን</label>
+                                                <label className="label-amharic">የትውልድ ዘመን (በዓ.ም)</label>
                                                 <input
                                                     name="birthYear"
                                                     type="number"
@@ -324,6 +362,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     onChange={handleInputChange}
                                                     required
                                                     min="1990"
+                                                    max={currentEthYear}
                                                     className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                             </div>
@@ -346,12 +385,27 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                             </select>
                                         </div>
                                         <div className="col-span-2">
+                                            <label className="label-amharic">የፎቶ URL</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    name="photoUrl"
+                                                    value={formData.photoUrl}
+                                                    onChange={handleInputChange}
+                                                    placeholder="https://..."
+                                                    className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                {formData.photoUrl && (
+                                                    <img src={formData.photoUrl} alt="Preview" className="w-10 h-10 rounded-lg object-cover border" />
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="col-span-2">
                                             <label className="label-amharic">የአፍ መፍቻ ቋንቋ</label>
                                             <input
                                                 name="motherTongue"
                                                 value={formData.motherTongue}
                                                 onChange={handleInputChange}
-                                                placeholder="ኦሮምኛ, አማርኛ..."
+                                                placeholder="ቋንቋ"
                                                 className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
@@ -456,6 +510,21 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                         />
                                     </div>
                                     <div className="col-span-2">
+                                        <label className="label-amharic">የሚማሩበት አጥቢያ ቤ/ክ</label>
+                                        <select
+                                            name="parishChurch"
+                                            value={formData.parishChurch}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">ምረጥ...</option>
+                                            <option value="ቅዱስ ገብራኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
+                                            <option value="ቅዱስ መዳኔአለም ቤተ ክርስቲያን">ቅዱስ መዳኔአለም ቤተ ክርስቲያን</option>
+                                            <option value="ደ/ብ/ቅ/ገብርኤል">ደ/ብ/ቅ/ገብርኤል</option>
+                                            <option value="Other">ሌላ (Other)</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-span-2">
                                         <label className="label-amharic">የተጠሪ ስም</label>
                                         <input name="emergencyName" value={formData.emergencyName} onChange={handleInputChange} required className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
@@ -555,27 +624,43 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                             {/* TAB 4: SPIRITUAL */}
                             {activeTab === 3 && (
                                 <div className="space-y-6">
-                                    <div>
-                                        <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ</label>
-                                        <select
-                                            name="serviceSection"
-                                            value={formData.serviceSection}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            <option value="">ምረጥ...</option>
-                                            <option value="እቅድ">እቅድ</option>
-                                            <option value="ትምህርት">ትምህርት</option>
-                                            <option value="ልማት">ልማት</option>
-                                            <option value="ባች">ባች</option>
-                                            <option value="ሙያ">ሙያ</option>
-                                            <option value="ቋንቋ">ቋንቋ</option>
-                                            <option value="አባላት">አባላት</option>
-                                            <option value="ኦዲት">ኦዲት</option>
-                                            <option value="ሂሳብ">ሂሳብ</option>
-                                            <option value="መዝሙር">መዝሙር</option>
-                                        </select>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ</label>
+                                            <select
+                                                name="serviceSection"
+                                                value={formData.serviceSection}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="">ምረጥ...</option>
+                                                <option value="እቅድ">እቅድ</option>
+                                                <option value="ትምህርት">ትምህርት</option>
+                                                <option value="ልማት">ልማት</option>
+                                                <option value="ባች">ባች</option>
+                                                <option value="ሙያ">ሙያ</option>
+                                                <option value="ቋንቋ">ቋንቋ</option>
+                                                <option value="አባላት">አባላት</option>
+                                                <option value="ኦዲት">ኦዲት</option>
+                                                <option value="ሂሳብ">ሂሳብ</option>
+                                                <option value="መዝሙር">መዝሙር</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="label-amharic">የሰልጣኝ ሁኔታ</label>
+                                            <select
+                                                name="traineeType"
+                                                value={formData.traineeType}
+                                                onChange={handleInputChange}
+                                                className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="">ምረጥ...</option>
+                                                <option value="Regular">መደበኛ (Regular)</option>
+                                                <option value="Short-term">አጭር ጊዜ (Short-term)</option>
+                                                <option value="Seminar">ሴሚናር (Seminar)</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
@@ -589,11 +674,68 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                         </div>
                                         <div>
                                             <label className="label-amharic">በግቢ ጉባኤው አባል የሆኑበት ዓ.ም</label>
-                                            <input name="membershipYear" value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <input name="membershipYear" type="number" min="2000" max={currentEthYear} value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
                                         <div>
                                             <label className="label-amharic">የሚመረቁበት ዓ/ም</label>
-                                            <input name="graduationYear" value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                            <input name="graduationYear" type="number" min={currentEthYear} value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-4">ተሳትፎ እና ክትትል</h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
+                                            {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
+                                                <div key={year} className="space-y-2">
+                                                    <label className="text-xs font-bold text-gray-500 uppercase block">{idx + 1}ኛ ተሳትፎ</label>
+                                                    <input
+                                                        name={`participation-${year}`}
+                                                        value={formData.participation[year]}
+                                                        onChange={handleInputChange}
+                                                        className="w-full text-xs font-bold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1"
+                                                        placeholder="-"
+                                                    />
+                                                    <label className="text-xs font-bold text-gray-500 uppercase block">{idx + 1}ኛ ክትትል</label>
+                                                    <input
+                                                        name={`attendance-${year}`}
+                                                        value={formData.attendance[year]}
+                                                        onChange={handleInputChange}
+                                                        className="w-full text-xs font-bold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1"
+                                                        placeholder="-"
+                                                    />
+                                                    <label className="text-xs font-bold text-gray-500 uppercase block">{idx + 1}ኛ ትምህርት</label>
+                                                    <input
+                                                        name={`educationYearly-${year}`}
+                                                        value={formData.educationYearly[year]}
+                                                        onChange={handleInputChange}
+                                                        className="w-full text-xs font-bold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1"
+                                                        placeholder="-"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="label-amharic">የአብነት ትምህርት</label>
+                                            <input name="abinetEducation" value={formData.abinetEducation} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2" />
+                                        </div>
+                                        <div>
+                                            <label className="label-amharic">ልዩ ፍላጎት</label>
+                                            <input name="specialNeed" value={formData.specialNeed} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2" />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="label-amharic">ተጨማሪ መረጃ</label>
+                                            <textarea name="additionalInfo" value={formData.additionalInfo} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2" rows={3} />
+                                        </div>
+                                        <div>
+                                            <label className="label-amharic">መረጃውን የሞላው</label>
+                                            <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2" />
+                                        </div>
+                                        <div>
+                                            <label className="label-amharic">መረጃውን ያረጋገጠው</label>
+                                            <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2" />
                                         </div>
                                     </div>
                                 </div>
