@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { query } = require('./config/db');
+const initDb = require('./utils/initDb');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/students', require('./routes/students'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/activity', require('./routes/activity'));
+app.use('/api/users', require('./routes/users'));
 
 // Basic Route
 app.get('/', (req, res) => {
@@ -24,6 +26,9 @@ app.get('/', (req, res) => {
 // Start Server
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
+
+    // Initialize/Update Database Schema
+    await initDb();
 
     // Test DB connection
     try {
