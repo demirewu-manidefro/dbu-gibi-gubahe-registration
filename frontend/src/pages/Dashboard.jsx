@@ -145,47 +145,11 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <Clock className="text-blue-600" size={20} /> Recent Registration Activity
-                        </h2>
-                        <button className="text-sm font-bold text-blue-600 flex items-center gap-1 hover:underline">
-                            View All Activity <ChevronRight size={16} />
-                        </button>
-                    </div>
-
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-premium overflow-hidden">
-                        <div className="divide-y divide-gray-50">
-                            {filteredLogs.map((log) => (
-                                <div key={log.id} className="p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 text-xs font-bold text-blue-600">
-                                            {log.admin.split(' ').map(n => n[0]).join('')}
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-gray-900">
-                                                {log.admin} registered <span className="text-blue-600">{log.student}</span>
-                                            </div>
-                                            <div className="text-xs text-gray-400 font-medium">
-                                                {formatEthiopianDateAmharic(log.time)} • {new Date(log.time).toLocaleTimeString()} • {log.type}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-green-500 bg-green-50 px-2 py-1 rounded-md border border-green-100">
-                                        {log.status}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="space-y-6">
+                <div className="lg:col-span-3 space-y-6">
                     <h2 className="text-xl font-bold flex items-center gap-2">
                         <Calendar className="text-blue-400" size={20} /> Upcoming Events
                     </h2>
-                    <div className="bg-blue-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[400px]">
+                    <div className="bg-blue-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[300px]">
                         <div className="absolute top-0 right-0 p-10 opacity-10">
                             <Church size={120} />
                         </div>
@@ -196,7 +160,7 @@ const Dashboard = () => {
                                 <p className="text-white/60 text-sm leading-relaxed">Please ensure all 1st year students are registered before the fasting season starts.</p>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
                                     <div className="bg-blue-400 p-2 rounded-xl text-blue-900">
                                         <Users size={18} />
@@ -217,7 +181,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full py-3 bg-white text-blue-900 rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
+                            <button className="py-3 px-8 bg-white text-blue-900 rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
                                 + Add Schedule
                             </button>
                         </div>
