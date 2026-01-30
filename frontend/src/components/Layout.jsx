@@ -199,9 +199,29 @@ const Layout = ({ children }) => {
                     <div className="flex items-center gap-4 relative">
                         {(() => {
                             const username = user?.username;
-                            const userNotifications = notifications.filter(n =>
-                                isManager || n.target === 'all' || n.target === username || n.target === user?.section
-                            );
+                            const userNotifications = notifications.filter(n => {
+                                // 1. Students: Never see registration or administrative activity notifications
+                                if (isStudent) {
+                                    if (n.type === 'registration' || ['approval', 'decline', 'admin_created', 'bulk_import', 'student_deleted', 'student_updated'].includes(n.type)) {
+                                        return false;
+                                    }
+                                    return n.target === 'all' || n.target === username;
+                                }
+
+                                // 2. Managers (Super Manager): See everything for control
+                                if (isManager) {
+                                    return true;
+                                }
+
+                                // 3. Admin / Section Leaders: See targeted notifications for their section, but NOT approvals
+                                if (user?.role === 'admin') {
+                                    // Rule: "when the section admin aproved... the notifcation send to super manager... not in section admin"
+                                    if (n.type === 'approval') return false;
+                                    return n.target === 'all' || n.target === username || n.target === user?.section;
+                                }
+
+                                return n.target === 'all' || n.target === username;
+                            });
                             const unreadCount = userNotifications.filter(n => !n.readBy.includes(username)).length;
                             return (
                                 <>
