@@ -63,7 +63,7 @@ exports.registerStudent = async (req, res) => {
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section', 'trainee_type',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
-            'filled_by', 'status', 'photo_url', 'user_id'
+            'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
 
         let ownerUserId = req.user ? req.user.id : null;
@@ -127,6 +127,7 @@ exports.registerStudent = async (req, res) => {
             studentData.other_trainings || studentData.otherTrainings,
             studentData.additional_info || studentData.additionalInfo,
             studentData.filled_by || studentData.filledBy || fullName,
+            studentData.verified_by || studentData.verifiedBy,
             studentData.status || 'Pending',
             studentData.photo_url || studentData.photoUrl,
             ownerUserId
@@ -229,7 +230,7 @@ exports.approveStudent = async (req, res) => {
             return res.status(403).json({ message: 'You are not authorized to approve students for this section' });
         }
 
-        await query("UPDATE students SET status = 'Student' WHERE id = $1", [id]);
+        await query("UPDATE students SET status = 'Student', verified_by = $1 WHERE id = $2", [req.user.name, id]);
         res.json({ message: 'Student approved successfully' });
     } catch (err) {
         console.error(err.message);
