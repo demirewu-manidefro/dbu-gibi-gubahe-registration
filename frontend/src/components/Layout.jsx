@@ -149,13 +149,17 @@ const Layout = ({ children }) => {
 
                 <div className="p-4 border-t border-white/10 space-y-4">
                     <div className={`flex items-center gap-3 p-2 ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}>
-                        <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold flex-shrink-0">
-                            {(user?.name || 'U').charAt(0)}
+                        <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold flex-shrink-0 overflow-hidden shadow-inner border-2 border-white/20">
+                            {user?.photo_url || user?.photoUrl ? (
+                                <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-lg lowercase">{(user?.name || 'U').charAt(0)}</span>
+                            )}
                         </div>
                         {(!isMobile && !sidebarOpen) ? null : (
                             <div className="overflow-hidden">
-                                <div className="font-semibold truncate text-sm max-w-[140px]">{user?.name || 'User'}</div>
-                                <div className="text-xs text-gray-400 capitalize">{user?.role}</div>
+                                <div className="font-bold truncate text-sm max-w-[140px] tracking-tight lowercase">{user?.name || 'User'}</div>
+                                <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">{user?.role}</div>
                             </div>
                         )}
                     </div>
@@ -307,11 +311,15 @@ const Layout = ({ children }) => {
                             );
                         })()}
                         <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
-                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 rounded-full border border-gray-100">
-                            <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                {(user?.name || 'U').charAt(0)}
+                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 rounded-full border border-gray-100 transition-colors">
+                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
+                                {user?.photo_url || user?.photoUrl ? (
+                                    <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="lowercase">{(user?.name || 'U').charAt(0)}</span>
+                                )}
                             </div>
-                            <span className="text-sm font-medium hidden sm:inline">{(user?.name || 'User').split(' ')[0]}</span>
+                            <span className="text-sm font-bold text-gray-700 hidden sm:inline">{(user?.name || 'User').split(' ')[0]}</span>
                         </button>
                     </div>
                 </header>
