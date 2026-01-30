@@ -35,7 +35,7 @@ const ethiopianRegions = {
 
 
 
-const RegistrationForm = () => {
+const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const { registerStudent, user } = useAuth(); // Add user
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
@@ -43,7 +43,7 @@ const RegistrationForm = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState('');
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState(initialData || {
         // Tab 1: Basic Info
         studentId: '',
         fullName: '',
@@ -99,9 +99,9 @@ const RegistrationForm = () => {
         submissionDate: ''
     });
 
-    // Populate data if student is logged in
+    // Populate data if student is logged in and not in edit mode
     useEffect(() => {
-        if (user && user.role === 'student') {
+        if (user && user.role === 'student' && !initialData) {
             const isDefaultId = user.student_id === user.username;
             const isDefaultName = user.name === 'N/A' || user.name === 'New Student' || user.name === user.username;
 
@@ -109,15 +109,31 @@ const RegistrationForm = () => {
                 ...prev,
                 studentId: isDefaultId ? '' : (user.student_id || ''),
                 fullName: isDefaultName ? '' : (user.name || ''),
-
-                department: user.dept || '',
-                batch: user.year || '',
-                serviceSection: user.section || '',
-                sex: user.sex || '',
+                baptismalName: user.baptismal_name || '',
+                sex: user.gender || user.sex || '',
                 phone: user.phone || '',
+                birthYear: user.birth_date ? String(new Date(user.birth_date).getFullYear()) : '',
+                department: user.department || user.dept || '',
+                batch: user.batch || user.year || '',
+                serviceSection: user.service_section || user.section || '',
+                region: user.region || '',
+                zone: user.zone || '',
+                woreda: user.woreda || '',
+                kebele: user.kebele || '',
+                gibiName: user.gibi_name || '',
+                centerAndWoredaCenter: user.center_and_woreda || '',
+                parishChurch: user.parish_church || '',
+                emergencyName: user.emergency_name || '',
+                emergencyPhone: user.emergency_phone || '',
+                priesthoodRank: user.priesthood_rank || '',
+                motherTongue: user.mother_tongue || '',
+                specialEducation: user.special_education || '',
+                specialPlace: user.special_place || '',
+                membershipYear: user.membership_year || '',
+                graduationYear: user.graduation_year || '',
             }));
         }
-    }, [user]);
+    }, [user, initialData]);
 
     // Auto-calculate age
     useEffect(() => {
@@ -222,17 +238,27 @@ const RegistrationForm = () => {
             setShowSuccess(true);
             setTimeout(() => {
                 setShowSuccess(false);
-                navigate('/students');
+                if (onComplete) {
+                    onComplete(finalData);
+                } else {
+                    navigate('/students');
+                }
             }, 2000);
         }, 1500);
     };
+
+    const isEditingMode = !!initialData;
 
     return (
         <div className="max-w-5xl mx-auto pb-20">
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{user?.role === 'student' ? 'የግል መረጃ ማስተካከያ' : 'የተማሪዎች ምዝገባ'}</h1>
-                    <p className="text-gray-500 font-medium">{user?.role === 'student' ? 'እባክዎ መረጃዎን በትክክል ይሙሉ' : 'የተማሪ ምዝገባ ማውጫ'}</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {isEditingMode ? 'የተማሪ መረጃ ማስተካከያ' : (user?.role === 'student' ? 'የግል መረጃ ማስተካከያ' : 'የተማሪዎች ምዝገባ')}
+                    </h1>
+                    <p className="text-gray-500 font-medium">
+                        {isEditingMode ? 'መረጃውን በትክክል ያሻሽሉ' : (user?.role === 'student' ? 'እባክዎ መረጃዎን በትክክል ይሙሉ' : 'የተማሪ ምዝገባ ማውጫ')}
+                    </p>
                 </div>
                 <div className="flex gap-2">
                     {tabs.map((tab) => (

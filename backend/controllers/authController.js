@@ -59,9 +59,10 @@ exports.login = async (req, res) => {
         }
 
         // Fetch additional profile data if student
+        // Fetch all student details for the user object if student
         let profileData = {};
         if (user.role === 'student') {
-            const { rows: studentRows } = await query('SELECT full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
+            const { rows: studentRows } = await query('SELECT *, full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
             if (studentRows[0]) {
                 profileData = studentRows[0];
             }
@@ -74,7 +75,11 @@ exports.login = async (req, res) => {
                 username: user.username,
                 role: user.role,
                 name: profileData.name || user.name,
-                section: user.section || profileData.section
+                section: user.section || profileData.section,
+                student_id: profileData.student_id,
+                mustChangePassword: user.must_change_password || false,
+                ...profileData,
+                id: user.id // Ensure integer user ID is not overwritten
             }
         };
 
@@ -105,19 +110,19 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
     try {
-        const { rows } = await query('SELECT id, username, name, role, section, status FROM users WHERE id = $1', [req.user.id]);
+        const { rows } = await query('SELECT id, username, name, role, section, status, must_change_password FROM users WHERE id = $1', [req.user.id]);
         const user = rows[0];
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         if (user.role === 'student') {
-            const { rows: studentRows } = await query('SELECT full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
+            const { rows: studentRows } = await query('SELECT *, full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
             if (studentRows[0]) {
-                return res.json({ ...user, ...studentRows[0] });
+                return res.json({ ...user, ...studentRows[0], mustChangePassword: user.must_change_password || false });
             }
         }
 
-        return res.json(user);
+        return res.json({ ...user, mustChangePassword: user.must_change_password || false });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
