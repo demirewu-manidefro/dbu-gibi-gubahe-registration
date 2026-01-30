@@ -76,37 +76,59 @@ exports.registerStudent = async (req, res) => {
         const values = [
             studentId,
             fullName,
-            studentData.gender,
+            studentData.gender || studentData.sex,
             studentData.age,
-            studentData.birthDate,
-            studentData.baptismalName,
-            studentData.priesthoodRank,
-            studentData.motherTongue,
-            studentData.otherLanguages,
+            (() => {
+                const bd = studentData.birth_date || studentData.birthDate || studentData.birthYear;
+                if (!bd) return null;
+                if (/^\d{4}$/.test(String(bd))) return `${bd}-01-01`; // Handle year-only
+                return bd;
+            })(),
+            studentData.baptismal_name || studentData.baptismalName,
+            studentData.priesthood_rank || studentData.priesthoodRank,
+            studentData.mother_tongue || studentData.motherTongue,
+            studentData.other_languages || studentData.otherLanguages,
             studentData.region,
             studentData.zone,
             studentData.woreda,
             studentData.kebele,
             studentData.phone,
-            studentData.gibiName,
-            studentData.centerAndWoreda || studentData.center_and_woreda,
-            studentData.parishChurch || studentData.parish_church,
-            studentData.emergencyName || studentData.emergency_name,
-            studentData.emergencyPhone || studentData.emergency_phone,
+            studentData.gibi_name || studentData.gibiName,
+            studentData.center_and_woreda || studentData.centerAndWoreda || studentData.centerAndWoredaCenter,
+            studentData.parish_church || studentData.parishChurch,
+            studentData.emergency_name || studentData.emergencyName,
+            studentData.emergency_phone || studentData.emergencyPhone,
             studentData.department || studentData.dept,
             studentData.batch || studentData.year,
-            studentData.schoolInfo ? JSON.stringify(studentData.schoolInfo) : null,
-            studentData.isGraduated ?? studentData.is_graduated ?? false,
-            studentData.graduationYear || studentData.graduation_year,
-            studentData.serviceSection || studentData.service_section,
-            studentData.traineeType || studentData.trainee_type,
-            studentData.teacherTraining ? JSON.stringify(studentData.teacherTraining) : null,
-            studentData.leadershipTraining ? JSON.stringify(studentData.leadershipTraining) : null,
-            studentData.otherTrainings || studentData.other_trainings,
-            studentData.additionalInfo || studentData.additional_info,
-            studentData.filledBy || studentData.filled_by || fullName,
+            (() => {
+                const info = studentData.school_info || studentData.schoolInfo || {};
+                // If it's a string, try to parse it
+                let schoolObj = typeof info === 'string' ? JSON.parse(info) : { ...info };
+
+                // Collect individual fields if not in the object
+                if (!schoolObj.gpa && studentData.gpa) schoolObj.gpa = studentData.gpa;
+                if (!schoolObj.participation && studentData.participation) schoolObj.participation = studentData.participation;
+                if (!schoolObj.specialEducation && studentData.specialEducation) schoolObj.specialEducation = studentData.specialEducation;
+                if (!schoolObj.specialPlace && studentData.specialPlace) schoolObj.specialPlace = studentData.specialPlace;
+                if (!schoolObj.attendance && studentData.attendance) schoolObj.attendance = studentData.attendance;
+                if (!schoolObj.educationYearly && studentData.educationYearly) schoolObj.educationYearly = studentData.educationYearly;
+                if (!schoolObj.abinetEducation && studentData.abinetEducation) schoolObj.abinetEducation = studentData.abinetEducation;
+                if (!schoolObj.specialNeed && studentData.specialNeed) schoolObj.specialNeed = studentData.specialNeed;
+                if (!schoolObj.cumulativeGPA && studentData.cumulativeGPA) schoolObj.cumulativeGPA = studentData.cumulativeGPA;
+
+                return JSON.stringify(schoolObj);
+            })(),
+            studentData.is_graduated ?? studentData.isGraduated ?? false,
+            studentData.graduation_year || studentData.graduationYear,
+            studentData.service_section || studentData.serviceSection || studentData.section,
+            studentData.trainee_type || studentData.traineeType,
+            studentData.teacher_training || studentData.teacherTraining ? JSON.stringify(studentData.teacher_training || studentData.teacherTraining) : null,
+            studentData.leadership_training || studentData.leadershipTraining ? JSON.stringify(studentData.leadership_training || studentData.leadershipTraining) : null,
+            studentData.other_trainings || studentData.otherTrainings,
+            studentData.additional_info || studentData.additionalInfo,
+            studentData.filled_by || studentData.filledBy || fullName,
             studentData.status || 'Pending',
-            studentData.photoUrl || studentData.photo_url,
+            studentData.photo_url || studentData.photoUrl,
             ownerUserId
         ];
 
@@ -136,18 +158,40 @@ exports.updateStudent = async (req, res) => {
 
     try {
 
-        const fields = Object.keys(updates);
+        // Pre-process updates for field names and values
+        const processedUpdates = {};
+        for (const [key, value] of Object.entries(updates)) {
+            let k = key;
+            let v = value;
+
+            // Map common camelCase to snake_case if they happen to come through
+            if (k === 'birthYear' || k === 'birthDate') k = 'birth_date';
+            if (k === 'fullName') k = 'full_name';
+            if (k === 'gender') k = 'gender';
+            if (k === 'traineeType') k = 'trainee_type';
+            if (k === 'studentId') k = 'id';
+            if (k === 'photoUrl') k = 'photo_url';
+            if (k === 'schoolInfo') k = 'school_info';
+            if (k === 'serviceSection' || k === 'section') k = 'service_section';
+
+            // Special handling for birth_date if it's just a year
+            if (k === 'birth_date' && v && /^\d{4}$/.test(String(v))) {
+                v = `${v}-01-01`;
+            }
+
+            // Stringify objects
+            if (typeof v === 'object' && v !== null) {
+                v = JSON.stringify(v);
+            }
+
+            processedUpdates[k] = v;
+        }
+
+        const fields = Object.keys(processedUpdates);
         if (fields.length === 0) return res.status(400).json({ message: 'No fields to update' });
 
         const setClause = fields.map((field, i) => `${field} = $${i + 2}`).join(', ');
-        const values = [id, ...Object.values(updates)];
-
-        // Special handling for JSON fields if they come as objects
-        for (let i = 1; i < values.length; i++) {
-            if (typeof values[i] === 'object' && values[i] !== null) {
-                values[i] = JSON.stringify(values[i]);
-            }
-        }
+        const values = [id, ...Object.values(processedUpdates)];
 
         const sql = `UPDATE students SET ${setClause} WHERE id = $1 RETURNING *`;
         const { rows } = await query(sql, values);
