@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) NOT NULL, -- 'admin', 'manager', 'student'
     section VARCHAR(50),
     status VARCHAR(20) DEFAULT 'active',
+    must_change_password BOOLEAN DEFAULT FALSE,
     last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
