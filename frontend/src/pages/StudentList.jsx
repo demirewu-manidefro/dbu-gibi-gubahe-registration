@@ -13,16 +13,17 @@ import {
     Upload,
     Key
 } from 'lucide-react';
+import EditStudentModal from '../components/EditStudentModal';
 
 const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent, importStudents } = useAuth();
+    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [editData, setEditData] = useState(null);
+    const [isViewing, setIsViewing] = useState(false);
 
     const safeStudents = students || [];
 
@@ -40,31 +41,24 @@ const StudentList = () => {
 
     const openView = (student) => {
         setSelectedStudent(student);
+        setIsViewing(true);
         setIsEditing(false);
-        setEditData(null);
     };
 
     const openEdit = (student) => {
         setSelectedStudent(student);
         setIsEditing(true);
-        setEditData({
-            name: student.name,
-            dept: student.dept,
-            year: student.year,
-            section: student.section,
-            status: student.status
-        });
+        setIsViewing(false);
     };
 
     const closeModal = () => {
         setSelectedStudent(null);
         setIsEditing(false);
-        setEditData(null);
+        setIsViewing(false);
     };
 
-    const handleSave = () => {
-        if (!selectedStudent || !editData) return;
-        updateStudent(selectedStudent.id, editData);
+    const handleSave = (updatedData) => {
+        // Data is already saved by EditStudentModal
         closeModal();
     };
 
@@ -337,9 +331,14 @@ const StudentList = () => {
                                 Cancel
                             </button>
                             <button
-                                onClick={() => {
-                                    alert(`Password reset for ${activeModal.replace('password-', '')} (stub function)`);
-                                    setActiveModal(null);
+                                onClick={async () => {
+                                    try {
+                                        const message = await resetPassword(activeModal.replace('password-', ''));
+                                        alert(message);
+                                        setActiveModal(null);
+                                    } catch (err) {
+                                        alert(err.message || 'Failed to reset password');
+                                    }
                                 }}
                                 className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg"
                             >
@@ -350,7 +349,17 @@ const StudentList = () => {
                 </div>
             )}
 
-            {selectedStudent && (
+            {/* Edit Modal - Full Registration Form */}
+            {isEditing && selectedStudent && (
+                <EditStudentModal
+                    student={selectedStudent}
+                    onClose={closeModal}
+                    onSave={handleSave}
+                />
+            )}
+
+            {/* View Modal - Quick View */}
+            {isViewing && selectedStudent && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -364,116 +373,49 @@ const StudentList = () => {
                         </div>
 
                         <div className="p-6 space-y-4">
-                            {isEditing ? (
-                                <div className="space-y-4">
+                            <div className="space-y-3">
+                                <div className="text-xl font-bold text-gray-900">{selectedStudent.name}</div>
+                                <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
-                                        <input
-                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
-                                            value={editData.name}
-                                            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                        />
+                                        <div className="text-xs text-gray-500 uppercase font-bold">Academic</div>
+                                        <div className="text-sm text-gray-600">Department: {selectedStudent.dept}</div>
+                                        <div className="text-sm text-gray-600">Year: {selectedStudent.year}</div>
+                                        <div className="text-sm text-gray-600">Status: {selectedStudent.status}</div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Department</label>
-                                        <input
-                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
-                                            value={editData.dept}
-                                            onChange={(e) => setEditData({ ...editData, dept: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Year</label>
-                                            <input
-                                                className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
-                                                value={editData.year}
-                                                onChange={(e) => setEditData({ ...editData, year: e.target.value })}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Status</label>
-                                            <select
-                                                className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
-                                                value={editData.status}
-                                                onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                                            >
-                                                <option value="Student">Student</option>
-                                                <option value="Graduated">Graduated</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Section</label>
-                                        <select
-                                            className="mt-1 w-full bg-gray-50 border-gray-200 rounded-xl"
-                                            value={editData.section}
-                                            onChange={(e) => setEditData({ ...editData, section: e.target.value })}
-                                        >
-                                            <option value="እቅድ">እቅድ</option>
-                                            <option value="ትምህርት">ትምህርት</option>
-                                            <option value="ልማት">ልማት</option>
-                                            <option value="ባች">ባች</option>
-                                            <option value="ሙያ">ሙያ</option>
-                                            <option value="ቋንቋ">ቋንቋ</option>
-                                            <option value="አባላት">አባላት</option>
-                                            <option value="ኦዲት">ኦዲት</option>
-                                            <option value="ሂሳብ">ሂሳብ</option>
-                                            <option value="መዝሙር">መዝሙር</option>
-                                        </select>
+                                        <div className="text-xs text-gray-500 uppercase font-bold">Contact</div>
+                                        <div className="text-sm text-gray-600">Phone: {selectedStudent.phone || '-'}</div>
+                                        <div className="text-sm text-gray-600">Region: {selectedStudent.region || '-'}</div>
+                                        <div className="text-sm text-gray-600">Zone: {selectedStudent.zone || '-'}</div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    <div className="text-xl font-bold text-gray-900">{selectedStudent.name}</div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <div className="text-xs text-gray-500 uppercase font-bold">Academic</div>
-                                            <div className="text-sm text-gray-600">Department: {selectedStudent.dept}</div>
-                                            <div className="text-sm text-gray-600">Year: {selectedStudent.year}</div>
-                                            <div className="text-sm text-gray-600">Status: {selectedStudent.status}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-500 uppercase font-bold">Contact</div>
-                                            <div className="text-sm text-gray-600">Phone: {selectedStudent.phone || '-'}</div>
-                                            <div className="text-sm text-gray-600">Region: {selectedStudent.region || '-'}</div>
-                                            <div className="text-sm text-gray-600">Zone: {selectedStudent.zone || '-'}</div>
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <div className="text-xs text-gray-500 uppercase font-bold mt-2">Spiritual</div>
-                                        <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
-                                        <div className="text-sm text-gray-600">
-                                            Courses: {selectedStudent.courses ? (
-                                                [
-                                                    selectedStudent.courses.level1 && 'Level 1',
-                                                    selectedStudent.courses.level2 && 'Level 2'
-                                                ].filter(Boolean).join(', ') || 'None'
-                                            ) : '-'}
-                                        </div>
-                                        <div className="text-sm text-gray-600">Graduation Year: {selectedStudent.graduationYear || '-'}</div>
+                                <div>
+                                    <div className="text-xs text-gray-500 uppercase font-bold mt-2">Spiritual</div>
+                                    <div className="text-sm text-gray-600">Section: {selectedStudent.section}</div>
+                                    <div className="text-sm text-gray-600">
+                                        Courses: {selectedStudent.courses ? (
+                                            [
+                                                selectedStudent.courses.level1 && 'Level 1',
+                                                selectedStudent.courses.level2 && 'Level 2'
+                                            ].filter(Boolean).join(', ') || 'None'
+                                        ) : '-'}
                                     </div>
+                                    <div className="text-sm text-gray-600">Graduation Year: {selectedStudent.graduationYear || '-'}</div>
                                 </div>
-                            )}
+                            </div>
                         </div>
 
                         <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2">
-                            {isEditing ? (
-                                <button
-                                    onClick={handleSave}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-xl font-bold"
-                                >
-                                    <Save size={16} /> Save
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => openEdit(selectedStudent)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-bold"
-                                >
-                                    <Edit size={16} /> Edit
-                                </button>
-                            )}
+                            <button
+                                onClick={() => {
+                                    setIsViewing(false);
+                                    openEdit(selectedStudent);
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700"
+                            >
+                                <Edit size={16} /> Edit
+                            </button>
                             <button
                                 onClick={closeModal}
                                 className="px-4 py-2 rounded-xl font-bold text-gray-500 hover:bg-gray-100"
