@@ -14,6 +14,45 @@ export const AuthProvider = ({ children }) => {
         }
     });
 
+    // Validate session on mount
+    useEffect(() => {
+        const validateSession = async () => {
+            const token = localStorage.getItem('token');
+
+            // If we have a user in state but no token, logout immediately
+            if (!token && user) {
+                logout();
+                return;
+            }
+
+            if (token) {
+                try {
+                    const res = await fetch(`${API_BASE_URL}/auth/me`, {
+                        headers: { 'x-auth-token': token }
+                    });
+
+                    if (!res.ok) {
+                        console.warn('Session invalid, logging out');
+                        logout();
+                    } else {
+                        // Update user data from server to ensure sync
+                        const userData = await res.json();
+                        // Only update if necessary to avoid potential render loops if objects differ slightly
+                        // (Simple check: if we have no user, or ID differs)
+                        if (!user || user.id !== userData.id) {
+                            setUser(userData);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Session validation error:', err);
+                }
+            }
+        };
+
+        validateSession();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         if (user) {
             localStorage.setItem('user', JSON.stringify(user));
