@@ -11,12 +11,13 @@ import {
     X,
     Save,
     Upload,
-    Key
+    Key,
+    CheckCircle
 } from 'lucide-react';
 import EditStudentModal from '../components/EditStudentModal';
 
 const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword } = useAuth();
+    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
@@ -637,6 +638,19 @@ const StudentList = () => {
                                         </td>
                                         <td className="px-8 py-5 text-right">
                                             <div className="flex items-center justify-end gap-1">
+                                                {user?.role === 'admin' && student.status === 'Pending' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (window.confirm(`Are you sure you want to approve ${student.name}?`)) {
+                                                                approveStudent(student.id);
+                                                            }
+                                                        }}
+                                                        className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                                                        title="Approve Student"
+                                                    >
+                                                        <CheckCircle size={18} />
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => openView(student)}
                                                     className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
