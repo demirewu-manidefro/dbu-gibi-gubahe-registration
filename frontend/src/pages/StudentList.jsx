@@ -35,55 +35,74 @@ const StudentList = () => {
             if (typeof val === 'string') {
                 try { return JSON.parse(val); } catch (e) { return val; }
             }
-            return val || {};
+            if (typeof val === 'object' && val !== null) return val;
+            return {};
         };
 
-        let schoolInfo = parse(s.schoolInfo || s.school_info);
-        let otherLanguages = parse(s.otherLanguages || s.other_languages);
-        let teacherTraining = parse(s.teacherTraining || s.teacher_training);
-        let leadershipTraining = parse(s.leadershipTraining || s.leadership_training);
+        let schoolInfo = parse(s.school_info || s.schoolInfo);
+        let otherLanguages = parse(s.other_languages || s.otherLanguages);
+        let teacherTraining = parse(s.teacher_training || s.teacherTraining);
+        let leadershipTraining = parse(s.leadership_training || s.leadershipTraining);
         let participation = parse(s.participation || schoolInfo.participation);
-        let gpa = s.gpa || schoolInfo.gpa;
+        let attendance = parse(s.attendance || schoolInfo.attendance);
+        let educationYearly = parse(s.educationYearly || schoolInfo.educationYearly);
+        let gpa = s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
+
+        // Handle birthYear extraction from birth_date if needed
+        let birthYear = s.birthYear || s.birth_year;
+        if (!birthYear && s.birth_date) {
+            const date = new Date(s.birth_date);
+            if (!isNaN(date.getTime())) {
+                birthYear = date.getFullYear();
+            } else {
+                birthYear = s.birth_date; // fallback if it's already a year string
+            }
+        }
 
         return {
             ...s,
-            id: s.studentId || s.student_id || s.id,
-            name: s.fullName || s.full_name || s.name,
-            sex: s.sex || s.gender,
+            id: s.id || s.student_id || s.studentId,
+            name: s.full_name || s.fullName || s.name,
+            sex: s.gender || s.sex,
             age: s.age,
-            birthYear: s.birthYear || s.birth_year || s.birth_date || s.birthDate,
-            baptismalName: s.baptismalName || s.baptismal_name,
-            priesthoodRank: s.priesthoodRank || s.priesthood_rank,
-            motherTongue: s.motherTongue || s.mother_tongue,
+            birthYear: birthYear,
+            baptismalName: s.baptismal_name || s.baptismalName,
+            priesthoodRank: s.priesthood_rank || s.priesthoodRank,
+            motherTongue: s.mother_tongue || s.motherTongue,
             otherLanguages: otherLanguages,
             region: s.region,
             zone: s.zone,
             woreda: s.woreda,
             kebele: s.kebele,
             phone: s.phone,
-            centerAndWoredaCenter: s.centerAndWoredaCenter || s.center_and_woreda,
-            gibiName: s.gibiName || s.gibi_name,
-            emergencyName: s.emergencyName || s.emergency_name,
-            emergencyPhone: s.emergencyPhone || s.emergency_phone,
-            parishChurch: s.parishChurch || s.parish_church,
-            section: s.section || s.service_section,
-            specialEducation: s.specialEducation || s.special_education || schoolInfo.specialEducation || schoolInfo.special_education,
-            specialPlace: s.specialPlace || s.special_place || schoolInfo.specialPlace || schoolInfo.special_place,
-            dept: s.dept || s.department,
-            year: s.year || s.batch,
-            graduationYear: s.graduationYear || s.graduation_year,
-            cumulativeGPA: s.cumulativeGPA || s.cumulative_gpa,
-            membershipYear: s.membershipYear || s.membership_year,
-            photoUrl: s.photoUrl || s.photo_url,
+            centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoredaCenter,
+            gibiName: s.gibi_name || s.gibiName,
+            emergencyName: s.emergency_name || s.emergencyName,
+            emergencyPhone: s.emergency_phone || s.emergencyPhone,
+            parishChurch: s.parish_church || s.parishChurch,
+            section: s.service_section || s.section,
+            specialEducation: s.special_education || s.specialEducation || schoolInfo.specialEducation,
+            specialPlace: s.special_place || s.specialPlace || schoolInfo.specialPlace,
+            dept: s.department || s.dept,
+            year: s.batch || s.year,
+            graduationYear: s.graduation_year || s.graduationYear,
+            cumulativeGPA: s.cumulative_gpa || s.cumulativeGPA || schoolInfo.cumulativeGPA,
+            membershipYear: s.membership_year || s.membershipYear,
+            photoUrl: s.photo_url || s.photoUrl,
+            traineeType: s.trainee_type || s.traineeType,
             gpa: gpa,
             participation: participation,
             teacherTraining: teacherTraining,
             leadershipTraining: leadershipTraining,
-            otherTrainings: s.otherTrainings || s.other_trainings,
-            additionalInfo: s.additionalInfo || s.additional_info,
-            filledBy: s.filledBy || s.filled_by,
-            verifiedBy: s.verifiedBy || s.verified_by,
-            submissionDate: s.submissionDate || s.created_at
+            otherTrainings: s.other_trainings || s.otherTrainings,
+            additionalInfo: s.additional_info || s.additionalInfo,
+            filledBy: s.filled_by || s.filledBy,
+            verifiedBy: s.verified_by || s.verifiedBy,
+            submissionDate: s.created_at || s.submissionDate,
+            attendance: attendance,
+            educationYearly: educationYearly,
+            abinetEducation: s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation,
+            specialNeed: s.special_need || s.specialNeed || schoolInfo.specialNeed,
         };
     };
 
@@ -173,6 +192,8 @@ const StudentList = () => {
 
         const p = s.participation || {}; // Safe access
         const g = s.gpa || {};
+        const att = s.attendance || {};
+        const edu = s.educationYearly || {};
 
         return [
             index + 1,
@@ -213,19 +234,19 @@ const StudentList = () => {
             r(s.membershipYear),
             r(s.graduationYear),
 
-            // Follow Up (Indexes 41-46) - Placeholder as no data source yet
-            r(''), r(''), r(''), r(''), r(''), r(''),
+            // Follow Up (Indexes 41-46)
+            q(att.y1), q(att.y2), q(att.y3), q(att.y4), q(att.y5), q(att.y6),
 
             q(s.photoUrl),
 
-            // Education (Indexes 48-53) - Placeholder as no data source yet
-            r(''), r(''), r(''), r(''), r(''), r(''),
+            // Education (Indexes 48-53)
+            q(edu.y1), q(edu.y2), q(edu.y3), q(edu.y4), q(edu.y5), q(edu.y6),
 
             q(s.teacherTraining?.level1), q(s.teacherTraining?.level2), q(s.teacherTraining?.level3),
             q(s.leadershipTraining?.level1), q(s.leadershipTraining?.level2), q(s.leadershipTraining?.level3),
             q(s.otherTrainings),
-            q(s.specialEducation), // Abnet (mapped to specialEducation as likely duplicate or user intent)
-            q(s.specialNeed), // Special Need
+            q(s.abinetEducation),
+            q(s.specialNeed),
             q(s.additionalInfo),
             q(s.filledBy),
             q(s.verifiedBy),
@@ -545,7 +566,13 @@ const StudentList = () => {
                                     {filteredStudents.map((student, idx) => (
                                         <tr key={student.id} className="hover:bg-gray-50">
                                             {getStudentCSVData(student, idx, false).map((val, i) => (
-                                                <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">{val}</td>
+                                                <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">
+                                                    {csvHeaders[i] === 'ፎቶ' && val && val !== '-' ? (
+                                                        <img src={val} alt="Student" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                                                    ) : (
+                                                        val
+                                                    )}
+                                                </td>
                                             ))}
                                         </tr>
                                     ))}
@@ -573,11 +600,11 @@ const StudentList = () => {
                                                     <img
                                                         src={student.photoUrl}
                                                         alt={student.name}
-                                                        className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                                                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-100 shadow-sm"
                                                     />
                                                 ) : (
-                                                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs text-center p-1">
-                                                        {(student.name || 'A').split(' ').map(n => n[0]).join('')}
+                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-sm shadow-sm lowercase">
+                                                        {(student.name || 'A').charAt(0)}
                                                     </div>
                                                 )}
                                                 <div>
