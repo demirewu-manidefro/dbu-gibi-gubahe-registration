@@ -135,6 +135,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 membershipYear: user.membership_year || '',
                 graduationYear: user.graduation_year || '',
             }));
+        } else if (user && (user.role === 'admin' || user.role === 'manager') && !initialData) {
+            // Auto-fill for admin/manager when adding a new student
+            setFormData(prev => ({
+                ...prev,
+                filledBy: user.name || '',
+                verifiedBy: user.name || '',
+                submissionDate: new Date().toISOString().split('T')[0]
+            }));
         }
     }, [user, initialData]);
 
