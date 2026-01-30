@@ -27,8 +27,68 @@ const StudentList = () => {
 
     const safeStudents = students || [];
 
+    const normalizeStudent = (s) => {
+        if (!s) return null;
+
+        // Helper to parse potential JSON strings
+        const parse = (val) => {
+            if (typeof val === 'string') {
+                try { return JSON.parse(val); } catch (e) { return val; }
+            }
+            return val || {};
+        };
+
+        let schoolInfo = parse(s.schoolInfo || s.school_info);
+        let otherLanguages = parse(s.otherLanguages || s.other_languages);
+        let teacherTraining = parse(s.teacherTraining || s.teacher_training);
+        let leadershipTraining = parse(s.leadershipTraining || s.leadership_training);
+        let participation = parse(s.participation || schoolInfo.participation);
+        let gpa = s.gpa || schoolInfo.gpa;
+
+        return {
+            ...s,
+            id: s.studentId || s.student_id || s.id,
+            name: s.fullName || s.full_name || s.name,
+            sex: s.sex || s.gender,
+            age: s.age,
+            birthYear: s.birthYear || s.birth_year || s.birth_date || s.birthDate,
+            baptismalName: s.baptismalName || s.baptismal_name,
+            priesthoodRank: s.priesthoodRank || s.priesthood_rank,
+            motherTongue: s.motherTongue || s.mother_tongue,
+            otherLanguages: otherLanguages,
+            region: s.region,
+            zone: s.zone,
+            woreda: s.woreda,
+            kebele: s.kebele,
+            phone: s.phone,
+            centerAndWoredaCenter: s.centerAndWoredaCenter || s.center_and_woreda,
+            gibiName: s.gibiName || s.gibi_name,
+            emergencyName: s.emergencyName || s.emergency_name,
+            emergencyPhone: s.emergencyPhone || s.emergency_phone,
+            parishChurch: s.parishChurch || s.parish_church,
+            section: s.section || s.service_section,
+            specialEducation: s.specialEducation || s.special_education || schoolInfo.specialEducation || schoolInfo.special_education,
+            specialPlace: s.specialPlace || s.special_place || schoolInfo.specialPlace || schoolInfo.special_place,
+            dept: s.dept || s.department,
+            year: s.year || s.batch,
+            graduationYear: s.graduationYear || s.graduation_year,
+            cumulativeGPA: s.cumulativeGPA || s.cumulative_gpa,
+            membershipYear: s.membershipYear || s.membership_year,
+            photoUrl: s.photoUrl || s.photo_url,
+            gpa: gpa,
+            participation: participation,
+            teacherTraining: teacherTraining,
+            leadershipTraining: leadershipTraining,
+            otherTrainings: s.otherTrainings || s.other_trainings,
+            additionalInfo: s.additionalInfo || s.additional_info,
+            filledBy: s.filledBy || s.filled_by,
+            verifiedBy: s.verifiedBy || s.verified_by,
+            submissionDate: s.submissionDate || s.created_at
+        };
+    };
+
     const filteredStudents = isStudent
-        ? safeStudents.filter(s => s.username === user?.username || s.id === user?.id)
+        ? [normalizeStudent(user)].filter(s => s && s.id)
         : safeStudents.filter(student =>
             (isManager
                 ? (filterSection === 'All' || student.section === filterSection)
@@ -69,110 +129,115 @@ const StudentList = () => {
 
     const [activeModal, setActiveModal] = useState(null);
 
-    const handleExport = () => {
-        const headers = [
-            'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
-            'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
-            'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ',
-            'ማእከለ እና ወረዳ ማእከል', 'የግቢ ጉባኤው ስም',
-            'የተጠሪ ስም', 'የተጠሪ ስልክ',
-            'አጥቢያ ቤተክርስቲያን', 'መንፈሳዊ ትምህርት ደረጃ', 'ልዩ ተሰጥኦ (CET)',
-            'የ1ኛ ዓመት ተሳትፎ', 'የ2ኛ ዓመት ተሳትፎ', 'የ3ኛ ዓመት ተሳትፎ',
-            'የ4ኛ ዓመት ተሳትፎ', 'የ5ኛ ዓመት ተሳትፎ', 'የ6ኛ ዓመት ተሳትፎ',
-            'የትምህርት ክፍል',
-            '1ኛ ዓመት GPA', '2ኛ ዓመት GPA', '3ኛ ዓመት GPA',
-            '4ኛ ዓመት GPA', '5ኛ ዓመት GPA', '6ኛ ዓመት GPA',
-            'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የምረቃ ዓመት',
-            '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
-            '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
-            'ፎቶ',
-            '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
-            '4ኛ ዓመት ትምህርት', '5ኛ ዓመት ትምህርት', '6ኛ ዓመት ትምህርት',
-            'የመምህራን ስልጠና 1', 'የመምህራን ስልጠና 2', 'የመምህራን ስልጠና 3',
-            'የአመራር ስልጠና 1', 'የአመራር ስልጠና 2', 'የአመራር ስልጠና 3',
-            'ሌሎች ስልጠናዎች', 'የአብነት ትምህርት', 'ልዩ ፍላጎት', 'ተጨማሪ መረጃ',
-            'የመዘገበው አካል', 'ያረጋገጠው አካል', 'የተሰጠበት ቀን'
+
+    const csvHeaders = [
+        'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
+        'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
+        'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ',
+        'ማእከለ እና ወረዳ ማእከል', 'የግቢ ጉባኤው ስም',
+        'የተጠሪ ስም', 'የተጠሪ ስልክ',
+        'አጥቢያ ቤተክርስቲያን', 'የአገልግሎት ክፍል', 'መንፈሳዊ ትምህርት ደረጃ', 'ልዩ ተሰጥኦ (CET)',
+        'የ1ኛ ዓመት ተሳትፎ', 'የ2ኛ ዓመት ተሳትፎ', 'የ3ኛ ዓመት ተሳትፎ',
+        'የ4ኛ ዓመት ተሳትፎ', 'የ5ኛ ዓመት ተሳትፎ', 'የ6ኛ ዓመት ተሳትፎ',
+        'የትምህርት ክፍል',
+        '1ኛ ዓመት GPA', '2ኛ ዓመት GPA', '3ኛ ዓመት GPA',
+        '4ኛ ዓመት GPA', '5ኛ ዓመት GPA', '6ኛ ዓመት GPA',
+        'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የምረቃ ዓመት',
+        '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
+        '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
+        'ፎቶ',
+        '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
+        '4ኛ ዓመት ትምህርት', '5ኛ ዓመት ትምህርት', '6ኛ ዓመት ትምህርት',
+        'የመምህራን ስልጠና 1', 'የመምህራን ስልጠና 2', 'የመምህራን ስልጠና 3',
+        'የአመራር ስልጠና 1', 'የአመራር ስልጠና 2', 'የአመራር ስልጠና 3',
+        'ሌሎች ስልጠናዎች', 'የአብነት ትምህርት', 'ልዩ ፍላጎት', 'ተጨማሪ መረጃ',
+        'የመዘገበው አካል', 'ያረጋገጠው አካል', 'የተሰጠበት ቀን'
+    ];
+
+    const getPriesthoodLabel = (rank) => {
+        const labels = { 'mimen': 'ምእመን', 'diakon': 'ዲያቆን', 'kahin': 'ካህን' };
+        return labels[rank] || rank || '';
+    };
+
+    const getSexLabel = (sex) => {
+        if (!sex) return '';
+        const s = sex.toLowerCase();
+        if (s.startsWith('m')) return 'M';
+        if (s.startsWith('f')) return 'F';
+        return sex;
+    };
+
+    const getStudentCSVData = (s, index, forExport = false) => {
+        const q = (val) => forExport ? `"${val || ''}"` : (val || '-'); // Quote for CSV, Dash for UI
+        const r = (val) => val || (forExport ? '' : '-'); // Raw for CSV, Dash for UI
+
+        const p = s.participation || {}; // Safe access
+        const g = s.gpa || {};
+
+        return [
+            index + 1,
+            forExport ? q(s.id) : s.id,
+            forExport ? q(s.name || s.fullName) : (s.name || s.fullName),
+            getSexLabel(s.sex),
+            r(s.age),
+            r(s.birthYear),
+            q(s.baptismalName),
+            q(getPriesthoodLabel(s.priesthoodRank)),
+            q(s.motherTongue),
+            q(s.otherLanguages?.l1),
+            q(s.otherLanguages?.l2),
+            q(s.otherLanguages?.l3),
+            q(s.region),
+            q(s.zone),
+            q(s.woreda),
+            q(s.kebele),
+            q(s.phone),
+            q(s.centerAndWoredaCenter),
+            q(s.gibiName),
+            q(s.emergencyName),
+            q(s.emergencyPhone),
+            q(s.parishChurch),
+            q(s.section),
+            q(s.specialEducation), // Menfesawi Timhirt
+            q(s.specialPlace), // Special Talent (CET)
+
+            // Participation (Indexes 25-30) - WAS MISSING
+            q(p.y1), q(p.y2), q(p.y3), q(p.y4), q(p.y5), q(p.y6),
+
+            q(s.dept || s.department),
+
+            // GPA (Indexes 32-37)
+            r(g.y1), r(g.y2), r(g.y3), r(g.y4), r(g.y5), r(g.y6),
+
+            r(s.cumulativeGPA),
+            r(s.membershipYear),
+            r(s.graduationYear),
+
+            // Follow Up (Indexes 41-46) - Placeholder as no data source yet
+            r(''), r(''), r(''), r(''), r(''), r(''),
+
+            q(s.photoUrl),
+
+            // Education (Indexes 48-53) - Placeholder as no data source yet
+            r(''), r(''), r(''), r(''), r(''), r(''),
+
+            q(s.teacherTraining?.level1), q(s.teacherTraining?.level2), q(s.teacherTraining?.level3),
+            q(s.leadershipTraining?.level1), q(s.leadershipTraining?.level2), q(s.leadershipTraining?.level3),
+            q(s.otherTrainings),
+            q(s.specialEducation), // Abnet (mapped to specialEducation as likely duplicate or user intent)
+            q(s.specialNeed), // Special Need
+            q(s.additionalInfo),
+            q(s.filledBy),
+            q(s.verifiedBy),
+            q(s.submissionDate)
         ];
+    };
 
-        const getPriesthoodLabel = (rank) => {
-            const labels = { 'lay': 'ምእመን', 'diakon': 'ዲያቆን', 'kahin': 'ካህን' };
-            return labels[rank] || rank || '';
-        };
 
-        const getSexLabel = (sex) => {
-            if (!sex) return '';
-            const s = sex.toLowerCase();
-            if (s.startsWith('m')) return 'M';
-            if (s.startsWith('f')) return 'F';
-            return sex;
-        };
-
+    const handleExport = () => {
         const csvContent = [
-            headers.join(','),
-            ...filteredStudents.map((s, index) => [
-                index + 1,
-                `"${s.id || ''}"`,
-                `"${s.name || s.fullName || ''}"`,
-                getSexLabel(s.sex),
-                s.age || '',
-                s.birthYear || '',
-                `"${s.baptismalName || ''}"`,
-                `"${getPriesthoodLabel(s.priesthoodRank)}"`,
-                `"${s.motherTongue || ''}"`,
-                `"${s.otherLanguages?.l1 || ''}"`,
-                `"${s.otherLanguages?.l2 || ''}"`,
-                `"${s.otherLanguages?.l3 || ''}"`,
-                `"${s.region || ''}"`,
-                `"${s.zone || ''}"`,
-                `"${s.woreda || ''}"`,
-                `"${s.kebele || ''}"`,
-                `"${s.phone || ''}"`,
-                `"${s.centerAndWoredaCenter || ''}"`,
-                `"${s.gibiName || ''}"`,
-                `"${s.emergencyName || ''}"`,
-                `"${s.emergencyPhone || ''}"`,
-                `"${s.parishChurch || ''}"`,
-                `"${s.specialEducation || ''}"`,
-                `"${s.specialPlace || ''}"`,
-                '', // Year_Responsibility_1 (Placeholder)
-                '', // 2
-                '', // 3
-                '', // 4
-                '', // 5
-                '', // 6
-                `"${s.dept || s.department || ''}"`,
-                s.gpa?.y1 || '',
-                s.gpa?.y2 || '',
-                s.gpa?.y3 || '',
-                s.gpa?.y4 || '',
-                s.gpa?.y5 || '',
-                s.gpa?.y6 || '',
-                s.cumulativeGPA || '',
-                s.membershipYear || '',
-                s.graduationYear || '',
-                '', // Follow-ups
-                '', '', '', '', '',
-                `"${s.photoUrl || ''}"`,
-                `"${s.participation?.y1 || ''}"`,
-                `"${s.participation?.y2 || ''}"`,
-                `"${s.participation?.y3 || ''}"`,
-                `"${s.participation?.y4 || ''}"`,
-                `"${s.participation?.y5 || ''}"`,
-                `"${s.participation?.y6 || ''}"`,
-                `"${s.teacherTraining?.level1 || ''}"`,
-                `"${s.teacherTraining?.level2 || ''}"`,
-                `"${s.teacherTraining?.level3 || ''}"`,
-                `"${s.leadershipTraining?.level1 || ''}"`,
-                `"${s.leadershipTraining?.level2 || ''}"`,
-                `"${s.leadershipTraining?.level3 || ''}"`,
-                '', // other_Training
-                `"${s.specialEducation || ''}"`, // Abnet_Course
-                '', // Special_need
-                `"${s.additionalInfo || ''}"`,
-                `"${s.filledBy || ''}"`,
-                `"${s.verifiedBy || ''}"`,
-                `"${s.submissionDate || ''}"`
-            ].join(','))
+            csvHeaders.join(','),
+            ...filteredStudents.map((s, index) => getStudentCSVData(s, index, true).join(','))
         ].join('\n');
 
         const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -465,102 +530,125 @@ const StudentList = () => {
                     </div>
                 )}
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-200 text-gray-800 text-sm font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
-                            <tr>
-                                <th className="px-8 py-5">Student Name & ID</th>
-                                <th className="px-8 py-5">Department</th>
-                                <th className="px-8 py-5">Year</th>
-                                <th className="px-8 py-5">ክፍላት</th>
-                                <th className="px-8 py-5">Status</th>
-                                <th className="px-8 py-5 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {filteredStudents.map((student) => (
-                                <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center gap-3">
-                                            {student.photoUrl ? (
-                                                <img
-                                                    src={student.photoUrl}
-                                                    alt={student.name}
-                                                    className="w-9 h-9 rounded-full object-cover border border-gray-200"
-                                                />
-                                            ) : (
-                                                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs text-center p-1">
-                                                    {(student.name || 'A').split(' ').map(n => n[0]).join('')}
-                                                </div>
-                                            )}
-                                            <div>
-                                                <div className="font-bold text-gray-900">{student.name || 'Anonymous'}</div>
-                                                <div className="text-xs text-gray-400">{student.id}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-5 font-medium text-gray-600">{student.dept || student.department || '-'}</td>
-                                    <td className="px-8 py-5">
-                                        <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-bold text-gray-600">
-                                            {student.year || student.batch || '-'}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                                            <span className="text-sm font-medium">{student.section}</span>
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Student'
-                                            ? 'bg-green-50 text-green-600 border-green-100'
-                                            : student.status === 'Pending'
-                                                ? 'bg-orange-50 text-orange-600 border-orange-100'
-                                                : 'bg-blue-50 text-blue-600 border-blue-100'
-                                            }`}>
-                                            {student.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <button
-                                                onClick={() => openView(student)}
-                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="View Details"
-                                            >
-                                                <Eye size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => openEdit(student)}
-                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Edit Student"
-                                            >
-                                                <Edit size={16} />
-                                            </button>
-                                            {!isStudent && (
-                                                <button
-                                                    onClick={() => setActiveModal(`password-${student.id}`)}
-                                                    className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
-                                                    title="Reset Password"
-                                                >
-                                                    <Key size={16} />
-                                                </button>
-                                            )}
-                                            {!isStudent && (
-                                                <button
-                                                    onClick={() => handleDelete(student.id)}
-                                                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                                                    title="Delete Student"
-                                                >
-                                                    <Trash size={18} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
+                <div className="overflow-x-auto pb-4">
+                    {isStudent ? (
+                        <div className="inline-block min-w-full align-middle">
+                            <table className="min-w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-200 text-gray-800 text-xs font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
+                                        {csvHeaders.map((h, i) => (
+                                            <th key={i} className="px-4 py-3 border-r border-gray-200 whitespace-nowrap min-w-[150px]">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 bg-white">
+                                    {filteredStudents.map((student, idx) => (
+                                        <tr key={student.id} className="hover:bg-gray-50">
+                                            {getStudentCSVData(student, idx, false).map((val, i) => (
+                                                <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">{val}</td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <table className="w-full text-left">
+                            <thead className="bg-gray-200 text-gray-800 text-sm font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
+                                <tr>
+                                    <th className="px-8 py-5">Student Name & ID</th>
+                                    <th className="px-8 py-5">Department</th>
+                                    <th className="px-8 py-5">Year</th>
+                                    <th className="px-8 py-5">ክፍላት</th>
+                                    <th className="px-8 py-5">Status</th>
+                                    <th className="px-8 py-5 text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {filteredStudents.map((student) => (
+                                    <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center gap-3">
+                                                {student.photoUrl ? (
+                                                    <img
+                                                        src={student.photoUrl}
+                                                        alt={student.name}
+                                                        className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                                                    />
+                                                ) : (
+                                                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs text-center p-1">
+                                                        {(student.name || 'A').split(' ').map(n => n[0]).join('')}
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div className="font-bold text-gray-900">{student.name || 'Anonymous'}</div>
+                                                    <div className="text-xs text-gray-400">{student.id}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-5 font-medium text-gray-600">{student.dept || student.department || '-'}</td>
+                                        <td className="px-8 py-5">
+                                            <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-bold text-gray-600">
+                                                {student.year || student.batch || '-'}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                                                <span className="text-sm font-medium">{student.section}</span>
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Student'
+                                                ? 'bg-green-50 text-green-600 border-green-100'
+                                                : student.status === 'Pending'
+                                                    ? 'bg-orange-50 text-orange-600 border-orange-100'
+                                                    : 'bg-blue-50 text-blue-600 border-blue-100'
+                                                }`}>
+                                                {student.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5 text-right">
+                                            <div className="flex items-center justify-end gap-1">
+                                                <button
+                                                    onClick={() => openView(student)}
+                                                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                    title="View Details"
+                                                >
+                                                    <Eye size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => openEdit(student)}
+                                                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                    title="Edit Student"
+                                                >
+                                                    <Edit size={16} />
+                                                </button>
+                                                {!isStudent && (
+                                                    <button
+                                                        onClick={() => setActiveModal(`password-${student.id}`)}
+                                                        className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
+                                                        title="Reset Password"
+                                                    >
+                                                        <Key size={16} />
+                                                    </button>
+                                                )}
+                                                {!isStudent && (
+                                                    <button
+                                                        onClick={() => handleDelete(student.id)}
+                                                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                        title="Delete Student"
+                                                    >
+                                                        <Trash size={18} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
 
                 {!isStudent && (
