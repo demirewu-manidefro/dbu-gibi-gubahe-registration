@@ -25,7 +25,18 @@ export const AuthProvider = ({ children }) => {
     const [admins, setAdmins] = useState([]);
     const [activityLog, setActivityLog] = useState([]);
 
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState(() => {
+        try {
+            const saved = localStorage.getItem('notifications');
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        localStorage.setItem('notifications', JSON.stringify(notifications));
+    }, [notifications]);
 
     const [attendanceHistory, setAttendanceHistory] = useState([]);
 
@@ -143,7 +154,7 @@ export const AuthProvider = ({ children }) => {
             fetchActivityLog();
 
             // Session Timeout Logic (15 minutes)
-            const TIMEOUT_DURATION = 1 * 60 * 1000;
+            const TIMEOUT_DURATION = 10 * 60 * 1000;
             let timeoutId;
 
             const resetTimer = () => {
@@ -230,6 +241,29 @@ export const AuthProvider = ({ children }) => {
             });
             if (res.ok) {
                 fetchStudents();
+
+                const isUpdate = students.some(s => s.id === (studentData.studentId || studentData.id));
+                const actionType = isUpdate ? 'student_update' : 'registration';
+
+                // Create notification for recent registration
+                const targetSection = studentData.serviceSection || studentData.service_section || 'all';
+                const newNotification = {
+                    id: Date.now(),
+                    target: targetSection,
+                    message: `${isUpdate ? 'Student updated' : 'New student registered'}: ${studentData.fullName || studentData.full_name || 'Unknown'} (${studentData.studentId || studentData.student_id || 'N/A'})`,
+                    from: user?.name || 'System',
+                    time: new Date().toISOString(),
+                    readBy: [],
+                    type: 'registration'
+                };
+                setNotifications(prev => [newNotification, ...prev].slice(0, 50));
+
+                recordActivity(actionType, {
+                    student: studentData.fullName || studentData.full_name,
+                    studentId: studentData.studentId || studentData.student_id || studentData.id,
+                    isUpdate
+                });
+
                 return true;
             } else {
                 const error = await res.json();
@@ -322,11 +356,32 @@ export const AuthProvider = ({ children }) => {
         recordActivity('admin_created', { adminName: newAdmin.name, section: newAdmin.section });
     };
 
-    const updateStudent = (studentId, updates) => {
-        setStudents(prev => prev.map(s =>
-            s.id === studentId ? { ...s, ...updates } : s
-        ));
-        recordActivity('student_updated', { student: updates?.name || studentId });
+    const updateStudent = async (studentId, updates) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(updates)
+            });
+            if (res.ok) {
+                const updatedStudent = await res.json();
+                setStudents(prev => prev.map(s =>
+                    s.id === studentId ? { ...s, ...updatedStudent } : s
+                ));
+                recordActivity('student_updated', {
+                    student: updates.fullName || updates.full_name || updates.name,
+                    studentId
+                });
+                return true;
+            }
+        } catch (err) {
+            console.error('Update student error:', err);
+            throw err;
+        }
     };
 
     const deleteStudent = (studentId) => {
@@ -369,6 +424,10 @@ export const AuthProvider = ({ children }) => {
         ));
     };
 
+    const dismissNotification = (notificationId) => {
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    };
+
     const login = async (username, password) => {
         try {
             const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -402,6 +461,55 @@ export const AuthProvider = ({ children }) => {
         ));
     };
 
+    const resetPassword = async (studentId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/reset-password/${studentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                recordActivity('password_reset', { studentId });
+                return data.message;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            console.error('Reset password error:', err);
+            // Include details if available from the server
+            const errorMessage = err.message || 'Failed to reset password';
+            throw new Error(errorMessage);
+        }
+    };
+
+    const changePassword = async (currentPassword, newPassword) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/change-password`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                // Update user to clear mustChangePassword flag
+                setUser(prev => ({ ...prev, mustChangePassword: false }));
+                return data.message;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            throw err;
+        }
+    };
+
     const value = {
         user,
         admins,
@@ -422,8 +530,11 @@ export const AuthProvider = ({ children }) => {
         notifications,
         sendNotification,
         markNotificationsRead,
+        dismissNotification,
         attendanceHistory,
-        saveAttendanceBatch
+        saveAttendanceBatch,
+        resetPassword,
+        changePassword
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
