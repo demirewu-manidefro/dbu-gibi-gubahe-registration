@@ -15,6 +15,7 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS user_id INT REFERENCES users(id) ON DELETE CASCADE;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS department VARCHAR(100);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS batch VARCHAR(20);
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
         `);
 
         console.log('Database schema initialized and updated');
