@@ -38,6 +38,7 @@ const ethiopianRegions = {
 const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const { registerStudent, user } = useAuth(); // Add user
     const navigate = useNavigate();
+    const currentEthYear = toEthiopian(new Date()).year;
     const [activeTab, setActiveTab] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -53,6 +54,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         baptismalName: '',
         priesthoodRank: '',
         profilePhoto: null,
+        photoUrl: '',
         motherTongue: '',
         otherLanguages: { l1: '', l2: '', l3: '' },
 
@@ -96,7 +98,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         additionalInfo: '',
         filledBy: '',
         verifiedBy: '',
-        submissionDate: ''
+        submissionDate: '',
+        traineeType: ''
     });
 
     // Populate data if student is logged in and not in edit mode
@@ -230,8 +233,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         setTimeout(() => {
             const finalData = {
                 ...formData,
-                full_name: formData.fullName, // Map for backend
-                student_id: formData.studentId // Map for backend
+                full_name: formData.fullName,
+                gender: formData.sex,
+                birth_date: formData.birthYear,
+                student_id: formData.studentId,
+                trainee_type: formData.traineeType
             };
             registerStudent(finalData);
             setIsSubmitting(false);
@@ -366,7 +372,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         value={formData.birthYear}
                                                         onChange={handleInputChange}
                                                         required
-                                                        min="1990" max={new Date().getFullYear()}
+                                                        min="1990" max={currentEthYear}
                                                     />
                                                 </div>
                                                 <div>
@@ -427,8 +433,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
 
                                     <div className="w-full md:w-64 flex flex-col items-center">
                                         <div className="w-48 h-56 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 group hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden">
-                                            {formData.profilePhoto ? (
-                                                <img src={URL.createObjectURL(formData.profilePhoto)} className="w-full h-full object-cover" />
+                                            {formData.photoUrl || formData.profilePhoto ? (
+                                                <img
+                                                    src={formData.photoUrl || (formData.profilePhoto ? URL.createObjectURL(formData.profilePhoto) : '')}
+                                                    className="w-full h-full object-cover"
+                                                    alt="Profile"
+                                                />
                                             ) : (
                                                 <>
                                                     <Camera size={40} className="group-hover:scale-110 transition-transform" />
@@ -439,10 +449,20 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 type="file"
                                                 className="absolute inset-0 opacity-0 cursor-pointer"
                                                 onChange={(e) => setFormData({ ...formData, profilePhoto: e.target.files[0] })}
-                                                required />
+                                            />
+                                        </div>
+                                        <div className="mt-4 w-full">
+                                            <label className="label-amharic">ወይም የፎቶ URL</label>
+                                            <input
+                                                name="photoUrl"
+                                                value={formData.photoUrl || ''}
+                                                onChange={handleInputChange}
+                                                placeholder="https://..."
+                                                className="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1"
+                                            />
                                         </div>
                                         <p className="mt-4 text-xs text-center text-gray-500 leading-relaxed italic">
-                                            ለማንነት መታወቂያ የሚሆን ግልጽ ፎቶ ይስቀሉ። (ከ 2MB ያልበለጠ)
+                                            ለማንነት መታወቂያ የሚሆን ግልጽ ፎቶ ይስቀሉ ወይም ሊንክ ያስገቡ።
                                         </p>
                                     </div>
                                 </div>
@@ -573,7 +593,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 >
                                                     <option value="">ምረጥ...</option>
-                                                    <option value="ቅዱስ ገብራኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
+                                                    <option value="ቅዱስ ገብርኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
                                                     <option value="ቅዱስ መዳኔአለም ቤተ ክርስቲያን">ቅዱስ መዳኔአለም ቤተ ክርስቲያን</option>
                                                     <option value="Other">ሌላ (Other)</option>
                                                 </select>
@@ -710,26 +730,42 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                 <div className="space-y-8">
                                     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                                         <h3 className="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2 mb-4">የአገልግሎት ክፍል</h3>
-                                        <div>
-                                            <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ</label>
-                                            <select
-                                                name="serviceSection"
-                                                value={formData.serviceSection}
-                                                onChange={handleInputChange}
-                                                required
-                                            >
-                                                <option value="">ምረጥ...</option>
-                                                <option value="እቅድ">እቅድ</option>
-                                                <option value="ትምህርት">ትምህርት</option>
-                                                <option value="ልማት">ልማት</option>
-                                                <option value="ባች">ባች</option>
-                                                <option value="ሙያ">ሙያ</option>
-                                                <option value="ቋንቋ">ቋንቋ</option>
-                                                <option value="አባላት">አባላት</option>
-                                                <option value="ኦዲት">ኦዲት</option>
-                                                <option value="ሂሳብ">ሂሳብ</option>
-                                                <option value="መዝሙር">መዝሙር</option>
-                                            </select>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ</label>
+                                                <select
+                                                    name="serviceSection"
+                                                    value={formData.serviceSection}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                >
+                                                    <option value="">ምረጥ...</option>
+                                                    <option value="እቅድ">እቅድ</option>
+                                                    <option value="ትምህርት">ትምህርት</option>
+                                                    <option value="ልማት">ልማት</option>
+                                                    <option value="ባች">ባች</option>
+                                                    <option value="ሙያ">ሙያ</option>
+                                                    <option value="ቋንቋ">ቋንቋ</option>
+                                                    <option value="አባላት">አባላት</option>
+                                                    <option value="ኦዲት">ኦዲት</option>
+                                                    <option value="ሂሳብ">ሂሳብ</option>
+                                                    <option value="መዝሙር">መዝሙር</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="label-amharic">የሰልጣኝ ሁኔታ</label>
+                                                <select
+                                                    name="traineeType"
+                                                    value={formData.traineeType}
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="">ምረጥ...</option>
+                                                    <option value="Regular">መደበኛ (Regular)</option>
+                                                    <option value="Short-term">አጭር ጊዜ (Short-term)</option>
+                                                    <option value="Seminar">ሴሚናር (Seminar)</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -747,11 +783,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">በግቢ ጉባኤው አባል የሆኑበት ዓ.ም</label>
-                                                    <input name="membershipYear" value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" />
+                                                    <input name="membershipYear" type="number" min="2000" max={currentEthYear} value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">የሚመረቁበት ዓ/ም</label>
-                                                    <input name="graduationYear" value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" />
+                                                    <input name="graduationYear" type="number" min={currentEthYear} value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" />
                                                 </div>
                                             </div>
                                         </div>
