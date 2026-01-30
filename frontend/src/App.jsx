@@ -11,13 +11,27 @@ import AttendanceSheet from './pages/AttendanceSheet';
 import AdminManagement from './pages/AdminManagement';
 import LandingPage from './pages/LandingPage';
 
-import PendingApprovals from './pages/PendingApprovals';
 import Analytics from './pages/Analytics';
 import NotFound from './pages/NotFound';
+import ChangePassword from './pages/ChangePassword';
+import PendingApprovals from './pages/PendingApprovals';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
-  return user ? <Layout>{children}</Layout> : <Navigate to="/login" />;
+
+  if (!user) return <Navigate to="/login" />;
+
+  // Force password change if required
+  if (user.mustChangePassword && window.location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" />;
+  }
+
+  return <Layout>{children}</Layout>;
+};
+
+const ChangePasswordRoute = () => {
+  const { user } = useAuth();
+  return user ? <ChangePassword /> : <Navigate to="/login" />;
 };
 
 import Register from './pages/Register';
@@ -30,6 +44,7 @@ function App() {
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<LandingPage />} />
+          <Route path="/change-password" element={<ChangePasswordRoute />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/add-student" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
           <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
@@ -37,6 +52,7 @@ function App() {
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
           <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
           <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
+
           <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

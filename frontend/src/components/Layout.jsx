@@ -17,14 +17,19 @@ import {
     Settings,
     ClipboardCheck,
     Clock,
-    BarChart3
+    BarChart3,
+    ShieldCheck as CheckCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { user, logout, notifications, markNotificationsRead } = useAuth();
+    const { user, logout, notifications, markNotificationsRead, dismissNotification } = useAuth();
     const [showNotifications, setShowNotifications] = useState(false);
+
+    const removeNotification = (notificationId) => {
+        dismissNotification(notificationId);
+    };
 
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -32,7 +37,6 @@ const Layout = ({ children }) => {
     const menuItems = isManager
         ? [
             { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-            { title: 'Approvals', icon: <Clock size={20} />, path: '/approvals' },
             { title: 'Analytics', icon: <BarChart3 size={20} />, path: '/analytics' },
             { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
             { title: 'Student List', icon: <Users size={20} />, path: '/students' },
@@ -41,12 +45,13 @@ const Layout = ({ children }) => {
         ]
         : isStudent
             ? [
-                { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'Update Registration', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'My Information', icon: <Users size={20} />, path: '/students' },
             ]
             : [
                 { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-                { title: 'Approvals', icon: <Clock size={20} />, path: '/approvals' },
                 { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'Approvals', icon: <CheckCircle size={20} />, path: '/approvals' },
                 { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
                 { title: 'Student List', icon: <Users size={20} />, path: '/students' },
                 { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
@@ -191,7 +196,7 @@ const Layout = ({ children }) => {
                         {(() => {
                             const username = user?.username;
                             const userNotifications = notifications.filter(n =>
-                                n.target === 'all' || n.target === username
+                                isManager || n.target === 'all' || n.target === username || n.target === user?.section
                             );
                             const unreadCount = userNotifications.filter(n => !n.readBy.includes(username)).length;
                             return (
@@ -202,7 +207,9 @@ const Layout = ({ children }) => {
                                     >
                                         <Bell size={20} />
                                         {unreadCount > 0 && (
-                                            <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
+                                            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                                {unreadCount > 9 ? '9+' : unreadCount}
+                                            </span>
                                         )}
                                     </button>
                                     <button
@@ -212,38 +219,89 @@ const Layout = ({ children }) => {
                                         <MessageCircle size={20} />
                                     </button>
                                     {showNotifications && (
-                                        <div className="absolute right-0 top-12 w-80 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
-                                            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                                                <div className="font-bold text-sm text-gray-800">Notifications</div>
-                                                <button
-                                                    onClick={() => {
-                                                        if (username) markNotificationsRead(username);
-                                                    }}
-                                                    className="text-xs font-semibold text-blue-600"
-                                                >
-                                                    Mark all read
-                                                </button>
-                                            </div>
-                                            <div className="max-h-80 overflow-y-auto">
-                                                {userNotifications.length === 0 ? (
-                                                    <div className="p-4 text-sm text-gray-500">No notifications</div>
-                                                ) : (
-                                                    userNotifications.map((n) => (
-                                                        <div key={n.id} className="px-4 py-3 border-b border-gray-50">
-                                                            <div className="text-xs text-gray-400">
-                                                                {new Date(n.time).toLocaleString()}
-                                                            </div>
-                                                            <div className="text-sm text-gray-800 mt-1">
-                                                                {n.message}
-                                                            </div>
-                                                            <div className="text-xs text-gray-500 mt-1">
-                                                                From: {n.from}
-                                                            </div>
+                                        <>
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={() => setShowNotifications(false)}
+                                            />
+                                            <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                                                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
+                                                    <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
+                                                        <Bell size={16} className="text-blue-600" />
+                                                        Notifications
+                                                        {unreadCount > 0 && (
+                                                            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                                                {unreadCount}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (username) markNotificationsRead(username);
+                                                        }}
+                                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                                                    >
+                                                        Mark all read
+                                                    </button>
+                                                </div>
+                                                <div className="max-h-96 overflow-y-auto">
+                                                    {userNotifications.length === 0 ? (
+                                                        <div className="p-8 text-center">
+                                                            <Bell size={48} className="mx-auto text-gray-300 mb-3" />
+                                                            <p className="text-sm text-gray-500">No notifications</p>
                                                         </div>
-                                                    ))
-                                                )}
+                                                    ) : (
+                                                        userNotifications.map((n) => {
+                                                            const isUnread = !n.readBy.includes(username);
+                                                            return (
+                                                                <div
+                                                                    key={n.id}
+                                                                    onClick={() => removeNotification(n.id)}
+                                                                    className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors ${isUnread ? 'bg-blue-50/50' : ''}`}
+                                                                >
+                                                                    <div className="flex items-start justify-between gap-2">
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-center gap-2 mb-1">
+                                                                                {n.type === 'registration' && (
+                                                                                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                                        New Registration
+                                                                                    </span>
+                                                                                )}
+                                                                                {isUnread && (
+                                                                                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="text-sm text-gray-800 font-medium">
+                                                                                {n.message}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-2 mt-1">
+                                                                                <span className="text-xs text-gray-500">
+                                                                                    From: {n.from}
+                                                                                </span>
+                                                                                <span className="text-xs text-gray-400">•</span>
+                                                                                <span className="text-xs text-gray-400">
+                                                                                    {new Date(n.time).toLocaleString()}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                removeNotification(n.id);
+                                                                            }}
+                                                                            className="text-gray-400 hover:text-red-600 p-1"
+                                                                            title="Remove notification"
+                                                                        >
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
+                                        </>
                                     )}
                                 </>
                             );
