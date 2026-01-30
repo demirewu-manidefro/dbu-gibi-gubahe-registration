@@ -235,6 +235,34 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify({ type, details })
             });
             fetchActivityLog();
+
+            // Generate a local notification for the manager/admins to see
+            // (Exclude 'registration' as it's handled separately in registerStudent)
+            // (Exclude 'message' as it's handled in sendNotification)
+            if (type !== 'registration' && type !== 'student_update' && type !== 'message' && type !== 'login') {
+                const activityMessages = {
+                    'approval': `Student Approved: ${details.studentId}`,
+                    'decline': `Registration Declined: ${details.studentId}`,
+                    'admin_created': `New Admin Created: ${details.adminName} (${details.section})`,
+                    'bulk_import': `Bulk Import: ${details.count} students imported`,
+                    'student_deleted': `Student Deleted: ${details.student}`,
+                    'student_updated': `Student Info Updated: ${details.student}`
+                };
+
+                const message = activityMessages[type];
+                if (message) {
+                    const newNotification = {
+                        id: Date.now() + Math.random(),
+                        target: type === 'approval' ? 'manager' : (details.section || 'all'),
+                        message,
+                        from: user?.name || 'System',
+                        time: new Date().toISOString(),
+                        readBy: [],
+                        type: type // e.g., 'approval', 'admin_created', etc.
+                    };
+                    setNotifications(prev => [newNotification, ...prev].slice(0, 50));
+                }
+            }
         } catch (err) {
             console.error('Error recording activity:', err);
         }
