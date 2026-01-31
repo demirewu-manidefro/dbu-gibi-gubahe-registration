@@ -401,18 +401,65 @@ const EditStudentModal = ({ student, onClose }) => {
                                             </select>
                                         </div>
                                         <div className="col-span-2">
-                                            <label className="label-amharic">የፎቶ URL</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    name="photoUrl"
-                                                    value={formData.photoUrl}
-                                                    onChange={handleInputChange}
-                                                    placeholder="https://..."
-                                                    className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                {formData.photoUrl && (
-                                                    <img src={formData.photoUrl} alt="Preview" className="w-10 h-10 rounded-lg object-cover border" />
-                                                )}
+                                            <label className="label-amharic">የተማሪ ፎቶ</label>
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative group">
+                                                    {formData.photoUrl ? (
+                                                        <img
+                                                            src={formData.photoUrl}
+                                                            alt="Preview"
+                                                            className="w-24 h-24 rounded-xl object-cover border-2 border-gray-200 shadow-sm"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 text-gray-400">
+                                                            <Camera size={32} />
+                                                        </div>
+                                                    )}
+                                                    <label className="absolute bottom-0 right-0 p-1.5 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 shadow-md transition-transform active:scale-95">
+                                                        <Camera size={14} />
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className="hidden"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                if (file) {
+                                                                    if (file.size > 5 * 1024 * 1024) { // 5MB limit check
+                                                                        setError("ምስሉ ከ 5MB መብለጥ የለበትም");
+                                                                        return;
+                                                                    }
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = () => {
+                                                                        setFormData(prev => ({ ...prev, photoUrl: reader.result }));
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </label>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm text-gray-500 mb-2">ፎቶ ይምረጡ (Max 5MB)</p>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            name="photoUrl"
+                                                            value={formData.photoUrl || ''}
+                                                            onChange={handleInputChange}
+                                                            placeholder="ወይም የፎቶ URL ያስገቡ..."
+                                                            className="w-full text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-600 font-mono"
+                                                        />
+                                                        {formData.photoUrl && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
+                                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Remove Photo"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-span-2">
