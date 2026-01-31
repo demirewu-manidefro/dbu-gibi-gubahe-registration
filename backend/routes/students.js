@@ -13,6 +13,11 @@ router.get('/', [auth, authorize(['admin', 'manager'])], studentController.getSt
 // @access  Public (Optional Auth)
 router.post('/', softAuth, studentController.registerStudent);
 
+// @route   POST api/students/import
+// @desc    Bulk import students
+// @access  Private (Admin/Manager)
+router.post('/import', [auth, authorize(['admin', 'manager'])], studentController.importStudents);
+
 // @route   PUT api/students/:id
 // @desc    Update a student
 // @access  Private (Admin/Manager)
