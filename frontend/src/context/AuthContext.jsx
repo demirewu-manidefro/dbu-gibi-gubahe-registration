@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './auth';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
@@ -489,20 +489,32 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const importStudents = (newStudents) => {
-        setStudents(prev => {
-            const updatedStudents = [...prev];
-            newStudents.forEach(newStudent => {
-                const existingIndex = updatedStudents.findIndex(s => s.id === newStudent.id);
-                if (existingIndex >= 0) {
-                    updatedStudents[existingIndex] = { ...updatedStudents[existingIndex], ...newStudent };
-                } else {
-                    updatedStudents.push(newStudent);
-                }
+    const importStudents = async (newStudents) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/import`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(newStudents)
             });
-            return updatedStudents;
-        });
-        recordActivity('bulk_import', { count: newStudents.length });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Refresh list from server
+                await fetchStudents();
+                recordActivity('bulk_import', { count: data.results.success, failed: data.results.failed });
+                return data.results; // Return results for UI feedback
+            } else {
+                throw new Error(data.message || 'Import failed');
+            }
+        } catch (err) {
+            console.error('Import error:', err);
+            throw err;
+        }
     };
 
     const sendNotification = ({ target, message }) => {
