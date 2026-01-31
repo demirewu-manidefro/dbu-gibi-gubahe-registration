@@ -290,12 +290,12 @@ const StudentList = () => {
         document.getElementById('file-upload').click();
     };
 
-    const handleFileUpload = (e) => {
+    const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             try {
                 const text = event.target.result;
                 const lines = text.split('\n').filter(line => line.trim());
@@ -313,28 +313,72 @@ const StudentList = () => {
                     'id': 'id',
                     'student id': 'id',
                     'studentid': 'id',
+                    'የተማሪ መለያ': 'id',
+
                     'name': 'name',
                     'full name': 'name',
                     'fullname': 'name',
                     'student name': 'name',
+                    'ሙሉ ስም': 'name',
+
                     'sex': 'sex',
                     'gender': 'sex',
+                    'ጾታ': 'sex',
+
                     'department': 'dept',
                     'dept': 'dept',
+                    'የትምህርት ክፍል': 'dept',
+
                     'year': 'year',
                     'batch': 'year',
+
                     'section': 'section',
+                    'የአገልግሎት ክፍል': 'section',
+
                     'status': 'status',
+
                     'phone': 'phone',
                     'telephone': 'phone',
+                    'የተማሪ ስልክ': 'phone',
+
                     'center': 'centerAndWoredaCenter',
                     'woreda center': 'centerAndWoredaCenter',
                     'maekel': 'centerAndWoredaCenter',
+                    'ማእከለ እና ወረዳ ማእከል': 'centerAndWoredaCenter',
+
                     'gibi': 'gibiName',
                     'gibi name': 'gibiName',
                     'gibigubae': 'gibiName',
+                    'የግቢ ጉባኤው ስም': 'gibiName',
+
                     'parish': 'parishChurch',
-                    'church': 'parishChurch'
+                    'church': 'parishChurch',
+                    'አጥቢያ ቤተክርስቲያን': 'parishChurch',
+
+                    // Additional Amharic Mappings
+                    'እድሜ': 'age',
+                    'የልደት ዘመን': 'birthYear',
+                    'የክርስትና ስም': 'baptismalName',
+                    'መንፈሳዊ ማዕረግ': 'priesthoodRank',
+                    'የአፍ መፍቻ ቋንቋ': 'motherTongue',
+                    'ክልል': 'region',
+                    'ዞን': 'zone',
+                    'ወረዳ': 'woreda',
+                    'ቀበሌ': 'kebele',
+                    'የተጠሪ ስም': 'emergencyName',
+                    'የተጠሪ ስልክ': 'emergencyPhone',
+                    'መንፈሳዊ ትምህርት ደረጃ': 'specialEducation',
+                    'ልዩ ተሰጥኦ (cet)': 'specialPlace',
+                    'አጠቃላይ ውጤት (cgpa)': 'cumulativeGPA',
+                    'አባል የሆኑበት ዓመት': 'membershipYear',
+                    'የምረቃ ዓመት': 'graduationYear',
+                    'ፎቶ': 'photoUrl',
+                    'የአብነት ትምህርት': 'abinetEducation',
+                    'ልዩ ፍላጎት': 'specialNeed',
+                    'ተጨማሪ መረጃ': 'additionalInfo',
+                    'የመዘገበው አካል': 'filledBy',
+                    'ያረጋገጠው አካል': 'verifiedBy',
+                    'የተሰጠበት ቀን': 'submissionDate'
                 };
 
                 // Parse data rows
@@ -364,8 +408,16 @@ const StudentList = () => {
                 }
 
                 // Import students
-                importStudents(parsedStudents);
-                alert(`Successfully imported ${parsedStudents.length} student(s)!`);
+                try {
+                    const results = await importStudents(parsedStudents);
+                    let msg = `Successfully imported ${results.success} student(s).`;
+                    if (results.failed > 0) {
+                        msg += `\nFailed to import ${results.failed} student(s). Check console or server logs for details.`;
+                    }
+                    alert(msg);
+                } catch (err) {
+                    alert(`Import failed: ${err.message}`);
+                }
 
                 // Reset file input
                 e.target.value = '';
