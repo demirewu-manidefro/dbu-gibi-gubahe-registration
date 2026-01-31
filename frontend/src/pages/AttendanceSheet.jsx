@@ -18,9 +18,11 @@ const AttendanceSheet = () => {
     const isManager = user?.role === 'manager';
     const [filterSection, setFilterSection] = useState(isManager ? 'All Sections' : user?.section);
 
+    // Only show approved students (status === 'Student'), not pending registrations
     const filteredStudents = students.filter(student =>
-        (filterSection === 'All Sections' || student.section === filterSection) &&
-        ((student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.status === 'Student' &&
+        (filterSection === 'All Sections' || student.section === filterSection || student.service_section === filterSection) &&
+        ((student.name || student.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
             (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
