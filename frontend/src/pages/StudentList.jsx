@@ -48,6 +48,8 @@ const StudentList = () => {
         let attendance = parse(s.attendance || schoolInfo.attendance);
         let educationYearly = parse(s.educationYearly || schoolInfo.educationYearly);
         let gpa = s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
+        let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
+        let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
 
         // Handle birthYear extraction from birth_date if needed
         let birthYear = s.birthYear || s.birth_year;
@@ -102,20 +104,23 @@ const StudentList = () => {
             submissionDate: s.created_at || s.submissionDate,
             attendance: attendance,
             educationYearly: educationYearly,
-            abinetEducation: s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation,
-            specialNeed: s.special_need || s.specialNeed || schoolInfo.specialNeed,
+            abinetEducation: abinetEducation,
+            specialNeed: specialNeed,
         };
     };
 
+    // For students: show only their own data
+    // For admins/managers: show only approved students (status === 'Student'), not pending
     const filteredStudents = isStudent
         ? [normalizeStudent(user)].filter(s => s && s.id)
         : safeStudents.filter(student =>
-            (isManager ? (student.name || '').toUpperCase() !== 'N/A' : true) &&
+            student.status === 'Student' && // Only show approved students
+            (isManager ? (student.name || student.full_name || '').toUpperCase() !== 'N/A' : true) &&
             (isManager
-                ? (filterSection === 'All' || student.section === filterSection)
-                : (student.section === user?.section)
+                ? (filterSection === 'All' || student.section === filterSection || student.service_section === filterSection)
+                : (student.section === user?.section || student.service_section === user?.section)
             ) &&
-            ((student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            ((student.name || student.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (student.dept || student.department || '').toLowerCase().includes(searchTerm.toLowerCase()))
         );
@@ -143,9 +148,14 @@ const StudentList = () => {
         closeModal();
     };
 
-    const handleDelete = (studentId) => {
-        if (!window.confirm('Are you sure you want to delete this student?')) return;
-        deleteStudent(studentId);
+    const handleDelete = async (studentId) => {
+        if (!window.confirm('Are you sure you want to delete this student? This action cannot be undone.')) return;
+        try {
+            await deleteStudent(studentId);
+            alert('Student deleted successfully!');
+        } catch (err) {
+            alert(err.message || 'Failed to delete student');
+        }
     };
 
     const [activeModal, setActiveModal] = useState(null);
@@ -239,7 +249,7 @@ const StudentList = () => {
             // Follow Up (Indexes 41-46)
             q(att.y1), q(att.y2), q(att.y3), q(att.y4), q(att.y5), q(att.y6),
 
-            q(s.photoUrl),
+            q(s.photoUrl || s.photo_url),
 
             // Education (Indexes 48-53)
             q(edu.y1), q(edu.y2), q(edu.y3), q(edu.y4), q(edu.y5), q(edu.y6),
@@ -598,9 +608,9 @@ const StudentList = () => {
                                     <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-3">
-                                                {student.photoUrl ? (
+                                                {student.photoUrl || student.photo_url ? (
                                                     <img
-                                                        src={student.photoUrl}
+                                                        src={student.photoUrl || student.photo_url}
                                                         alt={student.name}
                                                         className="w-10 h-10 rounded-full object-cover border-2 border-gray-100 shadow-sm"
                                                     />

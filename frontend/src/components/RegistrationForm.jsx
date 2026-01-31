@@ -88,13 +88,17 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         specialPlace: '',
 
         // This will now store the course names per year
+        educationYearly: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         participation: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        attendance: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
 
         // New Training Sections
         teacherTraining: { level1: '', level2: '', level3: '' },
         leadershipTraining: { level1: '', level2: '', level3: '' },
         otherTrainings: '',
 
+        abinetEducation: '',
+        specialNeed: '',
         additionalInfo: '',
         filledBy: '',
         verifiedBy: '',
@@ -134,6 +138,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 specialPlace: user.special_place || '',
                 membershipYear: user.membership_year || '',
                 graduationYear: user.graduation_year || '',
+                abinetEducation: user.abinet_education || '',
+                specialNeed: user.special_need || '',
+                attendance: user.school_info?.attendance || user.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                educationYearly: user.school_info?.educationYearly || user.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                participation: user.school_info?.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
             }));
         } else if (user && (user.role === 'admin' || user.role === 'manager') && !initialData) {
             // Auto-fill for admin/manager when adding a new student
@@ -158,7 +167,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const tabs = [
         { id: 0, label: 'መሰረታዊ መረጃ', subLabel: 'መረጃ', icon: <User size={20} /> },
         { id: 1, label: 'አድራሻ', subLabel: 'መገኛ', icon: <MapPin size={20} /> },
-        { id: 2, label: 'ትምህርት', subLabel: 'ትምህርት', icon: <GraduationCap size={20} /> },
+        { id: 2, label: 'ትምህርት', subLabel: 'አካዳሚክ', icon: <GraduationCap size={20} /> },
         { id: 3, label: 'አገልግሎት', subLabel: 'መንፈሳዊ', icon: <Church size={20} /> },
     ];
 
@@ -199,6 +208,18 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 ...prev,
                 participation: { ...prev.participation, [year]: value }
             }));
+        } else if (name.startsWith('attendance-')) {
+            const year = name.split('-')[1];
+            setFormData(prev => ({
+                ...prev,
+                attendance: { ...prev.attendance, [year]: value }
+            }));
+        } else if (name.startsWith('educationYearly-')) {
+            const year = name.split('-')[1];
+            setFormData(prev => ({
+                ...prev,
+                educationYearly: { ...prev.educationYearly, [year]: value }
+            }));
         } else {
             // Reset dependent fields when parent changes
             if (name === 'region') {
@@ -216,7 +237,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const handleNext = () => setActiveTab(prev => Math.min(prev + 1, 3));
     const handleBack = () => setActiveTab(prev => Math.max(prev - 1, 0));
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Basic validation
@@ -225,6 +246,22 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
             setError("Invalid Student ID! try again");
             setTimeout(() => setError(""), 3000);
             setActiveTab(0); // Return to Basic Info tab to fix
+            return;
+        }
+
+        // Validate Phone Number
+        if (!/^[79]\d{8}$/.test(formData.phone)) {
+            setError("ስልክ ቁጥር ትክክል አይደለም");
+            setTimeout(() => setError(""), 3000);
+            setActiveTab(1); // Go to Address tab
+            return;
+        }
+
+        // Validate Emergency Phone Number
+        if (!/^[79]\d{8}$/.test(formData.emergencyPhone)) {
+            setError("የድንገተኛው ስልክ ቁጥር ትክክል አይደለም");
+            setTimeout(() => setError(""), 3000);
+            setActiveTab(1); // Go to Address tab
             return;
         }
 
@@ -237,17 +274,40 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         }
 
         setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
+
+        try {
+            // Convert profile photo to Base64 if present
+            let finalPhotoUrl = formData.photoUrl;
+            if (formData.profilePhoto) {
+                const toBase64 = (file) => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+                try {
+                    finalPhotoUrl = await toBase64(formData.profilePhoto);
+                } catch (e) {
+                    console.error('Error converting photo to base64', e);
+                }
+            }
+
+            // Construct final data payload
             const finalData = {
                 ...formData,
                 full_name: formData.fullName,
                 gender: formData.sex,
                 birth_date: formData.birthYear,
                 student_id: formData.studentId,
-                trainee_type: formData.traineeType
+                trainee_type: formData.traineeType,
+                photoUrl: finalPhotoUrl // Send the base64 string or the URL
             };
-            registerStudent(finalData);
+
+            console.log('Submitting registration data:', finalData); // Client-side log
+
+            // AWAIT the actual API call
+            await registerStudent(finalData);
+
             setIsSubmitting(false);
             setShowSuccess(true);
             setTimeout(() => {
@@ -258,7 +318,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                     navigate('/students');
                 }
             }, 2000);
-        }, 1500);
+        } catch (err) {
+            console.error(err);
+            setError(err.message || "Registration failed");
+            setIsSubmitting(false);
+        }
     };
 
     const isEditingMode = !!initialData;
@@ -321,6 +385,15 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-10 flex-1">
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                            <AlertCircle className="text-red-600 flex-shrink-0" size={24} />
+                            <div>
+                                <h3 className="text-red-800 font-bold text-sm">ስህተት (Error)</h3>
+                                <p className="text-red-600 text-sm font-medium">{error}</p>
+                            </div>
+                        </div>
+                    )}
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
@@ -339,7 +412,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 <label className="label-amharic">የተማሪው መታወቂያ</label>
                                                 <input
                                                     name="studentId"
-                                                    placeholder="DBU1234567"
+                                                    placeholder="የተማሪው መታወቂያ ቁጥር ያስገቡ"
                                                     value={formData.studentId}
                                                     onChange={(e) => {
                                                         let val = e.target.value.toUpperCase();
@@ -356,7 +429,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 <label className="label-amharic">የተማሪው ሙሉ ሥም</label>
                                                 <input
                                                     name="fullName"
-                                                    placeholder="አበበ ባልቻ..."
+                                                    placeholder="ሙሉ ስምዎን ያስገቡ"
                                                     value={formData.fullName}
                                                     onChange={handleInputChange}
                                                     required
@@ -396,7 +469,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 <label className="label-amharic">ሥልጣነ ክህነት</label>
                                                 <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange}>
                                                     <option value="">ምረጥ...</option>
-                                                    <option value="lay">ምእመን</option>
+                                                    <option value="mimen">ምእመን</option>
                                                     <option value="diakon">ዲያቆን</option>
                                                     <option value="kahin">ካህን</option>
                                                 </select>
@@ -408,7 +481,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         name="motherTongue"
                                                         value={formData.motherTongue}
                                                         onChange={handleInputChange}
-                                                        placeholder="ኦሮምኛ, አማርኛ..."
+                                                        placeholder="ቋንቋዎን ያስገቡ"
                                                     />
                                                 </div>
                                                 <div>
@@ -778,15 +851,25 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                     </div>
 
                                     <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                                        <h3 className="text-lg font-bold text-blue-800 border-b border-blue-200 pb-2 mb-4">የአብነት ትምህርት:-</h3>
+                                        <h3 className="text-lg font-bold text-blue-800 border-b border-blue-200 pb-2 mb-4">የአብነት ትምህርት እና ልዩ ፍላጎት:-</h3>
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="label-amharic">የተማረውና አሁን የደረሰበት</label>
+                                                <label className="label-amharic">የተማረውና አሁን የደረሰበት (Spiritual Education Level)</label>
                                                 <input name="specialEducation" value={formData.specialEducation} onChange={handleInputChange} />
                                             </div>
                                             <div>
-                                                <label className="label-amharic">የተማረው ልዩ ተሰጥኦ</label>
+                                                <label className="label-amharic">የተማረው ልዩ ተሰጥኦ (Special Talent)</label>
                                                 <input name="specialPlace" value={formData.specialPlace} onChange={handleInputChange} />
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="label-amharic">የአብነት ትምህርት (General)</label>
+                                                    <input name="abinetEducation" value={formData.abinetEducation} onChange={handleInputChange} />
+                                                </div>
+                                                <div>
+                                                    <label className="label-amharic">ልዩ ፍላጎት (Special Need)</label>
+                                                    <input name="specialNeed" value={formData.specialNeed} onChange={handleInputChange} />
+                                                </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
@@ -803,9 +886,28 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
 
                                     <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
                                         <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
-                                            <h3 className="text-md font-bold">በግቢ ጉባኤው የተማረው ኮርስ:-</h3>
+                                            <h3 className="text-md font-bold">1. በግቢ ጉባኤው የተማረው ትምህርት (Courses):-</h3>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-y-3">
+                                        <div className="grid grid-cols-1 gap-y-3 mb-8">
+                                            {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
+                                                <div key={year} className="flex items-center gap-4">
+                                                    <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <input
+                                                        type="text"
+                                                        name={`educationYearly-${year}`}
+                                                        value={formData.educationYearly[year]}
+                                                        onChange={handleInputChange}
+                                                        placeholder="ኮርስ..."
+                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
+                                            <h3 className="text-md font-bold">2. በግቢ ጉባኤው የተሳትፎ (Participation):-</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
                                                     <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
@@ -814,7 +916,27 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         name={`participation-${year}`}
                                                         value={formData.participation[year]}
                                                         onChange={handleInputChange}
-                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500"
+                                                        placeholder="ተሳትፎ..."
+                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
+                                            <h3 className="text-md font-bold">3. በግቢ ጉባኤው የክትትል ሁኔታ (Attendance):-</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-y-3">
+                                            {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
+                                                <div key={year} className="flex items-center gap-4">
+                                                    <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <input
+                                                        type="text"
+                                                        name={`attendance-${year}`}
+                                                        value={formData.attendance[year]}
+                                                        onChange={handleInputChange}
+                                                        placeholder="ክትትል..."
+                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
                                                     />
                                                 </div>
                                             ))}

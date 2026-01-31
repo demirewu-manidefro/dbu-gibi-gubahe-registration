@@ -179,6 +179,22 @@ const EditStudentModal = ({ student, onClose }) => {
             return;
         }
 
+        // Validate Phone Number
+        if (!/^[79]\d{8}$/.test(formData.phone)) {
+            setError("ስልክ ቁጥር በ 7 ወይም በ 9 መጀመር እና 9 አሃዝ መሆን አለበት");
+            setTimeout(() => setError(""), 3000);
+            setActiveTab(1);
+            return;
+        }
+
+        // Validate Emergency Phone Number
+        if (!/^[79]\d{8}$/.test(formData.emergencyPhone)) {
+            setError("የተጠሪ ስልክ ቁጥር በ 7 ወይም በ 9 መጀመር እና 9 አሃዝ መሆን አለበት");
+            setTimeout(() => setError(""), 3000);
+            setActiveTab(1);
+            return;
+        }
+
         if (!formData.serviceSection) {
             setError("እባክዎን የአገልግሎት ክፍሉን ይምረጡ");
             setTimeout(() => setError(""), 3000);
@@ -431,9 +447,9 @@ const EditStudentModal = ({ student, onClose }) => {
                                                     const val = e.target.value.replace(/\D/g, '');
                                                     if (val.length <= 9) handleInputChange({ target: { name: 'phone', value: val } });
                                                 }}
-                                                placeholder="911234567"
+                                                placeholder="9... or 7..."
                                                 maxLength={9}
-                                                pattern="9[0-9]{8}"
+                                                pattern="[79][0-9]{8}"
                                                 className="w-full pl-20 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 required
                                             />
@@ -543,9 +559,9 @@ const EditStudentModal = ({ student, onClose }) => {
                                                     const val = e.target.value.replace(/\D/g, '');
                                                     if (val.length <= 9) handleInputChange({ target: { name: 'emergencyPhone', value: val } });
                                                 }}
-                                                placeholder="911234567"
+                                                placeholder="9... or 7..."
                                                 maxLength={9}
-                                                pattern="9[0-9]{8}"
+                                                pattern="[79][0-9]{8}"
                                                 className="w-full pl-20 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 required
                                             />
