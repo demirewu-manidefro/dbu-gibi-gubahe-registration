@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/auth';
-import { CheckCircle, XCircle, Search, Clock, User } from 'lucide-react';
+import { CheckCircle, XCircle, Search, Clock, User, Eye, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PendingApprovals = () => {
@@ -11,28 +11,35 @@ const PendingApprovals = () => {
         return <div className="p-10 text-center text-gray-500">Access Denied</div>;
     }
 
+    const [selectedStudent, setSelectedStudent] = useState(null);
     const mySection = user?.section;
     const isManager = user?.role === 'manager';
 
     const pendingStudents = students.filter(s =>
-        s.status === 'Pending' && (
-            isManager ||
-            s.section === mySection ||
-            !s.section ||
-            s.section === 'N/A' ||
-            (s.section && mySection && s.section.trim() === mySection.trim())
-        )
-    ).filter(s =>
+        (s.status || '').toLowerCase() === 'pending'
+    ).filter(s => {
+        // Filter 1: Must have a section (User requested to hide "Unassigned")
+        if (!s.section || s.section === 'N/A' || s.section === 'Unassigned') return false;
+
+        // Filter 2: If Admin, section must match
+        if (!isManager && mySection) {
+            return (s.section || '').trim().toLowerCase() === mySection.trim().toLowerCase();
+        }
+
+        return true;
+    }).filter(s =>
         (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (s.id || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
         <div className="space-y-6">
+
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Pending Approvals</h1>
-                    <p className="text-gray-500">Review and approve new student registrations for {isManager ? 'all sections' : mySection}.</p>
+                    <p className="text-gray-500">Review and approve new student registrations for {isManager ? 'all sections' : (mySection || 'your section')}.</p>
                 </div>
 
                 <div className="relative w-full md:w-64">
@@ -72,8 +79,8 @@ const PendingApprovals = () => {
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-lg overflow-hidden border-2 border-white shadow-sm">
-                                            {student.photoUrl ? (
-                                                <img src={student.photoUrl} alt="" className="w-full h-full object-cover" />
+                                            {student.photoUrl || student.photo_url ? (
+                                                <img src={student.photoUrl || student.photo_url} alt="" className="w-full h-full object-cover" />
                                             ) : (
                                                 (student.name || 'A').charAt(0)
                                             )}
@@ -90,20 +97,37 @@ const PendingApprovals = () => {
 
                                 <div className="space-y-2 mb-6">
                                     <div className="flex justify-between text-sm">
+                                        <span className="text-gray-500">Phone:</span>
+                                        <span className="font-medium text-gray-900">{student.phone ? `+251${student.phone}` : 'N/A'}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Department:</span>
-                                        <span className="font-medium text-gray-900">{student.dept || 'N/A'}</span>
+                                        <span className="font-medium text-gray-900">{student.dept || student.department || 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Year:</span>
-                                        <span className="font-medium text-gray-900">{student.year || 'N/A'}</span>
+                                        <span className="font-medium text-gray-900">{student.year || student.batch || 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Section:</span>
-                                        <span className="font-medium text-gray-900">{student.section}</span>
+                                        <span className="font-medium text-gray-900 flex items-center gap-1">
+                                            {student.section || <span className="text-red-500 italic">Unassigned</span>}
+                                            {/* Debug indicator for section mismatch */}
+                                            {student.section && mySection && student.section.trim() !== mySection.trim() && !isManager && (
+                                                <span title="Does not match your section" className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setSelectedStudent(student)}
+                                        className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+                                        title="See Details"
+                                    >
+                                        <Eye size={20} />
+                                    </button>
                                     <button
                                         onClick={() => declineStudent(student.id)}
                                         className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-100 text-red-600 hover:bg-red-50 font-semibold transition-colors"
@@ -124,8 +148,103 @@ const PendingApprovals = () => {
                     </AnimatePresence>
                 </div>
             )}
+
+            {/* View Student Modal */}
+            <AnimatePresence>
+                {selectedStudent && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                        >
+                            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                                <h2 className="text-xl font-bold text-gray-900">Applicant Details</h2>
+                                <button
+                                    onClick={() => setSelectedStudent(null)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                    <X size={24} className="text-gray-500" />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                                {/* Header Profile */}
+                                <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-2xl overflow-hidden">
+                                        {selectedStudent.photoUrl || selectedStudent.photo_url ? (
+                                            <img src={selectedStudent.photoUrl || selectedStudent.photo_url} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            (selectedStudent.name || 'A').charAt(0)
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900">{selectedStudent.name}</h3>
+                                        <p className="text-gray-500">{selectedStudent.id}</p>
+                                        <div className="inline-flex items-center gap-2 mt-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">
+                                            Status: {selectedStudent.status}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">Personal Info</h4>
+                                        <InfoRow label="Phone" value={selectedStudent.phone ? `+251${selectedStudent.phone}` : 'N/A'} />
+                                        <InfoRow label="Emergency Phone" value={selectedStudent.emergencyPhone || selectedStudent.emergency_phone} />
+                                        <InfoRow label="Sex" value={selectedStudent.gender || selectedStudent.sex} />
+                                        <InfoRow label="Age" value={selectedStudent.age} />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">Academic Info</h4>
+                                        <InfoRow label="Department" value={selectedStudent.dept || selectedStudent.department} />
+                                        <InfoRow label="Year/Batch" value={selectedStudent.year || selectedStudent.batch} />
+                                        <InfoRow label="Graduation Year" value={selectedStudent.graduationYear || selectedStudent.graduation_year} />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">Spiritual / Gibi Info</h4>
+                                        <InfoRow label="Service Section" value={selectedStudent.section || selectedStudent.service_section} highlight />
+                                        <InfoRow label="Gibi Name" value={selectedStudent.gibiName || selectedStudent.gibi_name} />
+                                        <InfoRow label="Parish Church" value={selectedStudent.parishChurch || selectedStudent.parish_church} />
+                                        <InfoRow label="Trainee Type" value={selectedStudent.traineeType || selectedStudent.trainee_type} />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">Verification</h4>
+                                        <InfoRow label="Filled By" value={selectedStudent.filledBy || selectedStudent.filled_by} />
+                                        <InfoRow label="Verified By" value={selectedStudent.verifiedBy || selectedStudent.verified_by} />
+                                        <InfoRow label="Submission Date" value={selectedStudent.created_at ? new Date(selectedStudent.created_at).toLocaleDateString() : 'N/A'} />
+                                    </div>
+                                </div>
+
+                                {/* Additional Info Area */}
+                                {selectedStudent.additionalInfo && (
+                                    <div className="bg-gray-50 p-4 rounded-xl">
+                                        <h4 className="font-bold text-gray-900 mb-2">Additional Info</h4>
+                                        <p className="text-gray-600 text-sm">{selectedStudent.additionalInfo || selectedStudent.additional_info}</p>
+                                    </div>
+                                )}
+                            </div>
+
+
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
+
+const InfoRow = ({ label, value, highlight }) => (
+    <div className="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+        <span className="text-gray-500">{label}</span>
+        <span className={`font-medium ${highlight ? 'text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full' : 'text-gray-900'}`}>
+            {value || <span className="text-gray-300 italic">N/A</span>}
+        </span>
+    </div>
+);
 
 export default PendingApprovals;

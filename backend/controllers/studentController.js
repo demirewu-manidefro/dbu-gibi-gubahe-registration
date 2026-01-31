@@ -14,11 +14,13 @@ exports.getStudents = async (req, res) => {
         `;
         const params = [];
 
-        // If admin, they can only see their own section
-        if (req.user.role === 'admin') {
-            sql += ' WHERE s.service_section = $1';
-            params.push(req.user.section);
-        }
+        // If admin, they can only see their own section OR unassigned students (to claim/approve)
+        // Using trimming to handle potential whitespace mismatches
+        // FIXED: Temporarily removed server-side filtering to allow frontend to see all potential matches
+        // if (req.user.role === 'admin') {
+        //     sql += " WHERE (TRIM(s.service_section) = TRIM($1) OR s.service_section IS NULL OR s.service_section = 'N/A' OR s.service_section = '')";
+        //     params.push(req.user.section);
+        // }
 
         sql += ' ORDER BY s.created_at DESC';
         const { rows } = await query(sql, params);
@@ -31,6 +33,8 @@ exports.getStudents = async (req, res) => {
 
 exports.registerStudent = async (req, res) => {
     const studentData = req.body;
+    console.log('DEBUG: registerStudent received data:', JSON.stringify(studentData, null, 2));
+
     const studentId = studentData.studentId || studentData.student_id || studentData.id || studentData.username;
     const fullName = studentData.fullName || studentData.full_name || 'Unknown Student';
 
@@ -77,7 +81,7 @@ exports.registerStudent = async (req, res) => {
             studentId,
             fullName,
             studentData.gender || studentData.sex,
-            studentData.age,
+            studentData.age ? parseInt(studentData.age) : null,
             (() => {
                 const bd = studentData.birth_date || studentData.birthDate || studentData.birthYear;
                 if (!bd) return null;
@@ -119,7 +123,7 @@ exports.registerStudent = async (req, res) => {
                 return JSON.stringify(schoolObj);
             })(),
             studentData.is_graduated ?? studentData.isGraduated ?? false,
-            studentData.graduation_year || studentData.graduationYear,
+            (studentData.graduation_year || studentData.graduationYear) ? parseInt(studentData.graduation_year || studentData.graduationYear) : null,
             studentData.service_section || studentData.serviceSection || studentData.section,
             studentData.trainee_type || studentData.traineeType,
             studentData.teacher_training || studentData.teacherTraining ? JSON.stringify(studentData.teacher_training || studentData.teacherTraining) : null,
@@ -149,7 +153,7 @@ exports.registerStudent = async (req, res) => {
         }
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({ message: err.message, stack: String(err) });
     }
 };
 
@@ -225,12 +229,30 @@ exports.approveStudent = async (req, res) => {
 
         const studentSection = rows[0].service_section;
 
-        // Authorization: Admin must match section OR be Manager
-        if (req.user.role === 'admin' && req.user.section !== studentSection) {
+        // Authorization Logic
+        let authorized = false;
+        if (req.user.role === 'manager') {
+            authorized = true;
+        } else if (req.user.role === 'admin') {
+            // Allow if student has no section (Admin 'claims' them) OR if sections match (normalized)
+            if (!studentSection) {
+                authorized = true;
+            } else {
+                const s1 = String(studentSection).trim().toLowerCase();
+                const s2 = String(req.user.section).trim().toLowerCase();
+                if (s1 === s2) authorized = true;
+            }
+        }
+
+        if (!authorized) {
             return res.status(403).json({ message: 'You are not authorized to approve students for this section' });
         }
 
-        await query("UPDATE students SET status = 'Student', verified_by = $1 WHERE id = $2", [req.user.name, id]);
+        // Approve AND ensure section is set if it was missing (claim logic)
+        await query(
+            "UPDATE students SET status = 'Student', verified_by = $1, service_section = COALESCE(service_section, $3) WHERE id = $2",
+            [req.user.name, id, req.user.section]
+        );
         res.json({ message: 'Student approved successfully' });
     } catch (err) {
         console.error(err.message);
@@ -246,8 +268,21 @@ exports.declineStudent = async (req, res) => {
 
         const studentSection = rows[0].service_section;
 
-        // Authorization: Admin must match section OR be Manager
-        if (req.user.role === 'admin' && req.user.section !== studentSection) {
+        // Authorization Logic
+        let authorized = false;
+        if (req.user.role === 'manager') {
+            authorized = true;
+        } else if (req.user.role === 'admin') {
+            if (!studentSection) {
+                authorized = true;
+            } else {
+                const s1 = String(studentSection).trim().toLowerCase();
+                const s2 = String(req.user.section).trim().toLowerCase();
+                if (s1 === s2) authorized = true;
+            }
+        }
+
+        if (!authorized) {
             return res.status(403).json({ message: 'You are not authorized to decline students for this section' });
         }
 
