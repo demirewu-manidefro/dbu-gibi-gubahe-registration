@@ -73,7 +73,7 @@ exports.changePassword = async (req, res) => {
 exports.getAdmins = async (req, res) => {
     try {
         const { rows } = await query(
-            "SELECT id, username, name, role, section, status, last_activity as \"lastActivity\" FROM users WHERE role IN ('admin', 'manager') ORDER BY id ASC"
+            "SELECT id, username, name, role, section, status, photo_url, last_activity as \"lastActivity\" FROM users WHERE role IN ('admin', 'manager') ORDER BY id ASC"
         );
         res.json(rows);
     } catch (err) {
@@ -83,12 +83,12 @@ exports.getAdmins = async (req, res) => {
 };
 
 exports.registerAdmin = async (req, res) => {
-    const { username, password, name, section } = req.body;
+    const { username, password, name, section, photo_url } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const { rows } = await query(
-            "INSERT INTO users (username, password, name, role, section, status) VALUES ($1, $2, $3, 'admin', $4, 'active') RETURNING id, username, name, role, section, status",
-            [username, hashedPassword, name, section]
+            "INSERT INTO users (username, password, name, role, section, status, photo_url) VALUES ($1, $2, $3, 'admin', $4, 'active', $5) RETURNING id, username, name, role, section, status, photo_url",
+            [username, hashedPassword, name, section, photo_url]
         );
 
         await createNotification(
@@ -126,5 +126,34 @@ exports.toggleAdminStatus = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
+    }
+};
+exports.updateProfile = async (req, res) => {
+    const { name, photo_url } = req.body;
+    try {
+        const { rows } = await query(
+            "UPDATE users SET name = COALESCE($1, name), photo_url = COALESCE($2, photo_url) WHERE id = $3 RETURNING id, username, name, role, section, status, photo_url",
+            [name, photo_url, req.user.id]
+        );
+        res.json(rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+exports.updateAdmin = async (req, res) => {
+    const { id } = req.params;
+    const { name, section, photo_url } = req.body;
+    try {
+        const { rows } = await query(
+            "UPDATE users SET name = COALESCE($1, name), section = COALESCE($2, section), photo_url = COALESCE($3, photo_url) WHERE id = $4 RETURNING id, username, name, role, section, status, photo_url",
+            [name, section, photo_url, id]
+        );
+        if (rows.length === 0) return res.status(404).json({ message: 'Admin not found' });
+        res.json(rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
     }
 };

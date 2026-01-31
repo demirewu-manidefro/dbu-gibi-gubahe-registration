@@ -9,12 +9,14 @@ import {
     X,
     User as UserIcon,
     Activity,
-    MessageSquare
+    MessageSquare,
+    Camera,
+    Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminManagement = () => {
-    const { user, admins, toggleAdminStatus, registerAdmin, sendNotification } = useAuth();
+    const { user, admins, toggleAdminStatus, registerAdmin, updateAdmin, sendNotification } = useAuth();
     const [isRegistering, setIsRegistering] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [broadcastTarget, setBroadcastTarget] = useState('all');
@@ -23,8 +25,25 @@ const AdminManagement = () => {
         name: '',
         username: '',
         password: '',
-        section: 'እቅድ'
+        section: 'እቅድ',
+        photo_url: ''
     });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingAdminId, setEditingAdminId] = useState(null);
+
+    const [photoPreview, setPhotoPreview] = useState(null);
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhotoPreview(reader.result);
+                setNewAdminData({ ...newAdminData, photo_url: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const adminOptions = admins.filter((a) => a.role === 'admin');
     const filteredAdmins = admins
@@ -39,11 +58,43 @@ const AdminManagement = () => {
             );
         });
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        registerAdmin(newAdminData);
-        setIsRegistering(false);
-        setNewAdminData({ name: '', username: '', password: '', section: 'እቅድ' });
+        try {
+            if (isEditing) {
+                await updateAdmin(editingAdminId, newAdminData);
+            } else {
+                await registerAdmin(newAdminData);
+            }
+            setIsRegistering(false);
+            setIsEditing(false);
+            setEditingAdminId(null);
+            setNewAdminData({ name: '', username: '', password: '', section: 'እቅድ', photo_url: '' });
+            setPhotoPreview(null);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const openEditModal = (admin) => {
+        setNewAdminData({
+            name: admin.name,
+            username: admin.username,
+            password: '', // Don't pre-fill password for security
+            section: admin.section || 'እቅድ',
+            photo_url: admin.photo_url || ''
+        });
+        setPhotoPreview(admin.photo_url);
+        setEditingAdminId(admin.id);
+        setIsEditing(true);
+        setIsRegistering(true);
+    };
+
+    const openAddModal = () => {
+        setNewAdminData({ name: '', username: '', password: '', section: 'እቅድ', photo_url: '' });
+        setPhotoPreview(null);
+        setIsEditing(false);
+        setIsRegistering(true);
     };
 
     const handleBroadcastSend = () => {
@@ -106,8 +157,8 @@ const AdminManagement = () => {
                         />
                     </div>
                     <button
-                        onClick={() => setIsRegistering(true)}
-                        className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition-all"
+                        onClick={openAddModal}
+                        className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition-all shadow-lg active:scale-95"
                     >
                         <UserPlus size={16} /> Register New Admin
                     </button>
@@ -134,8 +185,12 @@ const AdminManagement = () => {
                                 >
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center font-bold border border-blue-400/20">
-                                                {admin.name.charAt(0)}
+                                            <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center font-bold border border-blue-400/20 overflow-hidden">
+                                                {admin.photo_url ? (
+                                                    <img src={admin.photo_url} alt={admin.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    admin.name.charAt(0)
+                                                )}
                                             </div>
                                             <div>
                                                 <div className="font-bold text-gray-900">{admin.name}</div>
@@ -171,6 +226,13 @@ const AdminManagement = () => {
                                                 title="Message Admin"
                                             >
                                                 <MessageSquare size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => openEditModal(admin)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="Edit Admin"
+                                            >
+                                                <UserIcon size={18} />
                                             </button>
                                             <button
                                                 onClick={() => toggleAdminStatus(admin.id)}
@@ -256,16 +318,31 @@ const AdminManagement = () => {
                             </div>
 
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-400/10 text-blue-400 flex items-center justify-center">
-                                    <UserPlus size={24} />
+                                <div className="w-12 h-12 rounded-2xl bg-blue-400/10 text-blue-400 flex items-center justify-center font-bold">
+                                    {isEditing ? <UserIcon size={24} /> : <UserPlus size={24} />}
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-900">New Admin</h2>
-                                    <p className="text-sm text-gray-500">Create access for section leader</p>
+                                    <h2 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Admin' : 'New Admin'}</h2>
+                                    <p className="text-sm text-gray-500">{isEditing ? 'Update administrator details' : 'Create access for section leader'}</p>
                                 </div>
                             </div>
 
                             <form onSubmit={handleRegister} className="space-y-4">
+                                <div className="flex flex-col items-center mb-4">
+                                    <div className="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-blue-400 transition-all">
+                                        {photoPreview ? (
+                                            <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
+                                        ) : (
+                                            <Camera size={32} className="text-gray-300" />
+                                        )}
+                                        <input
+                                            type="file"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            onChange={handlePhotoChange}
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">Upload Profile Photo</p>
+                                </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
                                     <input
@@ -284,21 +361,22 @@ const AdminManagement = () => {
                                         <input
                                             type="text"
                                             required
+                                            disabled={isEditing}
                                             value={newAdminData.username}
                                             onChange={(e) => setNewAdminData({ ...newAdminData, username: e.target.value })}
-                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
+                                            className={`w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             placeholder="username"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{isEditing ? 'New Password (Optional)' : 'Password'}</label>
                                         <input
                                             type="password"
-                                            required
+                                            required={!isEditing}
                                             value={newAdminData.password}
                                             onChange={(e) => setNewAdminData({ ...newAdminData, password: e.target.value })}
                                             className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
-                                            placeholder="••••••••"
+                                            placeholder={isEditing ? 'Leave blank to keep same' : '••••••••'}
                                         />
                                     </div>
                                 </div>
@@ -325,10 +403,10 @@ const AdminManagement = () => {
                                 <div className="pt-4">
                                     <button
                                         type="submit"
-                                        className="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all flex items-center justify-center gap-2"
+                                        className="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95"
                                     >
-                                        <UserPlus size={18} />
-                                        Create Account
+                                        {isEditing ? <Save size={18} /> : <UserPlus size={18} />}
+                                        {isEditing ? 'Save Changes' : 'Create Account'}
                                     </button>
                                 </div>
                             </form>
