@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS students (
     other_trainings TEXT,
     additional_info TEXT,
     filled_by VARCHAR(100),
+    verified_by VARCHAR(100),
     status VARCHAR(20) DEFAULT 'Pending', -- 'Pending', 'Student', 'Graduated'
     photo_url TEXT,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -71,4 +72,15 @@ CREATE TABLE IF NOT EXISTS activity_log (
     details JSONB,
     time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(20) DEFAULT 'success'
+);
+
+-- Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL, -- 'registration', 'approval', 'system'
+    message TEXT NOT NULL,
+    target_section VARCHAR(50) NOT NULL, -- 'all', 'manager', 'section_name'
+    is_read BOOLEAN DEFAULT FALSE,
+    read_by JSONB DEFAULT '[]', -- Array of usernames who read it (for 'all' target)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

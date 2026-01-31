@@ -15,7 +15,24 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS user_id INT REFERENCES users(id) ON DELETE CASCADE;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS department VARCHAR(100);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS batch VARCHAR(20);
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS verified_by VARCHAR(100);
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);
+            
+            -- Backfill section for admins if missing (assuming username is the section name)
+            UPDATE users SET section = username WHERE role = 'admin' AND section IS NULL;
+        `);
+
+        await query(`
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                type VARCHAR(50) NOT NULL,
+                message TEXT NOT NULL,
+                target_section VARCHAR(50) NOT NULL,
+                is_read BOOLEAN DEFAULT FALSE,
+                read_by JSONB DEFAULT '[]',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
         `);
 
         console.log('Database schema initialized and updated');
