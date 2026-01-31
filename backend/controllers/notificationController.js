@@ -49,10 +49,10 @@ exports.getNotifications = async (req, res) => {
             type: n.type,
             message: n.message,
             target: n.target_section,
-            isRead: n.read_by.includes(username), // Computed for this user
+            isRead: (n.read_by || []).includes(username), // Computed for this user
             readBy: n.read_by || [],
             time: n.created_at,
-            from: 'System' // Can be enhanced later
+            from: n.from_username || 'System'
         }));
 
         res.json(notifications);
@@ -86,5 +86,23 @@ exports.markAsRead = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
+    }
+};
+
+exports.sendNotification = async (req, res) => {
+    try {
+        const { type, message, target } = req.body;
+        const from = req.user.username;
+
+        // Note: 'target' maps to 'target_section' in DB
+        await query(
+            "INSERT INTO notifications (type, message, target_section, from_username) VALUES ($1, $2, $3, $4)",
+            [type || 'message', message, target || 'all', from]
+        );
+
+        res.status(201).json({ success: true });
+    } catch (err) {
+        console.error('Error sending notification:', err);
+        res.status(500).json({ message: 'Server Error' });
     }
 };

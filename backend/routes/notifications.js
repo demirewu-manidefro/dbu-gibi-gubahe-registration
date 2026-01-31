@@ -13,4 +13,9 @@ router.get('/', auth, notificationController.getNotifications);
 // @access  Private
 router.put('/:id/read', auth, notificationController.markAsRead);
 
+// @route   POST api/notifications
+// @desc    Send a notification/message
+// @access  Private
+router.post('/', auth, notificationController.sendNotification);
+
 module.exports = router;

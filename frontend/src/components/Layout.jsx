@@ -24,8 +24,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { user, logout, notifications, markNotificationsRead, dismissNotification } = useAuth();
+    const { user, logout, notifications, markNotificationsRead, dismissNotification, sendNotification, admins } = useAuth();
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showMessages, setShowMessages] = useState(false);
+    const [showBroadcast, setShowBroadcast] = useState(false);
+    const [broadcastTarget, setBroadcastTarget] = useState('all');
+    const [broadcastMessage, setBroadcastMessage] = useState('');
+    const [sending, setSending] = useState(false);
 
     const removeNotification = (notificationId) => {
         dismissNotification(notificationId);
@@ -222,25 +227,41 @@ const Layout = ({ children }) => {
 
                                 return n.target === 'all' || n.target === username;
                             });
-                            const unreadCount = userNotifications.filter(n => !n.readBy.includes(username)).length;
+
+                            const userAlerts = userNotifications.filter(n => n.type !== 'message');
+                            const userMessages = userNotifications.filter(n => n.type === 'message');
+
+                            const unreadAlerts = userAlerts.filter(n => !n.readBy.includes(username)).length;
+                            const unreadMessages = userMessages.filter(n => !n.readBy.includes(username)).length;
                             return (
                                 <>
                                     <button
-                                        onClick={() => setShowNotifications(prev => !prev)}
+                                        onClick={() => {
+                                            setShowNotifications(prev => !prev);
+                                            setShowMessages(false);
+                                        }}
                                         className="p-2 hover:bg-gray-100 rounded-full relative"
                                     >
                                         <Bell size={20} />
-                                        {unreadCount > 0 && (
+                                        {unreadAlerts > 0 && (
                                             <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                                {unreadCount > 9 ? '9+' : unreadCount}
+                                                {unreadAlerts > 9 ? '9+' : unreadAlerts}
                                             </span>
                                         )}
                                     </button>
                                     <button
-                                        onClick={() => setShowNotifications(true)}
-                                        className="p-2 hover:bg-gray-100 rounded-full"
+                                        onClick={() => {
+                                            setShowMessages(prev => !prev);
+                                            setShowNotifications(false);
+                                        }}
+                                        className="p-2 hover:bg-gray-100 rounded-full relative"
                                     >
                                         <MessageCircle size={20} />
+                                        {unreadMessages > 0 && (
+                                            <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                                {unreadMessages > 9 ? '9+' : unreadMessages}
+                                            </span>
+                                        )}
                                     </button>
                                     {showNotifications && (
                                         <>
@@ -269,13 +290,13 @@ const Layout = ({ children }) => {
                                                     </button>
                                                 </div>
                                                 <div className="max-h-96 overflow-y-auto">
-                                                    {userNotifications.length === 0 ? (
+                                                    {userAlerts.length === 0 ? (
                                                         <div className="p-8 text-center">
                                                             <Bell size={48} className="mx-auto text-gray-300 mb-3" />
-                                                            <p className="text-sm text-gray-500">No notifications</p>
+                                                            <p className="text-sm text-gray-500">No alerts</p>
                                                         </div>
                                                     ) : (
-                                                        userNotifications.map((n) => {
+                                                        userAlerts.map((n) => {
                                                             const isUnread = !n.readBy.includes(username);
                                                             return (
                                                                 <div
@@ -327,6 +348,86 @@ const Layout = ({ children }) => {
                                             </div>
                                         </>
                                     )}
+                                    {showMessages && (
+                                        <>
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={() => setShowMessages(false)}
+                                            />
+                                            <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                                                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100">
+                                                    <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
+                                                        <MessageCircle size={16} className="text-indigo-600" />
+                                                        Messages
+                                                        {unreadMessages > 0 && (
+                                                            <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                                                {unreadMessages}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => setShowBroadcast(true)}
+                                                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-white/50 px-2 py-1 rounded-lg"
+                                                    >
+                                                        + New Message
+                                                    </button>
+                                                </div>
+                                                <div className="max-h-96 overflow-y-auto">
+                                                    {userMessages.length === 0 ? (
+                                                        <div className="p-8 text-center">
+                                                            <MessageCircle size={48} className="mx-auto text-gray-200 mb-3" />
+                                                            <p className="text-sm text-gray-500 font-medium">No messages yet</p>
+                                                            <button
+                                                                onClick={() => setShowBroadcast(true)}
+                                                                className="mt-4 text-xs text-blue-600 font-bold hover:underline"
+                                                            >
+                                                                Send your first broadcast
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        userMessages.map((m) => {
+                                                            const isUnread = !m.readBy.includes(username);
+                                                            return (
+                                                                <div
+                                                                    key={m.id}
+                                                                    onClick={() => removeNotification(m.id)}
+                                                                    className={`px-4 py-4 border-b border-gray-50 cursor-pointer hover:bg-indigo-50/30 transition-colors ${isUnread ? 'bg-indigo-50/20' : ''}`}
+                                                                >
+                                                                    <div className="flex items-start gap-3">
+                                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
+                                                                            {(m.from || 'S').charAt(0).toUpperCase()}
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="flex items-center justify-between mb-0.5">
+                                                                                <span className="text-xs font-bold text-gray-900">@{m.from}</span>
+                                                                                <span className="text-[10px] text-gray-400 font-medium">{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                            </div>
+                                                                            <div className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                                                                                {m.message}
+                                                                            </div>
+                                                                        </div>
+                                                                        {isUnread && (
+                                                                            <div className="w-2 h-2 bg-indigo-600 rounded-full mt-1.5 shadow-sm shadow-indigo-200" />
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    )}
+                                                </div>
+                                                {userMessages.length > 0 && (
+                                                    <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
+                                                        <button
+                                                            onClick={() => markNotificationsRead(username)}
+                                                            className="text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors"
+                                                        >
+                                                            Mark All as Read
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </>
                             );
                         })()}
@@ -343,6 +444,103 @@ const Layout = ({ children }) => {
                         </button>
                     </div>
                 </header>
+
+                <AnimatePresence>
+                    {showBroadcast && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setShowBroadcast(false)}
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            />
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100"
+                            >
+                                <div className="bg-blue-900 p-8 text-white relative">
+                                    <div className="absolute top-0 right-0 p-4">
+                                        <button onClick={() => setShowBroadcast(false)} className="text-white/50 hover:text-white transition-colors">
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+                                    <h3 className="text-2xl font-bold flex items-center gap-3">
+                                        <MessageCircle size={28} className="text-blue-400" />
+                                        Global Broadcast
+                                    </h3>
+                                    <p className="text-blue-200 mt-2 text-sm font-medium">Send an urgent announcement to students or admins</p>
+                                </div>
+
+                                <div className="p-8 space-y-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Select Audience</label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[
+                                                { id: 'all', label: 'Everyone', color: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
+                                                { id: 'admin', label: 'All Admins', color: 'bg-blue-50 text-blue-700 border-blue-100' },
+                                                { id: 'እቅድ', label: 'እቅድ Section', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+                                                { id: 'ትምህርት', label: 'ትምህርት Section', color: 'bg-amber-50 text-amber-700 border-amber-100' }
+                                            ].map(target => (
+                                                <button
+                                                    key={target.id}
+                                                    onClick={() => setBroadcastTarget(target.id)}
+                                                    className={`px-4 py-3 rounded-2xl border text-sm font-bold transition-all ${broadcastTarget === target.id
+                                                        ? `${target.color} border-current scale-[1.02] shadow-sm`
+                                                        : 'bg-gray-50 border-gray-100 text-gray-500 hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    {target.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Message Content</label>
+                                        <textarea
+                                            rows={4}
+                                            value={broadcastMessage}
+                                            onChange={(e) => setBroadcastMessage(e.target.value)}
+                                            placeholder="Write your announcement here..."
+                                            className="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-700 focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <button
+                                            disabled={sending || !broadcastMessage.trim()}
+                                            onClick={async () => {
+                                                setSending(true);
+                                                try {
+                                                    await sendNotification({ target: broadcastTarget, message: broadcastMessage });
+                                                    setBroadcastMessage('');
+                                                    setShowBroadcast(false);
+                                                } catch (err) {
+                                                    alert('Failed to send broadcast');
+                                                } finally {
+                                                    setSending(false);
+                                                }
+                                            }}
+                                            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
+                                        >
+                                            {sending ? (
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <MessageCircle size={20} />
+                                                    Send Broadcast
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 {/* Content Area */}
                 <div className="flex-1 overflow-y-auto p-8 no-scrollbar">

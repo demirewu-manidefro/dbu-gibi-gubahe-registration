@@ -516,10 +516,30 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const sendNotification = ({ target, message }) => {
-        // This function is seemingly unused or for internal messaging? 
-        // If used, it should POST to backend.
-        // For now, removing local set.
+    const sendNotification = async ({ target, message }) => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        try {
+            const res = await fetch(`${API_BASE_URL}/notifications`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({
+                    type: 'message',
+                    message,
+                    target: target || 'all'
+                })
+            });
+            if (res.ok) {
+                fetchNotifications();
+                return true;
+            }
+        } catch (err) {
+            console.error('Error sending notification:', err);
+            throw err;
+        }
     };
 
     const markNotificationsRead = async (username) => {
@@ -599,6 +619,32 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateAdmin = async (adminId, adminData) => {
+        if (user?.role !== 'manager') return;
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/admins/${adminId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(adminData)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setAdmins(prev => prev.map(a => a.id === adminId ? { ...a, ...data } : a));
+                recordActivity('admin_updated', { adminName: data.name, section: data.section });
+                return true;
+            } else {
+                throw new Error(data.message || 'Failed to update admin');
+            }
+        } catch (err) {
+            console.error('Update admin error:', err);
+            throw err;
+        }
+    };
+
     const resetPassword = async (studentId) => {
         const token = localStorage.getItem('token');
         try {
@@ -648,6 +694,30 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateProfile = async (profileData) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(profileData)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser(prev => ({ ...prev, ...data }));
+                return true;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            console.error('Update profile error:', err);
+            throw err;
+        }
+    };
+
     const value = {
         user,
         admins,
@@ -661,6 +731,8 @@ export const AuthProvider = ({ children }) => {
         registerStudent,
         registerAdmin,
         updateStudent,
+        updateAdmin,
+        updateProfile,
         deleteStudent,
         importStudents,
         approveStudent,
