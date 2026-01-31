@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { query } = require('../config/db');
+const { createNotification } = require('./notificationController');
 
 exports.resetPassword = async (req, res) => {
     const { studentId } = req.params;
@@ -66,5 +67,64 @@ exports.changePassword = async (req, res) => {
     } catch (err) {
         console.error('Change password error:', err);
         res.status(500).json({ message: 'Server Error', details: err.message });
+    }
+};
+
+exports.getAdmins = async (req, res) => {
+    try {
+        const { rows } = await query(
+            "SELECT id, username, name, role, section, status, last_activity as \"lastActivity\" FROM users WHERE role IN ('admin', 'manager') ORDER BY id ASC"
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.registerAdmin = async (req, res) => {
+    const { username, password, name, section } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const { rows } = await query(
+            "INSERT INTO users (username, password, name, role, section, status) VALUES ($1, $2, $3, 'admin', $4, 'active') RETURNING id, username, name, role, section, status",
+            [username, hashedPassword, name, section]
+        );
+
+        await createNotification(
+            'admin_created',
+            `New Admin Created: ${name} (${section})`,
+            'manager'
+        );
+
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.toggleAdminStatus = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rows: users } = await query("SELECT status, name FROM users WHERE id = $1", [id]);
+        if (users.length === 0) return res.status(404).json({ message: 'User not found' });
+
+        const newStatus = users[0].status === 'active' ? 'blocked' : 'active';
+        const { rows } = await query(
+            "UPDATE users SET status = $1 WHERE id = $2 RETURNING id, status",
+            [newStatus, id]
+        );
+
+        await createNotification(
+            'system',
+            `Admin ${users[0].name} ${newStatus === 'active' ? 'unblocked' : 'blocked'}`,
+            'manager'
+        );
+
+        res.json(rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
 };

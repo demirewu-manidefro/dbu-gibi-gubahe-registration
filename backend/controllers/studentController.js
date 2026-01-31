@@ -1,5 +1,6 @@
 const { query } = require('../config/db');
 const bcrypt = require('bcryptjs');
+const { createNotification } = require('./notificationController');
 
 exports.getStudents = async (req, res) => {
     try {
@@ -142,6 +143,15 @@ exports.registerStudent = async (req, res) => {
             const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
             const sql = `INSERT INTO students (${columns.join(', ')}) VALUES (${placeholders}) RETURNING *`;
             const { rows } = await query(sql, values);
+
+            // Create Notification
+            const target = studentData.service_section || studentData.serviceSection || 'all';
+            await createNotification(
+                'registration',
+                `New registration: ${fullName} (${studentId})`,
+                target
+            );
+
             res.status(201).json(rows[0]);
         } else {
             // Update
@@ -202,6 +212,16 @@ exports.updateStudent = async (req, res) => {
         const { rows } = await query(sql, values);
 
         if (rows.length === 0) return res.status(404).json({ message: 'Student not found' });
+
+        // Add notification for update
+        const student = rows[0];
+        const target = student.service_section || 'all';
+        await createNotification(
+            'student_updated',
+            `Student updated: ${student.full_name} (${student.id})`,
+            target
+        );
+
         res.json(rows[0]);
     } catch (err) {
         console.error(err.message);
@@ -212,8 +232,21 @@ exports.updateStudent = async (req, res) => {
 exports.deleteStudent = async (req, res) => {
     const { id } = req.params;
     try {
+        // Fetch student details before deletion for notification
+        const { rows: students } = await query('SELECT full_name, service_section FROM students WHERE id = $1', [id]);
+        if (students.length === 0) return res.status(404).json({ message: 'Student not found' });
+
+        const student = students[0];
+
         const { rowCount } = await query('DELETE FROM students WHERE id = $1', [id]);
-        if (rowCount === 0) return res.status(404).json({ message: 'Student not found' });
+
+        // Add notification for deletion
+        await createNotification(
+            'student_deleted',
+            `Student removed: ${student.full_name} (${id})`,
+            student.service_section || 'all'
+        );
+
         res.json({ message: 'Student deleted successfully' });
     } catch (err) {
         console.error(err.message);
@@ -253,6 +286,14 @@ exports.approveStudent = async (req, res) => {
             "UPDATE students SET status = 'Student', verified_by = $1, service_section = COALESCE(service_section, $3) WHERE id = $2",
             [req.user.name, id, req.user.section]
         );
+
+        // Notify Manager
+        await createNotification(
+            'approval',
+            `Student Approved: ${rows[0].id} by ${req.user.name}`,
+            'manager'
+        );
+
         res.json({ message: 'Student approved successfully' });
     } catch (err) {
         console.error(err.message);
