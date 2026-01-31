@@ -37,11 +37,8 @@ export const AuthProvider = ({ children }) => {
                     } else {
                         // Update user data from server to ensure sync
                         const userData = await res.json();
-                        // Only update if necessary to avoid potential render loops if objects differ slightly
-                        // (Simple check: if we have no user, or ID differs)
-                        if (!user || user.id !== userData.id) {
-                            setUser(userData);
-                        }
+                        // Always update user data to capture profile changes (photo, name, etc.)
+                        setUser(userData);
                     }
                 } catch (err) {
                     console.error('Session validation error:', err);
@@ -306,8 +303,28 @@ export const AuthProvider = ({ children }) => {
                 headers,
                 body: JSON.stringify(studentData)
             });
+
+            // Get the response text first to handle both JSON and HTML responses
+            const responseText = await res.text();
+            let responseData;
+
+            try {
+                responseData = JSON.parse(responseText);
+            } catch (parseError) {
+                // Response is not valid JSON (likely HTML error page)
+                console.error('Server returned non-JSON response:', responseText.substring(0, 200));
+                throw new Error('Server error - please ensure the backend server is running on port 5000');
+            }
+
             if (res.ok) {
+                // Capture the updated student data
+                const savedStudent = responseData;
                 fetchStudents();
+
+                // If this is the current user (updating their own profile), update user state immediately
+                if (user && (user.id === savedStudent.user_id || user.student_id === savedStudent.id || user.role === 'student')) {
+                    setUser(prev => ({ ...prev, ...savedStudent }));
+                }
 
                 const isUpdate = students.some(s => s.id === (studentData.studentId || studentData.id));
                 const actionType = isUpdate ? 'student_update' : 'registration';
@@ -333,8 +350,7 @@ export const AuthProvider = ({ children }) => {
 
                 return true;
             } else {
-                const error = await res.json();
-                throw new Error(error.message);
+                throw new Error(responseData.message || 'Registration failed');
             }
         } catch (err) {
             throw err;
@@ -451,9 +467,26 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const deleteStudent = (studentId) => {
-        setStudents(prev => prev.filter(s => s.id !== studentId));
-        recordActivity('student_deleted', { student: studentId });
+    const deleteStudent = async (studentId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+
+            if (res.ok) {
+                setStudents(prev => prev.filter(s => s.id !== studentId));
+                recordActivity('student_deleted', { student: studentId });
+                return true;
+            } else {
+                const error = await res.json();
+                throw new Error(error.message || 'Failed to delete student');
+            }
+        } catch (err) {
+            console.error('Delete student error:', err);
+            throw err;
+        }
     };
 
     const importStudents = (newStudents) => {

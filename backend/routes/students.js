@@ -20,7 +20,9 @@ router.put('/:id', [auth, authorize(['admin', 'manager'])], studentController.up
 
 // @route   DELETE api/students/:id
 // @desc    Delete a student
-// @access  Private (Manager only)
+// @access  Private (Admin/Manager)
+router.delete('/:id', [auth, authorize(['admin', 'manager'])], studentController.deleteStudent);
+
 // @route   POST api/students/:id/approve
 // @desc    Approve a student registration
 // @access  Private (Admin/Manager)
