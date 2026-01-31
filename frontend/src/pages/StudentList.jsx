@@ -110,6 +110,7 @@ const StudentList = () => {
     const filteredStudents = isStudent
         ? [normalizeStudent(user)].filter(s => s && s.id)
         : safeStudents.filter(student =>
+            (isManager ? (student.name || '').toUpperCase() !== 'N/A' : true) &&
             (isManager
                 ? (filterSection === 'All' || student.section === filterSection)
                 : (student.section === user?.section)
