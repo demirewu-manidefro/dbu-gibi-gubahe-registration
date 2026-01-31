@@ -293,3 +293,131 @@ exports.declineStudent = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+exports.importStudents = async (req, res) => {
+    const students = req.body; // Expecting array of student objects
+    if (!Array.isArray(students)) {
+        return res.status(400).json({ message: 'Input must be an array of students' });
+    }
+
+    const results = {
+        success: 0,
+        failed: 0,
+        errors: []
+    };
+
+    try {
+        // We reuse the logic from registerStudent but in a loop
+        // Ideally this should be a transaction, but for simplicity we loop
+        for (const studentData of students) {
+            try {
+                // Call internal helper or logic similar to registerStudent
+                // For now, we'll replicate the core logic or refactor registerStudent to be callable
+
+                const studentId = studentData.studentId || studentData.student_id || studentData.id;
+                if (!studentId) {
+                    results.failed++;
+                    results.errors.push(`Missing ID for student: ${studentData.name || 'Unknown'}`);
+                    continue;
+                }
+
+                const fullName = studentData.fullName || studentData.full_name || studentData.name || 'Unknown Student';
+
+                // 1. Ensure User Exists
+                const { rows: userRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
+                let userId = null;
+
+                if (userRows.length === 0) {
+                    // Create minimal user
+                    const defaultPassword = await bcrypt.hash('password123', 10);
+                    const { rows: newUser } = await query(
+                        'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+                        [studentId.trim(), defaultPassword, fullName, 'student', 'active']
+                    );
+                    userId = newUser[0].id;
+                } else {
+                    userId = userRows[0].id;
+                }
+
+                // 2. Prepare Data
+                // Construct school_info JSON
+                const schoolInfo = {
+                    cumulativeGPA: studentData.cumulativeGPA,
+                    gpa: studentData.gpa,
+                    participation: studentData.participation,
+                    specialEducation: studentData.specialEducation,
+                    specialPlace: studentData.specialPlace,
+                    attendance: studentData.attendance,
+                    educationYearly: studentData.educationYearly,
+                    abinetEducation: studentData.abinetEducation,
+                    specialNeed: studentData.specialNeed
+                };
+
+                const columns = [
+                    'id', 'full_name', 'gender', 'age', 'birth_date', 'baptismal_name', 'priesthood_rank',
+                    'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
+                    'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
+                    'department', 'batch', 'service_section', 'school_info',
+                    'filled_by', 'verified_by', 'status', 'user_id'
+                ];
+
+                const values = [
+                    studentId,
+                    fullName,
+                    studentData.sex || studentData.gender,
+                    studentData.age ? parseInt(studentData.age) : null,
+                    studentData.birthYear ? `${studentData.birthYear}-01-01` : null,
+                    studentData.baptismalName,
+                    studentData.priesthoodRank,
+                    studentData.motherTongue,
+                    null, // other_languages (complex obj)
+                    studentData.region,
+                    studentData.zone,
+                    studentData.woreda,
+                    studentData.kebele,
+                    studentData.phone,
+                    studentData.gibiName,
+                    studentData.centerAndWoredaCenter,
+                    studentData.parishChurch,
+                    studentData.emergencyName,
+                    studentData.emergencyPhone,
+                    studentData.dept || studentData.department,
+                    studentData.year || studentData.batch,
+                    studentData.section || studentData.serviceSection,
+                    JSON.stringify(schoolInfo),
+                    studentData.filledBy || 'Import',
+                    studentData.verifiedBy,
+                    studentData.status || 'Student',
+                    userId
+                ];
+
+                const sql = `
+                    INSERT INTO students (${columns.join(', ')})
+                    VALUES (${columns.map((_, i) => `$${i + 1}`).join(', ')})
+                    ON CONFLICT (id) DO UPDATE SET
+                    full_name = EXCLUDED.full_name,
+                    gender = EXCLUDED.gender,
+                    department = EXCLUDED.department,
+                    batch = EXCLUDED.batch,
+                    service_section = EXCLUDED.service_section,
+                    status = EXCLUDED.status
+                    RETURNING id;
+                `;
+
+                await query(sql, values);
+                results.success++;
+
+            } catch (innerErr) {
+                console.error(`Failed to import student ${studentData.id}:`, innerErr.message);
+                results.failed++;
+                results.errors.push(`ID ${studentData.id}: ${innerErr.message}`);
+            }
+        }
+
+        res.json({ message: 'Import completed', results });
+
+    } catch (err) {
+        console.error('Bulk import error:', err);
+        res.status(500).send('Server Error during bulk import');
+    }
+};
