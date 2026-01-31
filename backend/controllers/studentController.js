@@ -152,6 +152,11 @@ exports.registerStudent = async (req, res) => {
                 target
             );
 
+            // Sync photo to users table
+            if (studentData.photo_url || studentData.photoUrl) {
+                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, ownerUserId]);
+            }
+
             res.status(201).json(rows[0]);
         } else {
             // Update
@@ -159,6 +164,11 @@ exports.registerStudent = async (req, res) => {
             const setClause = columns.map((col, i) => `${col} = $${i + 1}`).join(', ');
             const sql = `UPDATE students SET ${setClause} WHERE id = $${columns.length + 1} RETURNING *`;
             const { rows } = await query(sql, [...values, anchorId]);
+            // Sync photo to users table
+            if (studentData.photo_url || studentData.photoUrl) {
+                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, ownerUserId]);
+            }
+
             res.json(rows[0]);
         }
     } catch (err) {

@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
                 name: profileData.name || user.name,
                 section: user.section || profileData.section,
                 student_id: profileData.student_id,
-                mustChangePassword: user.must_change_password || false,
+                photo_url: user.photo_url || profileData.photo_url,
                 ...profileData,
                 id: user.id // Ensure integer user ID is not overwritten
             }
@@ -110,7 +110,7 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
     try {
-        const { rows } = await query('SELECT id, username, name, role, section, status, must_change_password FROM users WHERE id = $1', [req.user.id]);
+        const { rows } = await query('SELECT id, username, name, role, section, status, must_change_password, photo_url FROM users WHERE id = $1', [req.user.id]);
         const user = rows[0];
 
         if (!user) return res.status(404).json({ message: 'User not found' });
