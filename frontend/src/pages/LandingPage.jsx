@@ -69,7 +69,7 @@ const LandingPage = () => {
                         <a href="#home" className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-90">
                             <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900 leading-none">ደብረ ብርሀን</h1>
+                                <h1 className="text-xl font-bold text-gray-900 leading-none">ደ/ዩ/ቀ </h1>
                                 <p className="text-xs text-blue-600 font-medium tracking-widest">ግቢ ጉባኤ</p>
                             </div>
                         </a>
@@ -435,7 +435,7 @@ const LandingPage = () => {
                             <div className="flex items-center gap-2 mb-6">
                                 <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                                 <span className="text-xl font-bold text-gray-900">
-                                    {lang === 'am' ? 'ደብረ ብርሀን ጊቢ ጉባኤ' : 'Debre Berhan Gibi Gubae'}
+                                    {lang === 'am' ? 'ደብረ ብርሃን ጊቢ ጉባኤ' : 'Debre Berhan Gibi Gubae'}
                                 </span>
                             </div>
                             <p className="text-gray-500 mb-6 max-w-sm">
@@ -476,7 +476,7 @@ const LandingPage = () => {
                                     <MapPin size={18} className="text-blue-600 shrink-0" />
                                     <span>
                                         {lang === 'am'
-                                            ? <>ደብረ ብርሀን<br />ቅዱስ ገብርኤል ቤተክርስቲያን ጀርባ</>
+                                            ? <>ደብረ ብርሃን<br />ቅዱስ ገብርኤል ቤተክርስቲያን ጀርባ</>
                                             : <>Debre Berhan<br />Behind St. Gabriel Church</>}
                                     </span>
                                 </li>
@@ -491,7 +491,7 @@ const LandingPage = () => {
                     <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
                         <p>
                             {lang === 'am'
-                                ? `© ${new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።`
+                                ? `© ${new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሃን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።`
                                 : `© ${new Date().getFullYear()} Debre Berhan Gibi Gubae. All rights reserved.`}
                         </p>
                         <div className="flex gap-6">
