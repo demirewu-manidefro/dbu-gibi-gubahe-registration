@@ -13,6 +13,11 @@ router.get('/', auth, notificationController.getNotifications);
 // @access  Private
 router.put('/:id/read', auth, notificationController.markAsRead);
 
+// @route   DELETE api/notifications/:id
+// @desc    Dismiss notification (hide from user)
+// @access  Private
+router.delete('/:id', auth, notificationController.dismissNotification);
+
 // @route   POST api/notifications
 // @desc    Send a notification/message
 // @access  Private

@@ -27,17 +27,22 @@ exports.getNotifications = async (req, res) => {
         // 3. User: sees 'username' target or 'all'
 
         if (role === 'manager') {
-            // Manager sees EVERYTHING
             sql += " (1=1) ";
         } else if (role === 'admin') {
-            sql += " (target_section = $1 OR target_section = $2 OR target_section = 'all') ";
-            // params: [section, username]
-            params.push(section, username);
+            // Use TRIM to ignore leading/trailing whitespace which sometimes happens
+            sql += " (TRIM(target_section) = TRIM($1) OR TRIM(target_section) = TRIM($2) OR target_section = 'all') ";
+            params.push(section || '', username);
         } else {
-            // Regular user / Student
-            sql += " (target_section = $1 OR target_section = 'all') ";
+            sql += " (TRIM(target_section) = TRIM($1) OR target_section = 'all') ";
             params.push(username);
         }
+
+        // Filter out notifications dismissed by the user
+        // Using Postgres JSONB '?' operator to check if username is in dismissed_by array
+        // Use parameter instead of string interpolation for safety
+        const dismissedParamIndex = params.length + 1;
+        sql += ` AND NOT (dismissed_by ? $${dismissedParamIndex})`;
+        params.push(username);
 
         sql += " ORDER BY created_at DESC LIMIT 50";
 
@@ -49,7 +54,7 @@ exports.getNotifications = async (req, res) => {
             type: n.type,
             message: n.message,
             target: n.target_section,
-            isRead: (n.read_by || []).includes(username), // Computed for this user
+            isRead: (n.read_by || []).includes(username),
             readBy: n.read_by || [],
             time: n.created_at,
             from: n.from_username || 'System'
@@ -57,7 +62,7 @@ exports.getNotifications = async (req, res) => {
 
         res.json(notifications);
     } catch (err) {
-        console.error(err.message);
+        console.error('getNotifications Error:', err.message);
         res.status(500).send('Server Error');
     }
 };
@@ -67,12 +72,6 @@ exports.markAsRead = async (req, res) => {
         const { id } = req.params;
         const { username } = req.user;
 
-        // Use JSONB operator to append username if not exists
-        // Postgres: update notifications set read_by = read_by || '["username"]'
-        // But better uniqueness check:
-        // jsonb_set etc. Simple approach:
-
-        // check if already read
         const check = await query("SELECT read_by FROM notifications WHERE id = $1", [id]);
         if (check.rows.length === 0) return res.status(404).json({ msg: 'Notification not found' });
 
@@ -89,12 +88,32 @@ exports.markAsRead = async (req, res) => {
     }
 };
 
+exports.dismissNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { username } = req.user;
+
+        const check = await query("SELECT dismissed_by FROM notifications WHERE id = $1", [id]);
+        if (check.rows.length === 0) return res.status(404).json({ msg: 'Notification not found' });
+
+        let dismissedBy = check.rows[0].dismissed_by || [];
+        if (!dismissedBy.includes(username)) {
+            dismissedBy.push(username);
+            await query("UPDATE notifications SET dismissed_by = $1 WHERE id = $2", [JSON.stringify(dismissedBy), id]);
+        }
+
+        res.json({ success: true, message: 'Notification dismissed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.sendNotification = async (req, res) => {
     try {
         const { type, message, target } = req.body;
         const from = req.user.username;
 
-        // Note: 'target' maps to 'target_section' in DB
         await query(
             "INSERT INTO notifications (type, message, target_section, from_username) VALUES ($1, $2, $3, $4)",
             [type || 'message', message, target || 'all', from]
