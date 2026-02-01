@@ -157,3 +157,48 @@ exports.updateAdmin = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+exports.makeStudentAdmin = async (req, res) => {
+    const { studentId } = req.params;
+
+    // Only Manager or maybe Admin can do this? Let's restrict to Manager as they manage Admins
+    if (req.user.role !== 'manager') {
+        return res.status(403).json({ message: 'Only the Manager can promote students to Admin' });
+    }
+
+    try {
+        // Find the user_id associated with the student
+        const { rows: studentRows } = await query('SELECT user_id, full_name, service_section FROM students WHERE id = $1', [studentId]);
+
+        if (studentRows.length === 0) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        const { user_id, full_name, service_section } = studentRows[0];
+
+        if (!user_id) {
+            return res.status(400).json({ message: 'No user account found for this student' });
+        }
+
+        // Update user role to admin
+        // We also default their section to their service_section or 'እቅድ' if not present
+        const section = service_section || 'እቅድ';
+
+        const { rows: userUpdate } = await query(
+            "UPDATE users SET role = 'admin', section = COALESCE(section, $1) WHERE id = $2 RETURNING username",
+            [section, user_id]
+        );
+
+        await createNotification(
+            'admin_created',
+            `Student Promoted to Admin: ${full_name} (${section})`,
+            'manager'
+        );
+
+        res.json({ message: `Student ${full_name} promoted to Admin successfully`, username: userUpdate[0].username });
+
+    } catch (err) {
+        console.error('Make admin error:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};

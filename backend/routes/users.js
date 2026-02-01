@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { resetPassword, changePassword, getAdmins, registerAdmin, toggleAdminStatus, updateProfile, updateAdmin } = require('../controllers/userController');
+const { resetPassword, changePassword, getAdmins, registerAdmin, toggleAdminStatus, updateProfile, updateAdmin, makeStudentAdmin } = require('../controllers/userController');
 const { auth } = require('../middleware/auth');
 
 // @route   PUT /api/users/reset-password/:studentId
@@ -37,5 +37,10 @@ router.put('/admins/:id/status', auth, toggleAdminStatus);
 // @desc    Update own profile (name, photo)
 // @access  Private
 router.put('/profile', auth, updateProfile);
+
+// @route   PUT /api/users/make-admin/:studentId
+// @desc    Promote student to admin (manager only)
+// @access  Private
+router.put('/make-admin/:studentId', auth, makeStudentAdmin);
 
 module.exports = router;
