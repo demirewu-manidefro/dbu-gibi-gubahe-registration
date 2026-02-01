@@ -145,7 +145,8 @@ exports.registerStudent = async (req, res) => {
             const { rows } = await query(sql, values);
 
             // Create Notification
-            const target = studentData.service_section || studentData.serviceSection || 'all';
+            const target = (studentData.service_section || studentData.serviceSection || studentData.section || 'all').trim();
+            console.log(`DEBUG: Sending registration notification for ${fullName}. Target Section: "${target}"`);
             await createNotification(
                 'registration',
                 `New registration: ${fullName} (${studentId})`,
@@ -168,6 +169,14 @@ exports.registerStudent = async (req, res) => {
             if (studentData.photo_url || studentData.photoUrl) {
                 await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, ownerUserId]);
             }
+
+            // Create Notification even for update (as it might be the first time they fill the full form)
+            const target = (studentData.service_section || studentData.serviceSection || studentData.section || 'all').trim();
+            await createNotification(
+                'registration',
+                `Student updated/completed registration: ${fullName} (${studentId})`,
+                target
+            );
 
             res.json(rows[0]);
         }
@@ -225,7 +234,7 @@ exports.updateStudent = async (req, res) => {
 
         // Add notification for update
         const student = rows[0];
-        const target = student.service_section || 'all';
+        const target = (student.service_section || 'all').trim();
         await createNotification(
             'student_updated',
             `Student updated: ${student.full_name} (${student.id})`,
@@ -254,7 +263,7 @@ exports.deleteStudent = async (req, res) => {
         await createNotification(
             'student_deleted',
             `Student removed: ${student.full_name} (${id})`,
-            student.service_section || 'all'
+            (student.service_section || 'all').trim()
         );
 
         res.json({ message: 'Student deleted successfully' });
@@ -337,7 +346,19 @@ exports.declineStudent = async (req, res) => {
             return res.status(403).json({ message: 'You are not authorized to decline students for this section' });
         }
 
+        // Fetch student name for notification
+        const { rows: studentInfo } = await query('SELECT full_name FROM students WHERE id = $1', [id]);
+        const studentName = studentInfo[0]?.full_name || id;
+
         await query('DELETE FROM students WHERE id = $1', [id]);
+
+        // Notify Manager
+        await createNotification(
+            'decline',
+            `Student registration declined: ${studentName} (${id}) by ${req.user.name}`,
+            'manager'
+        );
+
         res.json({ message: 'Student registration declined' });
     } catch (err) {
         console.error(err.message);
