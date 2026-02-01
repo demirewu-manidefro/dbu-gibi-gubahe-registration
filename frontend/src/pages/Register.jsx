@@ -86,7 +86,7 @@ const Register = () => {
                         >
                             <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
                             <h1 className="text-4xl font-extrabold mb-2">ተማሪዎች ምዝገባ</h1>
-                            <p className="text-xl text-blue-200 font-medium tracking-wide">አዲስ ጊቢ ጉባኤ አባል</p>
+                            <p className="text-xl text-blue-200 font-medium tracking-wide">አዲስ የጊቢ ጉባኤ አባል</p>
                         </motion.div>
                     </div>
 
@@ -97,7 +97,7 @@ const Register = () => {
                         className="max-w-md"
                     >
                         <blockquote className="text-2xl font-serif leading-relaxed mb-6 italic text-white/90">
-                            "ወደ እግዚአብሔር ቤት እንሂድ በተሉኝ ጊዜ ደስ አለኝ።"
+                            "ወደ እግዚአብሔር ቤት እንሂድ ባሉኝ ጊዜ ደስ አለኝ።"
                         </blockquote>
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-white/30 flex-1"></div>
@@ -131,7 +131,7 @@ const Register = () => {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">የተጠቃሚ ስም (Username)</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">የተጠቃሚ ስም </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <UserCircle size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
