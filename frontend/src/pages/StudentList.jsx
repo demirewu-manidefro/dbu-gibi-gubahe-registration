@@ -12,12 +12,13 @@ import {
     Save,
     Upload,
     Key,
-    CheckCircle
+    CheckCircle,
+    ShieldCheck
 } from 'lucide-react';
 import EditStudentModal from '../components/EditStudentModal';
 
 const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, globalSearch, setGlobalSearch } = useAuth();
+    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, makeStudentAdmin, globalSearch, setGlobalSearch } = useAuth();
     const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -112,16 +113,17 @@ const StudentList = () => {
     // For admins/managers: show only approved students (status === 'Student'), not pending
     const filteredStudents = isStudent
         ? [normalizeStudent(user)].filter(s => s && s.id)
-        : safeStudents.filter(student =>
+        : safeStudents.map(s => normalizeStudent(s)).filter(student =>
+            student &&
             student.status === 'Student' && // Only show approved students
-            (isManager ? (student.name || student.full_name || '').toUpperCase() !== 'N/A' : true) &&
+            (isManager ? (student.name || '').toUpperCase() !== 'N/A' : true) &&
             (isManager
-                ? (filterSection === 'All' || student.section === filterSection || student.service_section === filterSection)
-                : (student.section === user?.section || student.service_section === user?.section)
+                ? (filterSection === 'All' || student.section === filterSection)
+                : (student.section === user?.section)
             ) &&
-            ((student.name || student.full_name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
+            ((student.name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
                 (student.id || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-                (student.dept || student.department || '').toLowerCase().includes(globalSearch.toLowerCase()))
+                (student.dept || '').toLowerCase().includes(globalSearch.toLowerCase()))
         );
 
     const openView = (student) => {
@@ -615,143 +617,104 @@ const StudentList = () => {
                 )}
 
                 <div className="overflow-x-auto pb-4">
-                    {isStudent ? (
-                        <div className="inline-block min-w-full align-middle">
-                            <table className="min-w-full border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-200 text-gray-800 text-xs font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
-                                        {csvHeaders.map((h, i) => (
-                                            <th key={i} className="px-4 py-3 border-r border-gray-200 whitespace-nowrap min-w-[150px]">{h}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50 bg-white">
-                                    {filteredStudents.map((student, idx) => (
-                                        <tr key={student.id} className="hover:bg-gray-50">
-                                            {getStudentCSVData(student, idx, false).map((val, i) => (
-                                                <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">
-                                                    {csvHeaders[i] === 'ፎቶ' && val && val !== '-' ? (
-                                                        <img src={val} alt="Student" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-                                                    ) : (
-                                                        val
-                                                    )}
-                                                </td>
-                                            ))}
-                                        </tr>
+                    <div className="inline-block min-w-full align-middle">
+                        <table className="min-w-full border-collapse">
+                            <thead>
+                                <tr className="bg-gray-200 text-gray-800 text-xs font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
+                                    {csvHeaders.map((h, i) => (
+                                        <th key={i} className="px-4 py-3 border-r border-gray-200 whitespace-nowrap min-w-[150px]">{h}</th>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <table className="w-full text-left">
-                            <thead className="bg-gray-200 text-gray-800 text-sm font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
-                                <tr>
-                                    <th className="px-8 py-5">Student Name & ID</th>
-                                    <th className="px-8 py-5">Department</th>
-                                    <th className="px-8 py-5">Year</th>
-                                    <th className="px-8 py-5">ክፍላት</th>
-                                    <th className="px-8 py-5">Status</th>
-                                    <th className="px-8 py-5 text-right">Actions</th>
+                                    {!isStudent && (
+                                        <th className="px-4 py-3 border-r border-gray-200 whitespace-nowrap min-w-[100px] text-center">Actions</th>
+                                    )}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {filteredStudents.map((student) => (
-                                    <tr key={student.id} className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-3">
-                                                {student.photoUrl || student.photo_url ? (
-                                                    <img
-                                                        src={student.photoUrl || student.photo_url}
-                                                        alt={student.name}
-                                                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-100 shadow-sm"
-                                                    />
+                            <tbody className="divide-y divide-gray-50 bg-white">
+                                {filteredStudents.map((student, idx) => (
+                                    <tr key={student.id} className="hover:bg-gray-50">
+                                        {getStudentCSVData(student, idx, false).map((val, i) => (
+                                            <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">
+                                                {csvHeaders[i] === 'ፎቶ' && val && val !== '-' ? (
+                                                    <img src={val} alt="Student" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-sm shadow-sm lowercase">
-                                                        {(student.name || 'A').charAt(0)}
-                                                    </div>
+                                                    val
                                                 )}
-                                                <div>
-                                                    <div className="font-bold text-gray-900">{student.name || 'Anonymous'}</div>
-                                                    <div className="text-xs text-gray-400">{student.id}</div>
+                                            </td>
+                                        ))}
+                                        {!isStudent && (
+                                            <td className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap text-right">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    {user?.role === 'admin' && student.status === 'Pending' && (
+                                                        <button
+                                                            onClick={() => {
+                                                                if (window.confirm(`Are you sure you want to approve ${student.name}?`)) {
+                                                                    approveStudent(student.id);
+                                                                }
+                                                            }}
+                                                            className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                                                            title="Approve Student"
+                                                        >
+                                                            <CheckCircle size={18} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => openView(student)}
+                                                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => openEdit(student)}
+                                                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                        title="Edit Student"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    {!isStudent && (
+                                                        <button
+                                                            onClick={() => setActiveModal(`password-${student.id}`)}
+                                                            className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
+                                                            title="Reset Password"
+                                                        >
+                                                            <Key size={16} />
+                                                        </button>
+                                                    )}
+                                                    {!isStudent && isManager && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm(`Are you sure you want to promote ${student.name} to Admin?`)) {
+                                                                    try {
+                                                                        await makeStudentAdmin(student.id);
+                                                                        alert('Student promoted to Admin successfully');
+                                                                    } catch (err) {
+                                                                        alert(err.message);
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className="p-2 text-gray-400 hover:text-purple-600 transition-colors"
+                                                            title="Promote to Admin"
+                                                        >
+                                                            <ShieldCheck size={16} />
+                                                        </button>
+                                                    )}
+                                                    {!isStudent && (
+                                                        <button
+                                                            onClick={() => handleDelete(student.id)}
+                                                            className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                            title="Delete Student"
+                                                        >
+                                                            <Trash size={18} />
+                                                        </button>
+                                                    )}
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-5 font-medium text-gray-600">{student.dept || student.department || '-'}</td>
-                                        <td className="px-8 py-5">
-                                            <span className="px-2 py-1 bg-gray-100 rounded-md text-xs font-bold text-gray-600">
-                                                {student.year || student.batch || '-'}
-                                            </span>
-                                        </td>
-                                        <td className="px-8 py-5">
-                                            <span className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                                                <span className="text-sm font-medium">{student.section}</span>
-                                            </span>
-                                        </td>
-                                        <td className="px-8 py-5">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${student.status === 'Student'
-                                                ? 'bg-green-50 text-green-600 border-green-100'
-                                                : student.status === 'Pending'
-                                                    ? 'bg-orange-50 text-orange-600 border-orange-100'
-                                                    : 'bg-blue-50 text-blue-600 border-blue-100'
-                                                }`}>
-                                                {student.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-8 py-5 text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                {user?.role === 'admin' && student.status === 'Pending' && (
-                                                    <button
-                                                        onClick={() => {
-                                                            if (window.confirm(`Are you sure you want to approve ${student.name}?`)) {
-                                                                approveStudent(student.id);
-                                                            }
-                                                        }}
-                                                        className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                                                        title="Approve Student"
-                                                    >
-                                                        <CheckCircle size={18} />
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() => openView(student)}
-                                                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="View Details"
-                                                >
-                                                    <Eye size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={() => openEdit(student)}
-                                                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                    title="Edit Student"
-                                                >
-                                                    <Edit size={16} />
-                                                </button>
-                                                {!isStudent && (
-                                                    <button
-                                                        onClick={() => setActiveModal(`password-${student.id}`)}
-                                                        className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
-                                                        title="Reset Password"
-                                                    >
-                                                        <Key size={16} />
-                                                    </button>
-                                                )}
-                                                {!isStudent && (
-                                                    <button
-                                                        onClick={() => handleDelete(student.id)}
-                                                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                                                        title="Delete Student"
-                                                    >
-                                                        <Trash size={18} />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    )}
+                    </div>
                 </div>
 
                 {!isStudent && (
