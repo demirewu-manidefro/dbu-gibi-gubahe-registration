@@ -728,6 +728,27 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const makeStudentAdmin = async (studentId) => {
+        if (user?.role !== 'manager') return;
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/make-admin/${studentId}`, {
+                method: 'PUT',
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                recordActivity('admin_created', { adminName: `Promoted Student ${studentId}`, section: 'Promoted' });
+                return data.message;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            console.error('Make admin error:', err);
+            throw err;
+        }
+    };
+
     const value = {
         user,
         admins,
@@ -755,6 +776,7 @@ export const AuthProvider = ({ children }) => {
         saveAttendanceBatch,
         resetPassword,
         changePassword,
+        makeStudentAdmin,
         globalSearch,
         setGlobalSearch
     };
