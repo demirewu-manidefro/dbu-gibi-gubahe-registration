@@ -17,8 +17,7 @@ import {
 import EditStudentModal from '../components/EditStudentModal';
 
 const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent } = useAuth();
-    const [searchTerm, setSearchTerm] = useState('');
+    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, globalSearch, setGlobalSearch } = useAuth();
     const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -120,9 +119,9 @@ const StudentList = () => {
                 ? (filterSection === 'All' || student.section === filterSection || student.service_section === filterSection)
                 : (student.section === user?.section || student.service_section === user?.section)
             ) &&
-            ((student.name || student.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (student.dept || student.department || '').toLowerCase().includes(searchTerm.toLowerCase()))
+            ((student.name || student.full_name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
+                (student.id || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
+                (student.dept || student.department || '').toLowerCase().includes(globalSearch.toLowerCase()))
         );
 
     const openView = (student) => {
@@ -586,8 +585,8 @@ const StudentList = () => {
                                 type="text"
                                 placeholder="Search by ID, Name..."
                                 className="w-full pl-14 pr-6 h-12 bg-white border border-gray-200 rounded-full shadow-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={globalSearch}
+                                onChange={(e) => setGlobalSearch(e.target.value)}
                             />
                         </div>
 

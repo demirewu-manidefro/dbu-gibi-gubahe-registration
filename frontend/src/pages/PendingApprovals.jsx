@@ -4,8 +4,7 @@ import { CheckCircle, XCircle, Search, Clock, User, Eye, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PendingApprovals = () => {
-    const { students, user, approveStudent, declineStudent } = useAuth();
-    const [searchTerm, setSearchTerm] = useState('');
+    const { students, user, approveStudent, declineStudent, globalSearch, setGlobalSearch } = useAuth();
 
     if (user?.role !== 'admin' && user?.role !== 'manager') {
         return <div className="p-10 text-center text-gray-500">Access Denied</div>;
@@ -28,8 +27,8 @@ const PendingApprovals = () => {
 
         return true;
     }).filter(s =>
-        (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (s.id || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (s.name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
+        (s.id || '').toLowerCase().includes(globalSearch.toLowerCase())
     );
 
     return (
@@ -47,8 +46,8 @@ const PendingApprovals = () => {
                     <input
                         type="text"
                         placeholder="Search pending..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={globalSearch}
+                        onChange={(e) => setGlobalSearch(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     />
                 </div>

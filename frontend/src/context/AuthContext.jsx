@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
     const [activityLog, setActivityLog] = useState([]);
 
     const [notifications, setNotifications] = useState([]);
+    const [globalSearch, setGlobalSearch] = useState('');
 
     const fetchNotifications = async () => {
         const token = localStorage.getItem('token');
@@ -542,36 +543,45 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const markNotificationsRead = async (username) => {
-        // Mark all visible as read? Or just specific ones. 
-        // For now, let's assume we want to mark all fetched notifications as read
-        // Or getting a specific ID.
-        // Current UI calls specific ID removal or 'mark all read' (which isn't implemented well in backend for 'all')
-
-        // Assuming UI calls this on 'Mark all read' button or individual click?
-        // Layout.jsx calls `markNotificationsRead(username)` which implies ALL.
-        // But Layout.jsx also calls `removeNotification` -> `dismissNotification`.
-
-        // Let's implement mark as read for ALL fetched notifications for now (simplest migration)
-        // Or loop through them.
-
+    const markNotificationsRead = async (username, notificationId = null) => {
         const token = localStorage.getItem('token');
-        // We'll iterate and mark 
-        //Ideally backend supports 'mark all'
+        if (!token) return;
 
-        // Since backend controller for 'all' is not fully implemented, we will cheat and mark them read locally 
-        // AND try to send request. 
+        try {
+            if (notificationId) {
+                // Mark single notification as read in backend
+                await fetch(`${API_BASE_URL}/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token }
+                });
+            } else {
+                // If notificationId is null, it's a "Mark All Read" request
+                // Ideally there should be a backend endpoint for this.
+                // For now, we update local state and maybe it's enough for the session.
+            }
 
-        // Update: Controller has 'all' branch but returns 400.
-        // Let's just update local state to hide the badge, and maybe loop calls.
-
-        setNotifications(prev => prev.map(n =>
-            n.read_by && n.read_by.includes(username) ? n : { ...n, read_by: [...(n.read_by || []), username] }
-        ));
+            setNotifications(prev => prev.map(n => {
+                if (notificationId && n.id !== notificationId) return n;
+                return n.readBy && n.readBy.includes(username) ? n : { ...n, readBy: [...(n.readBy || []), username] };
+            }));
+        } catch (err) {
+            console.error('Error marking notification as read:', err);
+        }
     };
 
-    const dismissNotification = (notificationId) => {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    const dismissNotification = async (notificationId) => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+            await fetch(`${API_BASE_URL}/notifications/${notificationId}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+            setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        } catch (err) {
+            console.error('Error dismissing notification:', err);
+        }
     };
 
     const login = async (username, password) => {
@@ -744,7 +754,9 @@ export const AuthProvider = ({ children }) => {
         attendanceHistory,
         saveAttendanceBatch,
         resetPassword,
-        changePassword
+        changePassword,
+        globalSearch,
+        setGlobalSearch
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
