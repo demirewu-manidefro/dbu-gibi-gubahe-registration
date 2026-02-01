@@ -156,12 +156,7 @@ const AdminManagement = () => {
                             className="pl-10 h-10 bg-gray-50/50 border-gray-200"
                         />
                     </div>
-                    <button
-                        onClick={openAddModal}
-                        className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition-all shadow-lg active:scale-95"
-                    >
-                        <UserPlus size={16} /> Register New Admin
-                    </button>
+                    {/* Button Removed per request */}
                 </div>
 
                 <div className="overflow-x-auto">
