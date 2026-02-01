@@ -24,7 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { user, logout, notifications, markNotificationsRead, dismissNotification, sendNotification, admins } = useAuth();
+    const { user, logout, notifications, markNotificationsRead, dismissNotification, sendNotification, admins, globalSearch, setGlobalSearch } = useAuth();
     const [showNotifications, setShowNotifications] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
     const [showBroadcast, setShowBroadcast] = useState(false);
@@ -196,6 +196,8 @@ const Layout = ({ children }) => {
                                     type="text"
                                     placeholder="Search students by name or ID..."
                                     className="pl-10 pr-4 py-2 bg-gray-50 border-gray-200 rounded-full text-sm"
+                                    value={globalSearch}
+                                    onChange={(e) => setGlobalSearch(e.target.value)}
                                 />
                             </div>
                         )}
@@ -218,11 +220,11 @@ const Layout = ({ children }) => {
                                     return true;
                                 }
 
-                                // 3. Admin / Section Leaders: See targeted notifications for their section, but NOT approvals
+                                // 3. Admin / Section Leaders: See targeted notifications for their section, but NOT administrative confirmations like approvals/declines/attendance
                                 if (user?.role === 'admin') {
-                                    // Rule: "when the section admin aproved... the notifcation send to super manager... not in section admin"
-                                    if (n.type === 'approval') return false;
-                                    return n.target === 'all' || n.target === username || n.target === user?.section;
+                                    // Rule: "when the section admin aproved/declined... the notifcation send to super manager... not in section admin"
+                                    if (['approval', 'decline', 'attendance'].includes(n.type)) return false;
+                                    return n.target === 'all' || n.target === username || (n.target && n.target.trim() === user?.section?.trim());
                                 }
 
                                 return n.target === 'all' || n.target === username;
@@ -235,34 +237,38 @@ const Layout = ({ children }) => {
                             const unreadMessages = userMessages.filter(n => !n.readBy.includes(username)).length;
                             return (
                                 <>
-                                    <button
-                                        onClick={() => {
-                                            setShowNotifications(prev => !prev);
-                                            setShowMessages(false);
-                                        }}
-                                        className="p-2 hover:bg-gray-100 rounded-full relative"
-                                    >
-                                        <Bell size={20} />
-                                        {unreadAlerts > 0 && (
-                                            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                                {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                                            </span>
-                                        )}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowMessages(prev => !prev);
-                                            setShowNotifications(false);
-                                        }}
-                                        className="p-2 hover:bg-gray-100 rounded-full relative"
-                                    >
-                                        <MessageCircle size={20} />
-                                        {unreadMessages > 0 && (
-                                            <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                                {unreadMessages > 9 ? '9+' : unreadMessages}
-                                            </span>
-                                        )}
-                                    </button>
+                                    {!isStudent && (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    setShowNotifications(prev => !prev);
+                                                    setShowMessages(false);
+                                                }}
+                                                className="p-2 hover:bg-gray-100 rounded-full relative"
+                                            >
+                                                <Bell size={20} />
+                                                {unreadAlerts > 0 && (
+                                                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                                        {unreadAlerts > 9 ? '9+' : unreadAlerts}
+                                                    </span>
+                                                )}
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setShowMessages(prev => !prev);
+                                                    setShowNotifications(false);
+                                                }}
+                                                className="p-2 hover:bg-gray-100 rounded-full relative"
+                                            >
+                                                <MessageCircle size={20} />
+                                                {unreadMessages > 0 && (
+                                                    <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                                        {unreadMessages > 9 ? '9+' : unreadMessages}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </>
+                                    )}
                                     {showNotifications && (
                                         <>
                                             <div
@@ -274,9 +280,9 @@ const Layout = ({ children }) => {
                                                     <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
                                                         <Bell size={16} className="text-blue-600" />
                                                         Notifications
-                                                        {unreadCount > 0 && (
+                                                        {unreadAlerts > 0 && (
                                                             <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                                                {unreadCount}
+                                                                {unreadAlerts}
                                                             </span>
                                                         )}
                                                     </div>
@@ -301,7 +307,7 @@ const Layout = ({ children }) => {
                                                             return (
                                                                 <div
                                                                     key={n.id}
-                                                                    onClick={() => removeNotification(n.id)}
+                                                                    onClick={() => markNotificationsRead(username, n.id)}
                                                                     className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors ${isUnread ? 'bg-blue-50/50' : ''}`}
                                                                 >
                                                                     <div className="flex items-start justify-between gap-2">
