@@ -43,7 +43,7 @@ const Login = () => {
                             transition={{ delay: 0.2 }}
                         >
                             <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
-                            <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሀን ጊቢ ጉባኤ</h1>
+                            <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሃን ጊቢ ጉባኤ</h1>
                             <p className="text-xl text-blue-400 font-medium tracking-wide">መግቢያ (Login)</p>
                         </motion.div>
                     </div>
@@ -108,7 +108,7 @@ const Login = () => {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         className="block w-full pl-11 pr-4 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
-                                        placeholder="Username / መታወቂያ / ክፍል (ለምሳሌ 'እቅድ')"
+                                        placeholder="Username"
                                         required
                                     />
                                 </div>
