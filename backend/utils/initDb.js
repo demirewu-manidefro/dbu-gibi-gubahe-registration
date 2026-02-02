@@ -8,7 +8,6 @@ const initDb = async () => {
         const schema = fs.readFileSync(path.join(__dirname, '../models/schema.sql'), 'utf8');
         await query(schema);
 
-        // Ensure students table is updated
         await query(`
             ALTER TABLE students DROP COLUMN IF EXISTS username;
             ALTER TABLE students DROP COLUMN IF EXISTS password;
@@ -22,20 +21,6 @@ const initDb = async () => {
             
             -- Backfill section for admins if missing (assuming username is the section name)
             UPDATE users SET section = username WHERE role = 'admin' AND section IS NULL;
-        `);
-
-        await query(`
-            CREATE TABLE IF NOT EXISTS notifications (
-                id SERIAL PRIMARY KEY,
-                type VARCHAR(50) NOT NULL,
-                message TEXT NOT NULL,
-                target_section VARCHAR(50) NOT NULL,
-                is_read BOOLEAN DEFAULT FALSE,
-                read_by JSONB DEFAULT '[]',
-                from_username VARCHAR(50),
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-            ALTER TABLE notifications ADD COLUMN IF NOT EXISTS from_username VARCHAR(50);
         `);
 
         console.log('Database schema initialized and updated');

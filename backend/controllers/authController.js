@@ -16,7 +16,6 @@ exports.signup = async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user in 'users' table
         const { rows: newUser } = await query(
             'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, role',
             [username.trim(), hashedPassword, 'New Student', 'student', 'active']
@@ -58,8 +57,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // Fetch additional profile data if student
-        // Fetch all student details for the user object if student
+        
         let profileData = {};
         if (user.role === 'student') {
             const { rows: studentRows } = await query('SELECT *, full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
@@ -68,7 +66,7 @@ exports.login = async (req, res) => {
             }
         }
 
-        // Create JWT Payload
+        
         const payload = {
             user: {
                 id: user.id,
@@ -76,14 +74,10 @@ exports.login = async (req, res) => {
                 role: user.role,
                 name: profileData.name || user.name,
                 section: user.section || profileData.section,
-                student_id: profileData.student_id,
-                photo_url: user.photo_url || profileData.photo_url,
-                ...profileData,
-                id: user.id // Ensure integer user ID is not overwritten
+                student_id: profileData.student_id
             }
         };
 
-        // Sign Token
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
@@ -93,13 +87,21 @@ exports.login = async (req, res) => {
                 res.json({
                     token,
                     user: {
-                        ...payload.user
+                        id: user.id,
+                        username: user.username,
+                        role: user.role,
+                        name: profileData.name || user.name,
+                        section: user.section || profileData.section,
+                        student_id: profileData.student_id,
+                        photo_url: user.photo_url || profileData.photo_url,
+                        ...profileData,
+                        id: user.id 
                     }
                 });
             }
         );
 
-        // Update last activity
+
         await query('UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE id = $1', [user.id]);
 
     } catch (err) {

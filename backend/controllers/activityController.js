@@ -3,9 +3,7 @@ const { query } = require('../config/db');
 exports.getLogs = async (req, res) => {
     try {
         let sql = 'SELECT id, type, admin_name as admin, details, time, status FROM activity_log';
-        const params = [];
-
-        // If admin, show logs related to their section or their own actions
+        const params = []; 
         if (req.user.role === 'admin') {
             sql += ' WHERE admin_name = $1 OR (details->>\'section\') = $2';
             params.push(req.user.name, req.user.section);

@@ -15,13 +15,7 @@ exports.getStudents = async (req, res) => {
         `;
         const params = [];
 
-        // If admin, they can only see their own section OR unassigned students (to claim/approve)
-        // Using trimming to handle potential whitespace mismatches
-        // FIXED: Temporarily removed server-side filtering to allow frontend to see all potential matches
-        // if (req.user.role === 'admin') {
-        //     sql += " WHERE (TRIM(s.service_section) = TRIM($1) OR s.service_section IS NULL OR s.service_section = 'N/A' OR s.service_section = '')";
-        //     params.push(req.user.section);
-        // }
+
 
         sql += ' ORDER BY s.created_at DESC';
         const { rows } = await query(sql, params);
@@ -51,15 +45,24 @@ exports.registerStudent = async (req, res) => {
             existingProfile = rows;
         }
 
-        // 2. Ensure a user exists in the 'users' table
-        const { rows: userRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
 
-        if (userRows.length === 0 && !req.user) {
+        let targetOwnerId = null;
+
+        const { rows: existingUserRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
+
+        if (existingUserRows.length > 0) {
+            targetOwnerId = existingUserRows[0].id;
+        } else {
             const defaultPassword = await bcrypt.hash('password123', 10);
-            await query(
-                'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5)',
+            const { rows: newUser } = await query(
+                'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
                 [studentId.trim(), defaultPassword, fullName, 'student', 'active']
             );
+            targetOwnerId = newUser[0].id;
+        }
+        if (req.user && req.user.role === 'student') {
+
+            targetOwnerId = req.user.id;
         }
 
         const columns = [
@@ -70,13 +73,6 @@ exports.registerStudent = async (req, res) => {
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
             'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
-
-        let ownerUserId = req.user ? req.user.id : null;
-
-        if (!ownerUserId) {
-            const { rows: userSearch } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
-            if (userSearch[0]) ownerUserId = userSearch[0].id;
-        }
 
         const values = [
             studentId,
@@ -107,10 +103,10 @@ exports.registerStudent = async (req, res) => {
             studentData.batch || studentData.year,
             (() => {
                 const info = studentData.school_info || studentData.schoolInfo || {};
-                // If it's a string, try to parse it
+
                 let schoolObj = typeof info === 'string' ? JSON.parse(info) : { ...info };
 
-                // Collect individual fields if not in the object
+
                 if (!schoolObj.gpa && studentData.gpa) schoolObj.gpa = studentData.gpa;
                 if (!schoolObj.participation && studentData.participation) schoolObj.participation = studentData.participation;
                 if (!schoolObj.specialEducation && studentData.specialEducation) schoolObj.specialEducation = studentData.specialEducation;
@@ -135,7 +131,7 @@ exports.registerStudent = async (req, res) => {
             studentData.verified_by || studentData.verifiedBy,
             studentData.status || 'Pending',
             studentData.photo_url || studentData.photoUrl,
-            ownerUserId
+            targetOwnerId
         ];
 
         if (existingProfile.length === 0) {
@@ -144,18 +140,11 @@ exports.registerStudent = async (req, res) => {
             const sql = `INSERT INTO students (${columns.join(', ')}) VALUES (${placeholders}) RETURNING *`;
             const { rows } = await query(sql, values);
 
-            // Create Notification
-            const target = (studentData.service_section || studentData.serviceSection || studentData.section || 'all').trim();
-            console.log(`DEBUG: Sending registration notification for ${fullName}. Target Section: "${target}"`);
-            await createNotification(
-                'registration',
-                `New registration: ${fullName} (${studentId})`,
-                target
-            );
+            // Notification logic removed as per user request
 
-            // Sync photo to users table
+            // Sync photo to users table (Using targetOwnerId)
             if (studentData.photo_url || studentData.photoUrl) {
-                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, ownerUserId]);
+                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, targetOwnerId]);
             }
 
             res.status(201).json(rows[0]);
@@ -165,18 +154,10 @@ exports.registerStudent = async (req, res) => {
             const setClause = columns.map((col, i) => `${col} = $${i + 1}`).join(', ');
             const sql = `UPDATE students SET ${setClause} WHERE id = $${columns.length + 1} RETURNING *`;
             const { rows } = await query(sql, [...values, anchorId]);
-            // Sync photo to users table
+            // Sync photo to users table (Using targetOwnerId)
             if (studentData.photo_url || studentData.photoUrl) {
-                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, ownerUserId]);
+                await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, targetOwnerId]);
             }
-
-            // Create Notification even for update (as it might be the first time they fill the full form)
-            const target = (studentData.service_section || studentData.serviceSection || studentData.section || 'all').trim();
-            await createNotification(
-                'registration',
-                `Student updated/completed registration: ${fullName} (${studentId})`,
-                target
-            );
 
             res.json(rows[0]);
         }
@@ -192,13 +173,11 @@ exports.updateStudent = async (req, res) => {
 
     try {
 
-        // Pre-process updates for field names and values
+
         const processedUpdates = {};
         for (const [key, value] of Object.entries(updates)) {
             let k = key;
             let v = value;
-
-            // Map common camelCase to snake_case if they happen to come through
             if (k === 'birthYear' || k === 'birthDate') k = 'birth_date';
             if (k === 'fullName') k = 'full_name';
             if (k === 'gender') k = 'gender';
@@ -208,12 +187,10 @@ exports.updateStudent = async (req, res) => {
             if (k === 'schoolInfo') k = 'school_info';
             if (k === 'serviceSection' || k === 'section') k = 'service_section';
 
-            // Special handling for birth_date if it's just a year
             if (k === 'birth_date' && v && /^\d{4}$/.test(String(v))) {
                 v = `${v}-01-01`;
             }
 
-            // Stringify objects
             if (typeof v === 'object' && v !== null) {
                 v = JSON.stringify(v);
             }
@@ -232,7 +209,6 @@ exports.updateStudent = async (req, res) => {
 
         if (rows.length === 0) return res.status(404).json({ message: 'Student not found' });
 
-        // Add notification for update
         const student = rows[0];
         const target = (student.service_section || 'all').trim();
         await createNotification(
@@ -251,15 +227,13 @@ exports.updateStudent = async (req, res) => {
 exports.deleteStudent = async (req, res) => {
     const { id } = req.params;
     try {
-        // Fetch student details before deletion for notification
+
         const { rows: students } = await query('SELECT full_name, service_section FROM students WHERE id = $1', [id]);
         if (students.length === 0) return res.status(404).json({ message: 'Student not found' });
 
         const student = students[0];
 
         const { rowCount } = await query('DELETE FROM students WHERE id = $1', [id]);
-
-        // Add notification for deletion
         await createNotification(
             'student_deleted',
             `Student removed: ${student.full_name} (${id})`,
@@ -281,12 +255,12 @@ exports.approveStudent = async (req, res) => {
 
         const studentSection = rows[0].service_section;
 
-        // Authorization Logic
+
         let authorized = false;
         if (req.user.role === 'manager') {
             authorized = true;
         } else if (req.user.role === 'admin') {
-            // Allow if student has no section (Admin 'claims' them) OR if sections match (normalized)
+
             if (!studentSection) {
                 authorized = true;
             } else {
@@ -299,14 +273,10 @@ exports.approveStudent = async (req, res) => {
         if (!authorized) {
             return res.status(403).json({ message: 'You are not authorized to approve students for this section' });
         }
-
-        // Approve AND ensure section is set if it was missing (claim logic)
         await query(
             "UPDATE students SET status = 'Student', verified_by = $1, service_section = COALESCE(service_section, $3) WHERE id = $2",
             [req.user.name, id, req.user.section]
         );
-
-        // Notify Manager
         await createNotification(
             'approval',
             `Student Approved: ${rows[0].id} by ${req.user.name}`,
@@ -328,7 +298,6 @@ exports.declineStudent = async (req, res) => {
 
         const studentSection = rows[0].service_section;
 
-        // Authorization Logic
         let authorized = false;
         if (req.user.role === 'manager') {
             authorized = true;
@@ -367,7 +336,7 @@ exports.declineStudent = async (req, res) => {
 };
 
 exports.importStudents = async (req, res) => {
-    const students = req.body; // Expecting array of student objects
+    const students = req.body; 
     if (!Array.isArray(students)) {
         return res.status(400).json({ message: 'Input must be an array of students' });
     }
@@ -379,13 +348,8 @@ exports.importStudents = async (req, res) => {
     };
 
     try {
-        // We reuse the logic from registerStudent but in a loop
-        // Ideally this should be a transaction, but for simplicity we loop
         for (const studentData of students) {
             try {
-                // Call internal helper or logic similar to registerStudent
-                // For now, we'll replicate the core logic or refactor registerStudent to be callable
-
                 const studentId = studentData.studentId || studentData.student_id || studentData.id;
                 if (!studentId) {
                     results.failed++;
@@ -394,13 +358,10 @@ exports.importStudents = async (req, res) => {
                 }
 
                 const fullName = studentData.fullName || studentData.full_name || studentData.name || 'Unknown Student';
-
-                // 1. Ensure User Exists
                 const { rows: userRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
                 let userId = null;
 
                 if (userRows.length === 0) {
-                    // Create minimal user
                     const defaultPassword = await bcrypt.hash('password123', 10);
                     const { rows: newUser } = await query(
                         'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
@@ -411,8 +372,6 @@ exports.importStudents = async (req, res) => {
                     userId = userRows[0].id;
                 }
 
-                // 2. Prepare Data
-                // Construct school_info JSON
                 const schoolInfo = {
                     cumulativeGPA: studentData.cumulativeGPA,
                     gpa: studentData.gpa,
@@ -442,7 +401,7 @@ exports.importStudents = async (req, res) => {
                     studentData.baptismalName,
                     studentData.priesthoodRank,
                     studentData.motherTongue,
-                    null, // other_languages (complex obj)
+                    null, 
                     studentData.region,
                     studentData.zone,
                     studentData.woreda,

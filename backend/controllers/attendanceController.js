@@ -67,7 +67,7 @@ exports.saveAttendanceBatch = async (req, res) => {
 
 exports.getAnalyticsStats = async (req, res) => {
     try {
-        // This could be more complex, but let's provide basic aggregated stats
+        
         const { rows: stats } = await query(`
             SELECT 
                 section,

@@ -1,6 +1,4 @@
 const { query } = require('../config/db');
-
-// Helper function to create notification
 const createNotification = async (type, message, targetSection) => {
     try {
         console.log(`Creating notification: Type=${type}, Message=${message}, Target=${targetSection}`);
@@ -16,72 +14,15 @@ const createNotification = async (type, message, targetSection) => {
 exports.createNotification = createNotification;
 
 exports.getNotifications = async (req, res) => {
-    try {
-        const { role, section, username } = req.user;
-        let sql = "SELECT * FROM notifications WHERE";
-        const params = [];
-
-        // Logic for fetching notifications:
-        // 1. Manager: sees EVERYTHING
-        // 2. Admin: sees 'section' target, 'username' target, or 'all'
-        // 3. User: sees 'username' target or 'all'
-
-        if (role === 'manager') {
-            sql += " (1=1) ";
-        } else if (role === 'admin') {
-            // Use TRIM to ignore leading/trailing whitespace which sometimes happens
-            sql += " (TRIM(target_section) = TRIM($1) OR TRIM(target_section) = TRIM($2) OR target_section = 'all') ";
-            params.push(section || '', username);
-        } else {
-            sql += " (TRIM(target_section) = TRIM($1) OR target_section = 'all') ";
-            params.push(username);
-        }
-
-        // Filter out notifications dismissed by the user
-        // Using Postgres JSONB '?' operator to check if username is in dismissed_by array
-        // Use parameter instead of string interpolation for safety
-        const dismissedParamIndex = params.length + 1;
-        sql += ` AND NOT (dismissed_by ? $${dismissedParamIndex})`;
-        params.push(username);
-
-        sql += " ORDER BY created_at DESC LIMIT 50";
-
-        const { rows } = await query(sql, params);
-
-        // Format for frontend
-        const notifications = rows.map(n => ({
-            id: n.id,
-            type: n.type,
-            message: n.message,
-            target: n.target_section,
-            isRead: (n.read_by || []).includes(username),
-            readBy: n.read_by || [],
-            time: n.created_at,
-            from: n.from_username || 'System'
-        }));
-
-        res.json(notifications);
-    } catch (err) {
-        console.error('getNotifications Error:', err.message);
-        res.status(500).send('Server Error');
-    }
+    res.json([]);
 };
 
 exports.markAsRead = async (req, res) => {
     try {
         const { id } = req.params;
-        const { username } = req.user;
+        await query("DELETE FROM notifications WHERE id = $1", [id]);
 
-        const check = await query("SELECT read_by FROM notifications WHERE id = $1", [id]);
-        if (check.rows.length === 0) return res.status(404).json({ msg: 'Notification not found' });
-
-        let readBy = check.rows[0].read_by || [];
-        if (!readBy.includes(username)) {
-            readBy.push(username);
-            await query("UPDATE notifications SET read_by = $1 WHERE id = $2", [JSON.stringify(readBy), id]);
-        }
-
-        res.json(readBy);
+        res.json({ success: true, message: 'Notification deleted (marked as read)' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
