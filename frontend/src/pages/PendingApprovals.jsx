@@ -208,7 +208,7 @@ const PendingApprovals = () => {
                                         <InfoRow label="Service Section" value={selectedStudent.section || selectedStudent.service_section} highlight />
                                         <InfoRow label="Gibi Name" value={selectedStudent.gibiName || selectedStudent.gibi_name} />
                                         <InfoRow label="Parish Church" value={selectedStudent.parishChurch || selectedStudent.parish_church} />
-                                        <InfoRow label="Trainee Type" value={selectedStudent.traineeType || selectedStudent.trainee_type} />
+
                                     </div>
 
                                     <div className="space-y-4">

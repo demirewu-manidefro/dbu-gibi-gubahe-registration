@@ -103,7 +103,6 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         filledBy: '',
         verifiedBy: '',
         submissionDate: '',
-        traineeType: ''
     });
 
     useEffect(() => {
@@ -239,38 +238,48 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic validation
-        // Check Student ID (Strict: DBU + 7 digits)
-        if (!/^DBU\d{7}$/.test(formData.studentId)) {
-            setError("Invalid Student ID! try again");
-            setTimeout(() => setError(""), 3000);
-            setActiveTab(0); // Return to Basic Info tab to fix
-            return;
-        }
+        // Comprehensive Mandatory Field Validation
+        const validationError = (msg, tab) => {
+            setError(msg);
+            setTimeout(() => setError(""), 4000);
+            setActiveTab(tab);
+            return false;
+        };
 
-        // Validate Phone Number
-        if (!/^[79]\d{8}$/.test(formData.phone)) {
-            setError("ስልክ ቁጥር ትክክል አይደለም");
-            setTimeout(() => setError(""), 3000);
-            setActiveTab(1); // Go to Address tab
-            return;
-        }
+        // Tab 0 Validation
+        if (!formData.studentId) return validationError("የተማሪ መታወቂያ ያስፈልጋል", 0);
+        if (!/^DBU\d{7}$/.test(formData.studentId)) return validationError("Invalid Student ID! DBU + 7 digits required", 0);
+        if (!formData.fullName) return validationError("የተማሪው ሙሉ ስም ያስፈልጋል", 0);
+        if (!formData.sex) return validationError("ፆታ መመረጥ አለበት", 0);
+        if (!formData.birthYear) return validationError("የትውልድ ዘመን ያስፈልጋል", 0);
+        if (!formData.baptismalName) return validationError("ክርስትና ስም ያስፈልጋል", 0);
+        if (!formData.priesthoodRank) return validationError("ሥልጣነ ክህነት መመረጥ አለበት", 0);
+        if (!formData.motherTongue) return validationError("የአፍ መፍቻ ቋንቋ ያስፈልጋል", 0);
 
-        // Validate Emergency Phone Number
-        if (!/^[79]\d{8}$/.test(formData.emergencyPhone)) {
-            setError("የድንገተኛው ስልክ ቁጥር ትክክል አይደለም");
-            setTimeout(() => setError(""), 3000);
-            setActiveTab(1); // Go to Address tab
-            return;
-        }
+        // Tab 1 Validation
+        if (!formData.phone) return validationError("ስልክ ቁጥር ያስፈልጋል", 1);
+        if (!/^[79]\d{8}$/.test(formData.phone)) return validationError("ስልክ ቁጥር ትክክል አይደለም", 1);
+        if (!formData.region) return validationError("ክልል መመረጥ አለበት", 1);
+        if (!formData.zone) return validationError("ዞን መመረጥ አለበት", 1);
+        if (!formData.woreda) return validationError("ወረዳ ያስፈልጋል", 1);
+        if (!formData.kebele) return validationError("ቀበሌ ያስፈልጋል", 1);
+        if (!formData.gibiName) return validationError("የግቢ ጉባኤው ሥም መመረጥ አለበት", 1);
+        if (!formData.parishChurch) return validationError("አጥቢያ ቤ/ክ መመረጥ አለበት", 1);
+        if (!formData.emergencyName) return validationError("የተጠሪ ስም ያስፈልጋል", 1);
+        if (!formData.emergencyPhone) return validationError("የተጠሪ ስልክ ያስፈልጋል", 1);
+        if (!/^[79]\d{8}$/.test(formData.emergencyPhone)) return validationError("የተጠሪ ስልክ ቁጥር ትክክል አይደለም", 1);
 
-        // Check Service Section
-        if (!formData.serviceSection) {
-            setError("Please select a Service Section (የአገልግሎት ክፍል) before saving.");
-            setTimeout(() => setError(""), 3000);
-            setActiveTab(3); // Go to Spiritual tab
-            return;
-        }
+        // Tab 2 Validation
+        if (!formData.department) return validationError("የትምህርት ክፍል መመረጥ አለበት", 2);
+        if (!formData.batch) return validationError("ባች/ዓመት መመረጥ አለበት", 2);
+
+        // Tab 3 Validation
+        if (!formData.serviceSection) return validationError("የአገልግሎት ክፍል መመረጥ አለበት", 3);
+
+        // Global Footer Validation
+        if (!formData.filledBy) return validationError("መረጃውን የሞላው አካል ሥም ያስፈልጋል", 3);
+        if (!formData.verifiedBy) return validationError("መረጃውን ያረጋገጠው አካል ሥም ያስፈልጋል", 3);
+        if (!formData.submissionDate) return validationError("ቀኑን መሙላት ያስፈልጋል", 3);
 
         setIsSubmitting(true);
 
@@ -298,13 +307,13 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 gender: formData.sex,
                 birth_date: formData.birthYear,
                 student_id: formData.studentId,
-                trainee_type: formData.traineeType,
-                photoUrl: finalPhotoUrl // Send the base64 string or the URL
+                photoUrl: finalPhotoUrl
             };
 
-            console.log('Submitting registration data:', finalData); // Client-side log
+            // Remove redundant/deleted fields
+            delete finalData.traineeType;
 
-            // AWAIT the actual API call
+            console.log('Submitting registration data:', finalData);
             await registerStudent(finalData);
 
             setIsSubmitting(false);
@@ -408,7 +417,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                     <div className="flex-1 space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="col-span-2">
-                                                <label className="label-amharic">የተማሪው መታወቂያ</label>
+                                                <label className="label-amharic">የተማሪው መታወቂያ <span className="text-red-500">*</span></label>
                                                 <input
                                                     name="studentId"
                                                     placeholder="የተማሪው መታወቂያ ቁጥር ያስገቡ"
@@ -425,7 +434,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 />
                                             </div>
                                             <div className="col-span-2">
-                                                <label className="label-amharic">የተማሪው ሙሉ ሥም</label>
+                                                <label className="label-amharic">የተማሪው ሙሉ ሥም <span className="text-red-500">*</span></label>
                                                 <input
                                                     name="fullName"
                                                     placeholder="ሙሉ ስምዎን ያስገቡ"
@@ -435,7 +444,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="label-amharic">ፆታ</label>
+                                                <label className="label-amharic">ፆታ <span className="text-red-500">*</span></label>
                                                 <select name="sex" value={formData.sex} onChange={handleInputChange} required>
                                                     <option value="">ምረጥ...</option>
                                                     <option value="male">ወንድ</option>
@@ -444,7 +453,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="label-amharic">የትውልድ ዘመን</label>
+                                                    <label className="label-amharic">የትውልድ ዘመን <span className="text-red-500">*</span></label>
                                                     <input
                                                         name="birthYear"
                                                         type="number"
@@ -461,11 +470,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="label-amharic">ክርስትና ስም</label>
+                                                <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
                                                 <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} />
                                             </div>
                                             <div>
-                                                <label className="label-amharic">ሥልጣነ ክህነት</label>
+                                                <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
                                                 <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange}>
                                                     <option value="">ምረጥ...</option>
                                                     <option value="mimen">ምእመን</option>
@@ -475,12 +484,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             </div>
                                             <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="label-amharic">የአፍ መፍቻ ቋንቋ</label>
+                                                    <label className="label-amharic">የአፍ መፍቻ ቋንቋ <span className="text-red-500">*</span></label>
                                                     <input
                                                         name="motherTongue"
                                                         value={formData.motherTongue}
                                                         onChange={handleInputChange}
                                                         placeholder="ቋንቋዎን ያስገቡ"
+                                                        required
+                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
@@ -557,7 +568,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </h3>
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="label-amharic">ስልክ ቁጥር</label>
+                                                <label className="label-amharic">ስልክ ቁጥር <span className="text-red-500">*</span></label>
                                                 <div className="relative group">
                                                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
                                                         <img
@@ -568,8 +579,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                             alt="Ethiopia"
                                                             className="rounded-sm shadow-sm mr-2"
                                                         />
-                                                        <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#078930] via-[#FCDD09] to-[#DA121A] text-sm">+251</span>
-                                                        <div className="h-4 w-[1px] bg-gray-300 mx-2"></div>
+                                                        <span className="font-bold text-sm flex">
+                                                            <span className="text-[#078930]">+</span>
+                                                            <span className="text-[#FCDD09]">25</span>
+                                                            <span className="text-[#DA121A]">1</span>
+                                                        </span>
+                                                        <div className="h-6 w-[1px] bg-gray-300 mx-3"></div>
                                                     </div>
                                                     <input
                                                         type="tel"
@@ -590,8 +605,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="label-amharic">ክልል</label>
-                                                    <select name="region" value={formData.region} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <label className="label-amharic">ክልል <span className="text-red-500">*</span></label>
+                                                    <select name="region" value={formData.region} onChange={handleInputChange} required className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                                         <option value="">ክልል ይምረጡ...</option>
                                                         {Object.keys(ethiopianRegions).map(region => (
                                                             <option key={region} value={region}>{region}</option>
@@ -599,12 +614,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="label-amharic">ዞን</label>
+                                                    <label className="label-amharic">ዞን <span className="text-red-500">*</span></label>
                                                     <select
-                                                        name="zone"
-                                                        value={formData.zone}
                                                         onChange={handleInputChange}
                                                         disabled={!formData.region}
+                                                        required
                                                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
                                                         <option value="">{formData.region ? 'ዞን ይምረጡ...' : 'መጀመሪያ ክልል ይምረጡ'}</option>
@@ -617,33 +631,36 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="label-amharic">ወረዳ</label>
+                                                    <label className="label-amharic">ወረዳ <span className="text-red-500">*</span></label>
                                                     <input
                                                         name="woreda"
                                                         value={formData.woreda}
                                                         onChange={handleInputChange}
                                                         placeholder="ወረዳ"
+                                                        required
                                                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="label-amharic">ቀበሌ</label>
+                                                    <label className="label-amharic">ቀበሌ <span className="text-red-500">*</span></label>
                                                     <input
                                                         name="kebele"
                                                         value={formData.kebele}
                                                         onChange={handleInputChange}
                                                         placeholder="ቀበሌ"
+                                                        required
                                                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="label-amharic">የግቢ ጉባኤው ሥም</label>
+                                                    <label className="label-amharic">የግቢ ጉባኤው ሥም <span className="text-red-500">*</span></label>
                                                     <select
                                                         name="gibiName"
                                                         value={formData.gibiName}
                                                         onChange={handleInputChange}
+                                                        required
                                                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
                                                         <option value="">ምረጥ...</option>
@@ -665,11 +682,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="label-amharic">የሚማሩበት አጥቢያ ቤ/ክ</label>
+                                                <label className="label-amharic">የሚማሩበት አጥቢያ ቤ/ክ <span className="text-red-500">*</span></label>
                                                 <select
                                                     name="parishChurch"
                                                     value={formData.parishChurch}
                                                     onChange={handleInputChange}
+                                                    required
                                                     className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 >
                                                     <option value="">ምረጥ...</option>
@@ -695,11 +713,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </h3>
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="label-amharic">የተጠሪ ስም</label>
+                                                <label className="label-amharic">የተጠሪ ስም <span className="text-red-500">*</span></label>
                                                 <input name="emergencyName" value={formData.emergencyName} onChange={handleInputChange} required />
                                             </div>
                                             <div>
-                                                <label className="label-amharic">የተጠሪ ስልክ</label>
+                                                <label className="label-amharic">የተጠሪ ስልክ <span className="text-red-500">*</span></label>
                                                 <div className="relative group">
                                                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
                                                         <img
@@ -710,8 +728,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                             alt="Ethiopia"
                                                             className="rounded-sm shadow-sm mr-2"
                                                         />
-                                                        <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#078930] via-[#FCDD09] to-[#DA121A] text-sm">+251</span>
-                                                        <div className="h-4 w-[1px] bg-gray-300 mx-2"></div>
+                                                        <span className="font-bold text-sm flex">
+                                                            <span className="text-[#078930]">+</span>
+                                                            <span className="text-[#FCDD09]">25</span>
+                                                            <span className="text-[#DA121A]">1</span>
+                                                        </span>
+                                                        <div className="h-6 w-[1px] bg-gray-300 mx-3"></div>
                                                     </div>
                                                     <input
                                                         type="tel"
@@ -741,7 +763,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                 <div className="space-y-10">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="label-amharic">የትምህርት ክፍል</label>
+                                            <label className="label-amharic">የትምህርት ክፍል <span className="text-red-500">*</span></label>
                                             <select name="department" value={formData.department} onChange={handleInputChange} required>
                                                 <option value="">Select Department</option>
                                                 <option value="Mechanical">Mechanical Engineering</option>
@@ -752,7 +774,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="label-amharic">ባች/ዓመት</label>
+                                            <label className="label-amharic">ባች/ዓመት <span className="text-red-500">*</span></label>
                                             <select name="batch" value={formData.batch} onChange={handleInputChange} required>
                                                 <option value="">ዓመት ምረጥ</option>
                                                 <option value="1">1ኛ ዓመት</option>
@@ -812,7 +834,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         <h3 className="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2 mb-4">የአገልግሎት ክፍል</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ</label>
+                                                <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ <span className="text-red-500">*</span></label>
                                                 <select
                                                     name="serviceSection"
                                                     value={formData.serviceSection}
@@ -832,20 +854,6 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     <option value="ኦዲት">ኦዲት</option>
                                                     <option value="ሂሳብ">ሂሳብ</option>
                                                     <option value="መዝሙር">መዝሙር</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="label-amharic">የሰልጣኝ ሁኔታ</label>
-                                                <select
-                                                    name="traineeType"
-                                                    value={formData.traineeType}
-                                                    onChange={handleInputChange}
-                                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >
-                                                    <option value="">ምረጥ...</option>
-                                                    <option value="Regular">መደበኛ (Regular)</option>
-                                                    <option value="Short-term">አጭር ጊዜ (Short-term)</option>
-                                                    <option value="Seminar">ሴሚናር (Seminar)</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -1013,17 +1021,17 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="label-amharic">መረጃውን የሞላው</label>
-                                                <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} />
+                                                <label className="label-amharic">መረጃውን የሞላው <span className="text-red-500">*</span></label>
+                                                <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
                                             </div>
                                             <div>
-                                                <label className="label-amharic">መረጃውን ያረጋገጠው</label>
-                                                <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} />
+                                                <label className="label-amharic">መረጃውን ያረጋገጠው <span className="text-red-500">*</span></label>
+                                                <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="label-amharic">ቀን</label>
-                                            <input type="date" name="submissionDate" value={formData.submissionDate} onChange={handleInputChange} />
+                                            <label className="label-amharic">ቀን <span className="text-red-500">*</span></label>
+                                            <input type="date" name="submissionDate" value={formData.submissionDate} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
                                         </div>
                                     </div>
                                 </div>
