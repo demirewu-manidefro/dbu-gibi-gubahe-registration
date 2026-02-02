@@ -31,7 +31,7 @@ const ethiopianRegions = {
 };
 
 const EditStudentModal = ({ student, onClose }) => {
-    const { updateStudent } = useAuth();
+    const { updateStudent, user } = useAuth();
     const currentEthYear = toEthiopian(new Date()).year;
     const [activeTab, setActiveTab] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -695,7 +695,8 @@ const EditStudentModal = ({ student, onClose }) => {
                                                 value={formData.serviceSection}
                                                 onChange={handleInputChange}
                                                 required
-                                                className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                disabled={user?.role === 'admin'}
+                                                className={`w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 cursor-not-allowed opacity-75' : ''}`}
                                             >
                                                 <option value="">ምረጥ...</option>
                                                 <option value="እቅድ">እቅድ</option>
