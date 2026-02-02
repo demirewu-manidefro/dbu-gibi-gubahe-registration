@@ -146,6 +146,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         } else if (user && (user.role === 'admin' || user.role === 'manager') && !initialData) {
             setFormData(prev => ({
                 ...prev,
+                serviceSection: user.role === 'admin' ? user.section : '',
                 filledBy: user.name || '',
                 verifiedBy: user.name || '',
                 submissionDate: new Date().toISOString().split('T')[0]
@@ -817,6 +818,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     value={formData.serviceSection}
                                                     onChange={handleInputChange}
                                                     required
+                                                    disabled={user?.role === 'admin'}
+                                                    className={`w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 cursor-not-allowed opacity-75' : ''}`}
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="እቅድ">እቅድ</option>
