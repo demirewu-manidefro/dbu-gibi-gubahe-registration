@@ -460,6 +460,9 @@ export const AuthProvider = ({ children }) => {
                     studentId
                 });
                 return true;
+            } else {
+                const errorData = await res.json().catch(() => ({ message: 'Update failed' }));
+                throw new Error(errorData.message || 'ውሂቡን ማስቀመጥ አልተቻለም');
             }
         } catch (err) {
             console.error('Update student error:', err);
