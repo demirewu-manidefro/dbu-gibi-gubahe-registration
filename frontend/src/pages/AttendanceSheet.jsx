@@ -19,11 +19,16 @@ const AttendanceSheet = () => {
     const [filterSection, setFilterSection] = useState(isManager ? 'All Sections' : user?.section);
 
     // Only show approved students (status === 'Student'), not pending registrations
-    const filteredStudents = students.filter(student =>
+    // Base list of students who SHOULD be in the attendance sheet (by section)
+    const studentsInSheet = students.filter(student =>
         student.status === 'Student' &&
-        (filterSection === 'All Sections' || student.section === filterSection || student.service_section === filterSection) &&
-        ((student.name || student.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (student.id || '').toLowerCase().includes(searchTerm.toLowerCase()))
+        (filterSection === 'All Sections' || student.section === filterSection || student.service_section === filterSection)
+    );
+
+    // List of students currently visible (affected by search)
+    const filteredStudents = studentsInSheet.filter(student =>
+        (student.name || student.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (student.id || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleAttendanceChange = (studentId, status) => {
@@ -34,14 +39,41 @@ const AttendanceSheet = () => {
     };
 
     const handleSaveAttendance = () => {
-        if (Object.keys(attendanceData).length === 0) {
-            alert('No attendance marked!');
+        const markedInSheet = studentsInSheet.filter(s => attendanceData[s.id]);
+        const markedCount = markedInSheet.length;
+        const totalCount = studentsInSheet.length;
+
+        if (totalCount === 0) {
+            alert('No students in this section!');
             return;
         }
 
-        saveAttendanceBatch(selectedDate, attendanceData);
+        if (markedCount < totalCount) {
+            const missing = studentsInSheet.filter(s => !attendanceData[s.id]);
+            const missingNames = missing.slice(0, 3).map(s => s.name).join(', ');
+            const suffix = missing.length > 3 ? ` and ${missing.length - 3} more...` : '';
+
+            alert(`Please fill attendance for all students before saving.\nMissing: ${missingNames}${suffix}\n(${markedCount}/${totalCount} filled)`);
+            return;
+        }
+
+        // Only save data for the students in the current sheet context
+        const dataToSave = {};
+        studentsInSheet.forEach(s => {
+            dataToSave[s.id] = attendanceData[s.id];
+        });
+
+        saveAttendanceBatch(selectedDate, dataToSave);
         alert('Attendance saved successfully!');
-        // Ideally reset data or redirect, but for now we keep it
+    };
+
+    const handleMarkAllPresent = () => {
+        if (!window.confirm('Mark all UNMARKED students as present?')) return;
+        const newData = { ...attendanceData };
+        studentsInSheet.forEach(s => {
+            if (!newData[s.id]) newData[s.id] = 'present';
+        });
+        setAttendanceData(newData);
     };
 
     const getStatusColor = (status) => {
@@ -78,9 +110,33 @@ const AttendanceSheet = () => {
                         onClick={handleSaveAttendance}
                         className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md"
                     >
-                        <Save size={18} /> Save Sheet
+                        <Save size={18} />
+                        Save Sheet
                     </button>
                 </div>
+            </div>
+
+            <div className="bg-white/50 backdrop-blur-md rounded-2xl p-4 border border-gray-100 flex items-center gap-6 shadow-sm">
+                <div className="flex-1">
+                    <div className="flex justify-between mb-2">
+                        <span className="text-sm font-bold text-gray-700">Completion Status</span>
+                        <span className="text-sm font-black text-blue-600">
+                            {studentsInSheet.filter(s => attendanceData[s.id]).length} / {studentsInSheet.length} Marked
+                        </span>
+                    </div>
+                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                        <div
+                            className={`h-full transition-all duration-700 ease-out ${studentsInSheet.filter(s => attendanceData[s.id]).length === studentsInSheet.length ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-blue-500 animate-pulse'}`}
+                            style={{ width: `${(studentsInSheet.filter(s => attendanceData[s.id]).length / (studentsInSheet.length || 1)) * 100}%` }}
+                        />
+                    </div>
+                </div>
+                <button
+                    onClick={handleMarkAllPresent}
+                    className="px-4 py-2 border-2 border-green-100 text-green-600 rounded-xl text-xs font-black uppercase tracking-tight hover:bg-green-50 transition-colors"
+                >
+                    Mark All Present
+                </button>
             </div>
 
             <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
