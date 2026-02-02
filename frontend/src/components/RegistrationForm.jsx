@@ -616,6 +616,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 <div>
                                                     <label className="label-amharic">ዞን <span className="text-red-500">*</span></label>
                                                     <select
+                                                        name="zone"
+                                                        value={formData.zone}
                                                         onChange={handleInputChange}
                                                         disabled={!formData.region}
                                                         required

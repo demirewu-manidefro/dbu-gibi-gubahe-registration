@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { useAuth } from './context/auth';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -36,26 +37,37 @@ const ChangePasswordRoute = () => {
 
 import Register from './pages/Register';
 
+// Wrapper component to access user context for NotificationProvider
+const AppContent = () => {
+  const { user } = useAuth();
+
+  return (
+    <NotificationProvider currentUser={user}>
+      <Routes>
+        <Route path="/login" element={<LoginWrapper />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/change-password" element={<ChangePasswordRoute />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/add-student" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
+        <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
+        <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
+        <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
+        <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
+        <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
+
+        <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </NotificationProvider>
+  );
+};
+
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginWrapper />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/change-password" element={<ChangePasswordRoute />} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/add-student" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
-          <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
-          <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
-          <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
-          <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
-          <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
-
-          <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppContent />
       </AuthProvider>
     </Router>
   );

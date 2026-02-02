@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/auth';
+import { useNotifications } from '../context/NotificationContext';
+import { createNotificationMessage } from '../utils/notificationHelpers';
 import {
     Calendar,
     Save,
@@ -8,8 +10,11 @@ import {
 } from 'lucide-react';
 import EthiopianDatePicker from '../components/EthiopianDatePicker';
 
+
+
 const AttendanceSheet = () => {
     const { students, user, saveAttendanceBatch } = useAuth();
+    const { addNotification } = useNotifications();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState({});
@@ -64,8 +69,18 @@ const AttendanceSheet = () => {
         });
 
         saveAttendanceBatch(selectedDate, dataToSave);
+
+        // Send notification to manager
+        const notif = createNotificationMessage.attendanceSaved(
+            user?.name || user?.username,
+            filterSection,
+            totalCount
+        );
+        addNotification({ ...notif, from: user?.username });
+
         alert('Attendance saved successfully!');
     };
+
 
     const handleMarkAllPresent = () => {
         if (!window.confirm('Mark all UNMARKED students as present?')) return;

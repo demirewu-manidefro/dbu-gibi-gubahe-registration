@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/auth';
+import { useNotifications } from '../context/NotificationContext';
 import {
     UserPlus,
     Users,
@@ -24,7 +25,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { user, logout, notifications, markNotificationsRead, dismissNotification, sendNotification, admins, globalSearch, setGlobalSearch } = useAuth();
+    const { user, logout, globalSearch, setGlobalSearch } = useAuth();
+    const { getNotificationsForUser, markAsRead, markAllAsRead, removeNotification, addNotification } = useNotifications();
+
     const [showNotifications, setShowNotifications] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
     const [showBroadcast, setShowBroadcast] = useState(false);
@@ -32,12 +35,9 @@ const Layout = ({ children }) => {
     const [broadcastMessage, setBroadcastMessage] = useState('');
     const [sending, setSending] = useState(false);
 
-    const removeNotification = (notificationId) => {
-        dismissNotification(notificationId);
-    };
-
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
+    const isAdmin = user?.role === 'admin';
 
     const menuItems = isManager
         ? [
@@ -75,6 +75,34 @@ const Layout = ({ children }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Get user-specific notifications
+    const userNotifications = getNotificationsForUser(user);
+    const userAlerts = userNotifications.filter(n => n.type !== 'message');
+    const userMessages = userNotifications.filter(n => n.type === 'message');
+
+    const unreadAlerts = userAlerts.filter(n => !n.readBy.includes(user?.username)).length;
+    const unreadMessages = userMessages.filter(n => !n.readBy.includes(user?.username)).length;
+
+    const handleSendBroadcast = async () => {
+        if (!broadcastMessage.trim()) return;
+
+        setSending(true);
+        try {
+            addNotification({
+                type: 'message',
+                message: broadcastMessage.trim(),
+                target: broadcastTarget,
+                from: user?.username || user?.name
+            });
+            setBroadcastMessage('');
+            setShowBroadcast(false);
+        } catch (err) {
+            alert('Failed to send broadcast');
+        } finally {
+            setSending(false);
+        }
+    };
+
     // Mobile Overlay
     const Overlay = () => (
         <motion.div
@@ -87,7 +115,7 @@ const Layout = ({ children }) => {
     );
 
     return (
-        <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800">
+        <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800 transition-colors duration-300">
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isMobile && sidebarOpen && <Overlay />}
@@ -132,7 +160,7 @@ const Layout = ({ children }) => {
                             className={({ isActive }) =>
                                 `group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer ${isActive
                                     ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                                    : 'text-white/70 hover:bg-white/10:bg-gray-700 hover:text-white'
                                 }`
                             }
                         >
@@ -170,7 +198,7 @@ const Layout = ({ children }) => {
                     </div>
                     <button
                         onClick={logout}
-                        className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
+                        className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40:bg-gray-700 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
                     >
                         <LogOut size={20} className="flex-shrink-0" />
                         {(!isMobile && !sidebarOpen) ? null : <span className="font-medium whitespace-nowrap">Sign Out</span>}
@@ -181,11 +209,11 @@ const Layout = ({ children }) => {
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Header */}
-                <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20">
+                <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20 transition-colors duration-300">
                     <div className="flex items-center gap-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-100 rounded-lg"
+                            className="p-2 hover:bg-gray-100:bg-gray-700 rounded-lg transition-colors"
                         >
                             <Menu size={20} />
                         </button>
@@ -204,241 +232,224 @@ const Layout = ({ children }) => {
                     </div>
 
                     <div className="flex items-center gap-4 relative">
-                        {(() => {
-                            const username = user?.username;
-                            const userNotifications = notifications.filter(n => {
-                                // 1. Students: Never see registration or administrative activity notifications
-                                if (isStudent) {
-                                    if (n.type === 'registration' || ['approval', 'decline', 'admin_created', 'bulk_import', 'student_deleted', 'student_updated'].includes(n.type)) {
-                                        return false;
-                                    }
-                                    return n.target === 'all' || n.target === username;
-                                }
-
-                                // 2. Managers (Super Manager): See everything for control
-                                if (isManager) {
-                                    return true;
-                                }
-
-                                // 3. Admin / Section Leaders: See targeted notifications for their section, but NOT administrative confirmations like approvals/declines/attendance
-                                if (user?.role === 'admin') {
-                                    // Rule: "when the section admin aproved/declined... the notifcation send to super manager... not in section admin"
-                                    if (['approval', 'decline', 'attendance'].includes(n.type)) return false;
-                                    return n.target === 'all' || n.target === username || (n.target && n.target.trim() === user?.section?.trim());
-                                }
-
-                                return n.target === 'all' || n.target === username;
-                            });
-
-                            const userAlerts = userNotifications.filter(n => n.type !== 'message');
-                            const userMessages = userNotifications.filter(n => n.type === 'message');
-
-                            const unreadAlerts = userAlerts.filter(n => !n.readBy.includes(username)).length;
-                            const unreadMessages = userMessages.filter(n => !n.readBy.includes(username)).length;
-                            return (
-                                <>
-                                    {!isStudent && (
-                                        <>
-                                            <button
-                                                onClick={() => {
-                                                    setShowNotifications(prev => !prev);
-                                                    setShowMessages(false);
-                                                }}
-                                                className="p-2 hover:bg-gray-100 rounded-full relative"
-                                            >
-                                                <Bell size={20} />
-                                                {unreadAlerts > 0 && (
-                                                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                                        {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                                                    </span>
-                                                )}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setShowMessages(prev => !prev);
-                                                    setShowNotifications(false);
-                                                }}
-                                                className="p-2 hover:bg-gray-100 rounded-full relative"
-                                            >
-                                                <MessageCircle size={20} />
-                                                {unreadMessages > 0 && (
-                                                    <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                                        {unreadMessages > 9 ? '9+' : unreadMessages}
-                                                    </span>
-                                                )}
-                                            </button>
-                                        </>
+                        {/* Notifications - Hidden for students */}
+                        {!isStudent && (
+                            <>
+                                <button
+                                    onClick={() => {
+                                        setShowNotifications(prev => !prev);
+                                        setShowMessages(false);
+                                    }}
+                                    className="p-2 hover:bg-gray-100:bg-gray-700 rounded-full relative transition-colors"
+                                >
+                                    <Bell size={20} />
+                                    {unreadAlerts > 0 && (
+                                        <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                            {unreadAlerts > 9 ? '9+' : unreadAlerts}
+                                        </span>
                                     )}
-                                    {showNotifications && (
-                                        <>
-                                            <div
-                                                className="fixed inset-0 z-40"
-                                                onClick={() => setShowNotifications(false)}
-                                            />
-                                            <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
-                                                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
-                                                    <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
-                                                        <Bell size={16} className="text-blue-600" />
-                                                        Notifications
-                                                        {unreadAlerts > 0 && (
-                                                            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                                                {unreadAlerts}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <button
-                                                        onClick={() => {
-                                                            if (username) markNotificationsRead(username);
-                                                        }}
-                                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700"
-                                                    >
-                                                        Mark all read
-                                                    </button>
-                                                </div>
-                                                <div className="max-h-96 overflow-y-auto">
-                                                    {userAlerts.length === 0 ? (
-                                                        <div className="p-8 text-center">
-                                                            <Bell size={48} className="mx-auto text-gray-300 mb-3" />
-                                                            <p className="text-sm text-gray-500">No alerts</p>
-                                                        </div>
-                                                    ) : (
-                                                        userAlerts.map((n) => {
-                                                            const isUnread = !n.readBy.includes(username);
-                                                            return (
-                                                                <div
-                                                                    key={n.id}
-                                                                    onClick={() => markNotificationsRead(username, n.id)}
-                                                                    className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors ${isUnread ? 'bg-blue-50/50' : ''}`}
-                                                                >
-                                                                    <div className="flex items-start justify-between gap-2">
-                                                                        <div className="flex-1">
-                                                                            <div className="flex items-center gap-2 mb-1">
-                                                                                {n.type === 'registration' && (
-                                                                                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                                                        New Registration
-                                                                                    </span>
-                                                                                )}
-                                                                                {isUnread && (
-                                                                                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                                                                                )}
-                                                                            </div>
-                                                                            <div className="text-sm text-gray-800 font-medium">
-                                                                                {n.message}
-                                                                            </div>
-                                                                            <div className="flex items-center gap-2 mt-1">
-                                                                                <span className="text-xs text-gray-500">
-                                                                                    From: {n.from}
-                                                                                </span>
-                                                                                <span className="text-xs text-gray-400">•</span>
-                                                                                <span className="text-xs text-gray-400">
-                                                                                    {new Date(n.time).toLocaleString()}
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                removeNotification(n.id);
-                                                                            }}
-                                                                            className="text-gray-400 hover:text-red-600 p-1"
-                                                                            title="Remove notification"
-                                                                        >
-                                                                            <X size={14} />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })
-                                                    )}
-                                                </div>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowMessages(prev => !prev);
+                                        setShowNotifications(false);
+                                    }}
+                                    className="p-2 hover:bg-gray-100:bg-gray-700 rounded-full relative transition-colors"
+                                >
+                                    <MessageCircle size={20} />
+                                    {unreadMessages > 0 && (
+                                        <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                            {unreadMessages > 9 ? '9+' : unreadMessages}
+                                        </span>
+                                    )}
+                                </button>
+                            </>
+                        )}
+
+                        {/* Notification Dropdown */}
+                        {showNotifications && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setShowNotifications(false)}
+                                />
+                                <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
+                                        <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
+                                            <Bell size={16} className="text-blue-600" />
+                                            Notifications
+                                            {unreadAlerts > 0 && (
+                                                <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                                    {unreadAlerts}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => markAllAsRead(user?.username)}
+                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700:text-blue-300"
+                                        >
+                                            Mark all read
+                                        </button>
+                                    </div>
+                                    <div className="max-h-96 overflow-y-auto">
+                                        {userAlerts.length === 0 ? (
+                                            <div className="p-8 text-center">
+                                                <Bell size={48} className="mx-auto text-gray-300 mb-3" />
+                                                <p className="text-sm text-gray-500">No alerts</p>
                                             </div>
-                                        </>
-                                    )}
-                                    {showMessages && (
-                                        <>
-                                            <div
-                                                className="fixed inset-0 z-40"
-                                                onClick={() => setShowMessages(false)}
-                                            />
-                                            <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
-                                                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100">
-                                                    <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
-                                                        <MessageCircle size={16} className="text-indigo-600" />
-                                                        Messages
-                                                        {unreadMessages > 0 && (
-                                                            <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                                                {unreadMessages}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <button
-                                                        onClick={() => setShowBroadcast(true)}
-                                                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-white/50 px-2 py-1 rounded-lg"
+                                        ) : (
+                                            userAlerts.map((n) => {
+                                                const isUnread = !n.readBy.includes(user?.username);
+                                                return (
+                                                    <div
+                                                        key={n.id}
+                                                        onClick={() => markAsRead(n.id, user?.username)}
+                                                        className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50:bg-gray-700 transition-colors ${isUnread ? 'bg-blue-50/50/50' : ''}`}
                                                     >
-                                                        + New Message
-                                                    </button>
-                                                </div>
-                                                <div className="max-h-96 overflow-y-auto">
-                                                    {userMessages.length === 0 ? (
-                                                        <div className="p-8 text-center">
-                                                            <MessageCircle size={48} className="mx-auto text-gray-200 mb-3" />
-                                                            <p className="text-sm text-gray-500 font-medium">No messages yet</p>
+                                                        <div className="flex items-start justify-between gap-2">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    {n.type === 'registration' && (
+                                                                        <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                            New Registration
+                                                                        </span>
+                                                                    )}
+                                                                    {n.type === 'approval' && (
+                                                                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                            Approved
+                                                                        </span>
+                                                                    )}
+                                                                    {n.type === 'decline' && (
+                                                                        <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                            Declined
+                                                                        </span>
+                                                                    )}
+                                                                    {n.type === 'attendance' && (
+                                                                        <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                            Attendance
+                                                                        </span>
+                                                                    )}
+                                                                    {isUnread && (
+                                                                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-sm text-gray-800 font-medium">
+                                                                    {n.message}
+                                                                </div>
+                                                                <div className="flex items-center gap-2 mt-1">
+                                                                    <span className="text-xs text-gray-500">
+                                                                        From: {n.from}
+                                                                    </span>
+                                                                    <span className="text-xs text-gray-400">•</span>
+                                                                    <span className="text-xs text-gray-400">
+                                                                        {new Date(n.time).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                             <button
-                                                                onClick={() => setShowBroadcast(true)}
-                                                                className="mt-4 text-xs text-blue-600 font-bold hover:underline"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    removeNotification(n.id);
+                                                                }}
+                                                                className="text-gray-400 hover:text-red-600:text-red-400 p-1"
+                                                                title="Remove notification"
                                                             >
-                                                                Send your first broadcast
+                                                                <X size={14} />
                                                             </button>
                                                         </div>
-                                                    ) : (
-                                                        userMessages.map((m) => {
-                                                            const isUnread = !m.readBy.includes(username);
-                                                            return (
-                                                                <div
-                                                                    key={m.id}
-                                                                    onClick={() => removeNotification(m.id)}
-                                                                    className={`px-4 py-4 border-b border-gray-50 cursor-pointer hover:bg-indigo-50/30 transition-colors ${isUnread ? 'bg-indigo-50/20' : ''}`}
-                                                                >
-                                                                    <div className="flex items-start gap-3">
-                                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
-                                                                            {(m.from || 'S').charAt(0).toUpperCase()}
-                                                                        </div>
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <div className="flex items-center justify-between mb-0.5">
-                                                                                <span className="text-xs font-bold text-gray-900">@{m.from}</span>
-                                                                                <span className="text-[10px] text-gray-400 font-medium">{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                                            </div>
-                                                                            <div className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                                                                                {m.message}
-                                                                            </div>
-                                                                        </div>
-                                                                        {isUnread && (
-                                                                            <div className="w-2 h-2 bg-indigo-600 rounded-full mt-1.5 shadow-sm shadow-indigo-200" />
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })
-                                                    )}
-                                                </div>
-                                                {userMessages.length > 0 && (
-                                                    <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
-                                                        <button
-                                                            onClick={() => markNotificationsRead(username)}
-                                                            className="text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors"
-                                                        >
-                                                            Mark All as Read
-                                                        </button>
                                                     </div>
-                                                )}
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Messages Dropdown */}
+                        {showMessages && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setShowMessages(false)}
+                                />
+                                <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100">
+                                        <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
+                                            <MessageCircle size={16} className="text-indigo-600" />
+                                            Messages
+                                            {unreadMessages > 0 && (
+                                                <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                                    {unreadMessages}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => setShowBroadcast(true)}
+                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700:text-indigo-300 bg-white/50/50 px-2 py-1 rounded-lg"
+                                        >
+                                            + New Message
+                                        </button>
+                                    </div>
+                                    <div className="max-h-96 overflow-y-auto">
+                                        {userMessages.length === 0 ? (
+                                            <div className="p-8 text-center">
+                                                <MessageCircle size={48} className="mx-auto text-gray-200 mb-3" />
+                                                <p className="text-sm text-gray-500 font-medium">No messages yet</p>
+                                                <button
+                                                    onClick={() => setShowBroadcast(true)}
+                                                    className="mt-4 text-xs text-blue-600 font-bold hover:underline"
+                                                >
+                                                    Send your first broadcast
+                                                </button>
                                             </div>
-                                        </>
+                                        ) : (
+                                            userMessages.map((m) => {
+                                                const isUnread = !m.readBy.includes(user?.username);
+                                                return (
+                                                    <div
+                                                        key={m.id}
+                                                        onClick={() => removeNotification(m.id)}
+                                                        className={`px-4 py-4 border-b border-gray-50 cursor-pointer hover:bg-indigo-50/30:bg-gray-700/30 transition-colors ${isUnread ? 'bg-indigo-50/20/20' : ''}`}
+                                                    >
+                                                        <div className="flex items-start gap-3">
+                                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
+                                                                {(m.from || 'S').charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center justify-between mb-0.5">
+                                                                    <span className="text-xs font-bold text-gray-900">@{m.from}</span>
+                                                                    <span className="text-[10px] text-gray-400 font-medium">{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                </div>
+                                                                <div className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                                                                    {m.message}
+                                                                </div>
+                                                            </div>
+                                                            {isUnread && (
+                                                                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-1.5 shadow-sm shadow-indigo-200" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                    {userMessages.length > 0 && (
+                                        <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
+                                            <button
+                                                onClick={() => markAllAsRead(user?.username)}
+                                                className="text-xs font-bold text-gray-500 hover:text-indigo-600:text-indigo-400 transition-colors"
+                                            >
+                                                Mark All as Read
+                                            </button>
+                                        </div>
                                     )}
-                                </>
-                            );
-                        })()}
+                                </div>
+                            </>
+                        )}
+
                         <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
-                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 rounded-full border border-gray-100 transition-colors">
+                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50:bg-gray-700 rounded-full border border-gray-100 transition-colors">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
                                 {user?.photo_url || user?.photoUrl ? (
                                     <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -451,6 +462,7 @@ const Layout = ({ children }) => {
                     </div>
                 </header>
 
+                {/* Broadcast Modal */}
                 <AnimatePresence>
                     {showBroadcast && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -485,17 +497,17 @@ const Layout = ({ children }) => {
                                         <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Select Audience</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {[
-                                                { id: 'all', label: 'Everyone', color: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
-                                                { id: 'admin', label: 'All Admins', color: 'bg-blue-50 text-blue-700 border-blue-100' },
-                                                { id: 'እቅድ', label: 'እቅድ Section', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-                                                { id: 'ትምህርት', label: 'ትምህርት Section', color: 'bg-amber-50 text-amber-700 border-amber-100' }
+                                                { id: 'all', label: 'Everyone', color: 'bg-indigo-50/30 text-indigo-700 border-indigo-100' },
+                                                { id: 'admin', label: 'All Admins', color: 'bg-blue-50/30 text-blue-700 border-blue-100' },
+                                                { id: 'እቅድ', label: 'እቅድ Section', color: 'bg-emerald-50/30 text-emerald-700 border-emerald-100' },
+                                                { id: 'ትምህርት', label: 'ትምህርት Section', color: 'bg-amber-50/30 text-amber-700 border-amber-100' }
                                             ].map(target => (
                                                 <button
                                                     key={target.id}
                                                     onClick={() => setBroadcastTarget(target.id)}
                                                     className={`px-4 py-3 rounded-2xl border text-sm font-bold transition-all ${broadcastTarget === target.id
                                                         ? `${target.color} border-current scale-[1.02] shadow-sm`
-                                                        : 'bg-gray-50 border-gray-100 text-gray-500 hover:bg-gray-100'
+                                                        : 'bg-gray-50 border-gray-100 text-gray-500 hover:bg-gray-100:bg-gray-600'
                                                         }`}
                                                 >
                                                     {target.label}
@@ -518,19 +530,8 @@ const Layout = ({ children }) => {
                                     <div className="pt-2">
                                         <button
                                             disabled={sending || !broadcastMessage.trim()}
-                                            onClick={async () => {
-                                                setSending(true);
-                                                try {
-                                                    await sendNotification({ target: broadcastTarget, message: broadcastMessage });
-                                                    setBroadcastMessage('');
-                                                    setShowBroadcast(false);
-                                                } catch (err) {
-                                                    alert('Failed to send broadcast');
-                                                } finally {
-                                                    setSending(false);
-                                                }
-                                            }}
-                                            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
+                                            onClick={handleSendBroadcast}
+                                            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700:bg-blue-600 transition-all shadow-xl shadow-blue-200/30 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
                                         >
                                             {sending ? (
                                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -549,7 +550,7 @@ const Layout = ({ children }) => {
                 </AnimatePresence>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+                <div className="flex-1 overflow-y-auto p-8 no-scrollbar bg-gray-50 transition-colors duration-300">
                     {children}
                 </div>
             </main>
@@ -558,3 +559,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
+
