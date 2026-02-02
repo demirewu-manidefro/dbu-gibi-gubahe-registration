@@ -16,6 +16,7 @@ import {
     ShieldCheck
 } from 'lucide-react';
 import EditStudentModal from '../components/EditStudentModal';
+import { toEthiopian } from '../utils/ethiopianDateUtils';
 
 const StudentList = () => {
     const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, makeStudentAdmin, globalSearch, setGlobalSearch } = useAuth();
@@ -90,7 +91,7 @@ const StudentList = () => {
             year: s.batch || s.year,
             graduationYear: s.graduation_year || s.graduationYear,
             cumulativeGPA: s.cumulative_gpa || s.cumulativeGPA || schoolInfo.cumulativeGPA,
-            membershipYear: s.membership_year || s.membershipYear,
+            membershipYear: s.membership_year || s.membershipYear || schoolInfo.membershipYear,
             photoUrl: s.photo_url || s.photoUrl,
             traineeType: s.trainee_type || s.traineeType,
             gpa: gpa,
@@ -232,27 +233,27 @@ const StudentList = () => {
             q(s.emergencyPhone),
             q(s.parishChurch),
             q(s.section),
-            q(s.specialEducation), // Menfesawi Timhirt
-            q(s.specialPlace), // Special Talent (CET)
+            q(s.specialEducation), 
+            q(s.specialPlace), 
 
-            // Participation (Indexes 25-30) - WAS MISSING
+         
             q(p.y1), q(p.y2), q(p.y3), q(p.y4), q(p.y5), q(p.y6),
 
             q(s.dept || s.department),
 
-            // GPA (Indexes 32-37)
+           
             r(g.y1), r(g.y2), r(g.y3), r(g.y4), r(g.y5), r(g.y6),
 
             r(s.cumulativeGPA),
             r(s.membershipYear),
             r(s.graduationYear),
 
-            // Follow Up (Indexes 41-46)
+          
             q(att.y1), q(att.y2), q(att.y3), q(att.y4), q(att.y5), q(att.y6),
 
             q(s.photoUrl || s.photo_url),
 
-            // Education (Indexes 48-53)
+            
             q(edu.y1), q(edu.y2), q(edu.y3), q(edu.y4), q(edu.y5), q(edu.y6),
 
             q(s.teacherTraining?.level1), q(s.teacherTraining?.level2), q(s.teacherTraining?.level3),
@@ -263,8 +264,20 @@ const StudentList = () => {
             q(s.additionalInfo),
             q(s.filledBy),
             q(s.verifiedBy),
-            q(s.submissionDate)
+            q(formatEthDate(s.submissionDate))
         ];
+    };
+
+    const formatEthDate = (dateVal) => {
+        if (!dateVal) return '-';
+        try {
+            const date = new Date(dateVal);
+            if (isNaN(date.getTime())) return dateVal; // Return original if not a valid date
+            const eth = toEthiopian(date);
+            return `${eth.day}/${eth.month}/${eth.year}`;
+        } catch (e) {
+            return dateVal;
+        }
     };
 
 
@@ -306,10 +319,9 @@ const StudentList = () => {
                     return;
                 }
 
-                // Parse headers (first line)
                 const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
 
-                // Map common header variations to our field names
+                
                 const headerMap = {
                     'id': 'id',
                     'student id': 'id',
@@ -434,8 +446,12 @@ const StudentList = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Student List</h1>
-                    <p className="text-gray-500 font-medium">Manage and view all registered Gibi Gubae students</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {isStudent ? 'My Profile' : 'Student List'}
+                    </h1>
+                    <p className="text-gray-500 font-medium">
+                        {isStudent ? 'View My Information' : 'Manage and view all registered Gibi Gubae students'}
+                    </p>
                 </div>
             </div>
 
