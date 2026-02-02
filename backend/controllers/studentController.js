@@ -116,6 +116,7 @@ exports.registerStudent = async (req, res) => {
                 if (!schoolObj.abinetEducation && studentData.abinetEducation) schoolObj.abinetEducation = studentData.abinetEducation;
                 if (!schoolObj.specialNeed && studentData.specialNeed) schoolObj.specialNeed = studentData.specialNeed;
                 if (!schoolObj.cumulativeGPA && studentData.cumulativeGPA) schoolObj.cumulativeGPA = studentData.cumulativeGPA;
+                if (!schoolObj.membershipYear && studentData.membershipYear) schoolObj.membershipYear = studentData.membershipYear;
 
                 return JSON.stringify(schoolObj);
             })(),
@@ -336,7 +337,7 @@ exports.declineStudent = async (req, res) => {
 };
 
 exports.importStudents = async (req, res) => {
-    const students = req.body; 
+    const students = req.body;
     if (!Array.isArray(students)) {
         return res.status(400).json({ message: 'Input must be an array of students' });
     }
@@ -401,7 +402,7 @@ exports.importStudents = async (req, res) => {
                     studentData.baptismalName,
                     studentData.priesthoodRank,
                     studentData.motherTongue,
-                    null, 
+                    null,
                     studentData.region,
                     studentData.zone,
                     studentData.woreda,
