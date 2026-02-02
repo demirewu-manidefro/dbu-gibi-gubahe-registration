@@ -3,13 +3,12 @@ import { toEthiopian, toGregorian, ETHIOPIAN_MONTHS, ETHIOPIAN_MONTHS_AMHARIC } 
 import { Calendar } from 'lucide-react';
 
 const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
-    // Default to a recent date if value is missing
     const [ethDate, setEthDate] = useState({ year: 2017, month: 1, day: 1 });
 
     useEffect(() => {
         if (value) {
             try {
-                // Ensure value is a valid date string
+
                 const date = new Date(value);
                 if (!isNaN(date.getTime())) {
                     const eth = toEthiopian(date);
@@ -24,7 +23,6 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
     const handleChange = (field, val) => {
         const newEthDate = { ...ethDate, [field]: parseInt(val) };
         
-        // Pagume validation: if month changes to 13, cap day at 6
         if (newEthDate.month === 13 && newEthDate.day > 6) {
            newEthDate.day = 1;
         }
@@ -43,11 +41,9 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
         }
     };
 
-    // Generate years dynamically (e.g., current Eth year - 80 to + 5 for birthdates or events)
     const currentEthYear = toEthiopian(new Date()).year;
     const years = Array.from({ length: 100 }, (_, i) => currentEthYear - 80 + i);
-    
-    // Determine max days for the currently selected month
+
     const maxDays = ethDate.month === 13 ? 6 : 30;
     const days = Array.from({ length: maxDays }, (_, i) => i + 1);
 

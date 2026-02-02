@@ -106,7 +106,6 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         traineeType: ''
     });
 
-    // Populate data if student is logged in and not in edit mode
     useEffect(() => {
         if (user && user.role === 'student' && !initialData) {
             const isDefaultId = user.student_id === user.username;
@@ -145,7 +144,6 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 participation: user.school_info?.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
             }));
         } else if (user && (user.role === 'admin' || user.role === 'manager') && !initialData) {
-            // Auto-fill for admin/manager when adding a new student
             setFormData(prev => ({
                 ...prev,
                 filledBy: user.name || '',
