@@ -69,8 +69,12 @@ const LandingPage = () => {
                         <a href="#home" className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-90">
                             <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900 leading-none">ደ/ዩ/ቀ </h1>
-                                <p className="text-xs text-blue-600 font-medium tracking-widest">ግቢ ጉባኤ</p>
+                                <h1 className="text-xl font-bold text-gray-900 leading-none">
+                                    {lang === 'am' ? 'ደብረ ብርሃን ዩኒቨርስቲ ' : 'Debre Berhan University '}
+                                </h1>
+                                <p className="text-xs text-blue-600 font-medium tracking-widest">
+                                    {lang === 'am' ? 'ግቢ ጉባኤ' : 'Gibi Gubae'}
+                                </p>
                             </div>
                         </a>
 
@@ -140,7 +144,9 @@ const LandingPage = () => {
                             <div className="flex items-center justify-between p-6 border-b border-gray-100">
                                 <div className="flex items-center gap-2">
                                     <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
-                                    <span className="font-bold text-gray-900">ግቢ ጉባኤ</span>
+                                    <span className="font-bold text-gray-900">
+                                        {lang === 'am' ? 'ግቢ ጉባኤ' : 'Gibi Gubae'}
+                                    </span>
                                 </div>
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
@@ -229,7 +235,7 @@ const LandingPage = () => {
                                 {lang === 'en' && 'Founded 1977 E.C.'}
                             </motion.div>
 
-                            <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
+                            <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6" style={{ fontFamily: lang === 'am' ? 'Tint, sans-serif' : 'inherit' }}>
                                 {lang === 'am' ? 'መንፈሳዊ አንድነት በ' : 'Spiritual Unity in '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">{lang === 'am' ? 'ዩኒቨርሲቲ' : 'University'}</span>
                             </motion.h1>
 
