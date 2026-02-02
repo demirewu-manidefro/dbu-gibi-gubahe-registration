@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { useAuth } from '../context/auth';
 import {
     Search,
@@ -31,8 +33,6 @@ const StudentList = () => {
 
     const normalizeStudent = (s) => {
         if (!s) return null;
-
-        // Helper to parse potential JSON strings
         const parse = (val) => {
             if (typeof val === 'string') {
                 try { return JSON.parse(val); } catch (e) { return val; }
@@ -59,7 +59,7 @@ const StudentList = () => {
             if (!isNaN(date.getTime())) {
                 birthYear = date.getFullYear();
             } else {
-                birthYear = s.birth_date; // fallback if it's already a year string
+                birthYear = s.birth_date;
             }
         }
 
@@ -110,8 +110,7 @@ const StudentList = () => {
         };
     };
 
-    // For students: show only their own data
-    // For admins/managers: show only approved students (status === 'Student'), not pending
+
     const filteredStudents = isStudent
         ? [normalizeStudent(user)].filter(s => s && s.id)
         : safeStudents.map(s => normalizeStudent(s)).filter(student =>
@@ -146,7 +145,6 @@ const StudentList = () => {
     };
 
     const handleSave = (updatedData) => {
-        // Data is already saved by EditStudentModal
         closeModal();
     };
 
@@ -163,7 +161,7 @@ const StudentList = () => {
     const [activeModal, setActiveModal] = useState(null);
 
 
-    const csvHeaders = [
+    const excelHeaders = [
         'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
         'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
         'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ',
@@ -178,7 +176,6 @@ const StudentList = () => {
         'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የምረቃ ዓመት',
         '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
         '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
-        'ፎቶ',
         '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
         '4ኛ ዓመት ትምህርት', '5ኛ ዓመት ትምህርት', '6ኛ ዓመት ትምህርት',
         'የመምህራን ስልጠና 1', 'የመምህራን ስልጠና 2', 'የመምህራን ስልጠና 3',
@@ -200,11 +197,11 @@ const StudentList = () => {
         return sex;
     };
 
-    const getStudentCSVData = (s, index, forExport = false) => {
-        const q = (val) => forExport ? `"${val || ''}"` : (val || '-'); // Quote for CSV, Dash for UI
-        const r = (val) => val || (forExport ? '' : '-'); // Raw for CSV, Dash for UI
+    const getStudentExcelData = (s, index, forExport = false) => {
+        const q = (val) => forExport ? `"${val || ''}"` : (val || '-');
+        const r = (val) => val || (forExport ? '' : '-');
 
-        const p = s.participation || {}; // Safe access
+        const p = s.participation || {};
         const g = s.gpa || {};
         const att = s.attendance || {};
         const edu = s.educationYearly || {};
@@ -233,27 +230,24 @@ const StudentList = () => {
             q(s.emergencyPhone),
             q(s.parishChurch),
             q(s.section),
-            q(s.specialEducation), 
-            q(s.specialPlace), 
+            q(s.specialEducation),
+            q(s.specialPlace),
 
-         
+
             q(p.y1), q(p.y2), q(p.y3), q(p.y4), q(p.y5), q(p.y6),
 
             q(s.dept || s.department),
 
-           
+
             r(g.y1), r(g.y2), r(g.y3), r(g.y4), r(g.y5), r(g.y6),
 
             r(s.cumulativeGPA),
             r(s.membershipYear),
             r(s.graduationYear),
 
-          
+
             q(att.y1), q(att.y2), q(att.y3), q(att.y4), q(att.y5), q(att.y6),
 
-            q(s.photoUrl || s.photo_url),
-
-            
             q(edu.y1), q(edu.y2), q(edu.y3), q(edu.y4), q(edu.y5), q(edu.y6),
 
             q(s.teacherTraining?.level1), q(s.teacherTraining?.level2), q(s.teacherTraining?.level3),
@@ -281,23 +275,53 @@ const StudentList = () => {
     };
 
 
-    const handleExport = () => {
-        const csvContent = [
-            csvHeaders.join(','),
-            ...filteredStudents.map((s, index) => getStudentCSVData(s, index, true).join(','))
-        ].join('\n');
+    const handleExport = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Students');
 
-        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `student_list_${new Date().toLocaleDateString()}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        const headerRow = worksheet.addRow(excelHeaders.slice(1));
+
+
+        headerRow.eachCell((cell) => {
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FF9A9B9D' }
+            };
+            cell.font = {
+                bold: true,
+                color: { argb: 'black' }
+            };
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
+
+
+        filteredStudents.forEach((s, index) => {
+            const rowData = getStudentExcelData(s, index, false).slice(1);
+            const row = worksheet.addRow(rowData);
+            row.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+            });
+        });
+
+        worksheet.columns.forEach((column) => {
+            column.width = 18;
+        });
+
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(blob, `student_list_${new Date().toLocaleDateString()}.xlsx`);
     };
 
     const handleImport = () => {
@@ -308,138 +332,144 @@ const StudentList = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            try {
-                const text = event.target.result;
-                const lines = text.split('\n').filter(line => line.trim());
+        try {
+            const workbook = new ExcelJS.Workbook();
+            const arrayBuffer = await file.arrayBuffer();
+            await workbook.xlsx.load(arrayBuffer);
+            const worksheet = workbook.getWorksheet(1);
 
-                if (lines.length < 2) {
-                    alert('CSV file is empty or has no data rows');
-                    return;
+            const rows = [];
+            worksheet.eachRow({ includeEmpty: true }, (row) => {
+                const rowValues = [];
+                for (let i = 1; i <= worksheet.columnCount; i++) {
+                    const cell = row.getCell(i);
+                    rowValues.push(cell.text ? cell.text.trim() : '');
                 }
+                rows.push(rowValues);
+            });
 
-                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
-
-                
-                const headerMap = {
-                    'id': 'id',
-                    'student id': 'id',
-                    'studentid': 'id',
-                    'የተማሪ መለያ': 'id',
-
-                    'name': 'name',
-                    'full name': 'name',
-                    'fullname': 'name',
-                    'student name': 'name',
-                    'ሙሉ ስም': 'name',
-
-                    'sex': 'sex',
-                    'gender': 'sex',
-                    'ጾታ': 'sex',
-
-                    'department': 'dept',
-                    'dept': 'dept',
-                    'የትምህርት ክፍል': 'dept',
-
-                    'year': 'year',
-                    'batch': 'year',
-
-                    'section': 'section',
-                    'የአገልግሎት ክፍል': 'section',
-
-                    'status': 'status',
-
-                    'phone': 'phone',
-                    'telephone': 'phone',
-                    'የተማሪ ስልክ': 'phone',
-
-                    'center': 'centerAndWoredaCenter',
-                    'woreda center': 'centerAndWoredaCenter',
-                    'maekel': 'centerAndWoredaCenter',
-                    'ማእከለ እና ወረዳ ማእከል': 'centerAndWoredaCenter',
-
-                    'gibi': 'gibiName',
-                    'gibi name': 'gibiName',
-                    'gibigubae': 'gibiName',
-                    'የግቢ ጉባኤው ስም': 'gibiName',
-
-                    'parish': 'parishChurch',
-                    'church': 'parishChurch',
-                    'አጥቢያ ቤተክርስቲያን': 'parishChurch',
-
-                    // Additional Amharic Mappings
-                    'እድሜ': 'age',
-                    'የልደት ዘመን': 'birthYear',
-                    'የክርስትና ስም': 'baptismalName',
-                    'መንፈሳዊ ማዕረግ': 'priesthoodRank',
-                    'የአፍ መፍቻ ቋንቋ': 'motherTongue',
-                    'ክልል': 'region',
-                    'ዞን': 'zone',
-                    'ወረዳ': 'woreda',
-                    'ቀበሌ': 'kebele',
-                    'የተጠሪ ስም': 'emergencyName',
-                    'የተጠሪ ስልክ': 'emergencyPhone',
-                    'መንፈሳዊ ትምህርት ደረጃ': 'specialEducation',
-                    'ልዩ ተሰጥኦ (cet)': 'specialPlace',
-                    'አጠቃላይ ውጤት (cgpa)': 'cumulativeGPA',
-                    'አባል የሆኑበት ዓመት': 'membershipYear',
-                    'የምረቃ ዓመት': 'graduationYear',
-                    'ፎቶ': 'photoUrl',
-                    'የአብነት ትምህርት': 'abinetEducation',
-                    'ልዩ ፍላጎት': 'specialNeed',
-                    'ተጨማሪ መረጃ': 'additionalInfo',
-                    'የመዘገበው አካል': 'filledBy',
-                    'ያረጋገጠው አካል': 'verifiedBy',
-                    'የተሰጠበት ቀን': 'submissionDate'
-                };
-
-                // Parse data rows
-                const parsedStudents = [];
-                for (let i = 1; i < lines.length; i++) {
-                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-
-                    if (values.length < 2) continue; // Skip empty rows
-
-                    const student = {};
-                    headers.forEach((header, index) => {
-                        const fieldName = headerMap[header] || header;
-                        student[fieldName] = values[index] || '';
-                    });
-
-                    // Ensure required fields
-                    if (student.id || student.name) {
-                        student.id = student.id || `IMPORT-${Date.now()}-${i}`;
-                        student.status = student.status || 'Student';
-                        parsedStudents.push(student);
-                    }
-                }
-
-                if (parsedStudents.length === 0) {
-                    alert('No valid students found in CSV');
-                    return;
-                }
-
-                // Import students
-                try {
-                    const results = await importStudents(parsedStudents);
-                    let msg = `Successfully imported ${results.success} student(s).`;
-                    if (results.failed > 0) {
-                        msg += `\nFailed to import ${results.failed} student(s). Check console or server logs for details.`;
-                    }
-                    alert(msg);
-                } catch (err) {
-                    alert(`Import failed: ${err.message}`);
-                }
-
-                // Reset file input
-                e.target.value = '';
-            } catch (error) {
-                console.error('Import error:', error);
-                alert('Error parsing CSV file. Please check the format.');
+            if (rows.length < 2) {
+                alert('File is empty or has no data rows');
+                return;
             }
-        };
-        reader.readAsText(file);
+
+            const headers = rows[0].map(h => h.toString().trim().toLowerCase());
+
+            const headerMap = {
+                'id': 'id',
+                'student id': 'id',
+                'studentid': 'id',
+                'የተማሪ መለያ': 'id',
+
+                'name': 'name',
+                'full name': 'name',
+                'fullname': 'name',
+                'student name': 'name',
+                'ሙሉ ስም': 'name',
+
+                'sex': 'sex',
+                'gender': 'sex',
+                'ጾታ': 'sex',
+
+                'department': 'dept',
+                'dept': 'dept',
+                'የትምህርት ክፍል': 'dept',
+
+                'year': 'year',
+                'batch': 'year',
+
+                'section': 'section',
+                'የአገልግሎት ክፍል': 'section',
+
+                'status': 'status',
+
+                'phone': 'phone',
+                'telephone': 'phone',
+                'የተማሪ ስልክ': 'phone',
+
+                'center': 'centerAndWoredaCenter',
+                'woreda center': 'centerAndWoredaCenter',
+                'maekel': 'centerAndWoredaCenter',
+                'ማእከለ እና ወረዳ ማእከል': 'centerAndWoredaCenter',
+
+                'gibi': 'gibiName',
+                'gibi name': 'gibiName',
+                'gibigubae': 'gibiName',
+                'የግቢ ጉባኤው ስም': 'gibiName',
+
+                'parish': 'parishChurch',
+                'church': 'parishChurch',
+                'አጥቢያ ቤተክርስቲያን': 'parishChurch',
+
+                'እድሜ': 'age',
+                'የልደት ዘመን': 'birthYear',
+                'የክርስትና ስም': 'baptismalName',
+                'መንፈሳዊ ማዕረግ': 'priesthoodRank',
+                'የአፍ መፍቻ ቋንቋ': 'motherTongue',
+                'ክልል': 'region',
+                'ዞን': 'zone',
+                'ወረዳ': 'woreda',
+                'ቀበሌ': 'kebele',
+                'የተጠሪ ስም': 'emergencyName',
+                'የተጠሪ ስልክ': 'emergencyPhone',
+                'መንፈሳዊ ትምህርት ደረጃ': 'specialEducation',
+                'ልዩ ተሰጥኦ (cet)': 'specialPlace',
+                'አጠቃላይ ውጤት (cgpa)': 'cumulativeGPA',
+                'አባል የሆኑበት ዓመት': 'membershipYear',
+                'የምረቃ ዓመት': 'graduationYear',
+                'ፎቶ': 'photoUrl',
+                'የአብነት ትምህርት': 'abinetEducation',
+                'ልዩ ፍላጎት': 'specialNeed',
+                'ተጨማሪ መረጃ': 'additionalInfo',
+                'የመዘገበው አካል': 'filledBy',
+                'ያረጋገጠው አካል': 'verifiedBy',
+                'የተሰጠበት ቀን': 'submissionDate'
+            };
+
+            const parsedStudents = [];
+            for (let i = 1; i < rows.length; i++) {
+                const values = rows[i];
+                if (values.every(v => v === '')) continue;
+                const student = {};
+                headers.forEach((header, index) => {
+                    const fieldName = headerMap[header] || header;
+                    student[fieldName] = values[index] || '';
+                });
+
+                if (student.id || student.name) {
+                    student.id = student.id || `IMPORT-${Date.now()}-${i}`;
+                    student.status = student.status || 'Student';
+
+                    if (user?.role === 'admin') {
+                        student.section = user.section;
+                        student.service_section = user.section;
+                    }
+
+                    parsedStudents.push(student);
+                }
+            }
+
+            if (parsedStudents.length === 0) {
+                alert('No valid students found in the file');
+                return;
+            }
+
+            try {
+                const results = await importStudents(parsedStudents);
+                let msg = `Successfully imported ${results.success} student(s).`;
+                if (results.failed > 0) {
+                    msg += `\nFailed to import ${results.failed} student(s). Check console or server logs for details.`;
+                }
+                alert(msg);
+            } catch (err) {
+                alert(`Import failed: ${err.message}`);
+            }
+
+            e.target.value = '';
+        } catch (error) {
+            console.error('Import error:', error);
+            alert('Error parsing the file. Please ensure it is a valid .xlsx file.');
+        }
     };
 
     return (
@@ -464,7 +494,7 @@ const StudentList = () => {
                         className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all group"
                     >
                         <Download size={18} className="text-emerald-500 group-hover:text-emerald-600" />
-                        <span>Export CSV</span>
+                        <span>Export to XLSX</span>
                     </button>
                     <button
                         onClick={handleImport}
@@ -636,8 +666,8 @@ const StudentList = () => {
                     <div className="inline-block min-w-full align-middle">
                         <table className="min-w-full border-collapse">
                             <thead>
-                                <tr className="bg-gray-200 text-gray-800 text-xs font-extrabold uppercase tracking-widest border-b-2 border-gray-300">
-                                    {csvHeaders.map((h, i) => (
+                                <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
+                                    {excelHeaders.map((h, i) => (
                                         <th key={i} className="px-4 py-3 border-r border-gray-200 whitespace-nowrap min-w-[150px]">{h}</th>
                                     ))}
                                     {!isStudent && (
@@ -648,13 +678,9 @@ const StudentList = () => {
                             <tbody className="divide-y divide-gray-50 bg-white">
                                 {filteredStudents.map((student, idx) => (
                                     <tr key={student.id} className="hover:bg-gray-50">
-                                        {getStudentCSVData(student, idx, false).map((val, i) => (
+                                        {getStudentExcelData(student, idx, false).map((val, i) => (
                                             <td key={i} className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 whitespace-nowrap">
-                                                {csvHeaders[i] === 'ፎቶ' && val && val !== '-' ? (
-                                                    <img src={val} alt="Student" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-                                                ) : (
-                                                    val
-                                                )}
+                                                {val}
                                             </td>
                                         ))}
                                         {!isStudent && (
