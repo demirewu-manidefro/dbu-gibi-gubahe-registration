@@ -24,8 +24,6 @@ const initDb = async () => {
         `);
 
         console.log('Database schema initialized and updated');
-
-        // Check if manager exists, if not create default
         const { rows } = await query("SELECT * FROM users WHERE username = 'manager'");
         if (rows.length === 0) {
             const hashedPassword = await bcrypt.hash('manager123', 10);
@@ -57,7 +55,7 @@ const initDb = async () => {
 };
 
 if (require.main === module) {
-    initDb().then(() => process.exit());
+    initDb();
 }
 
 module.exports = initDb;

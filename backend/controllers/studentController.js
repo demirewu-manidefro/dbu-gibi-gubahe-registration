@@ -69,7 +69,7 @@ exports.registerStudent = async (req, res) => {
             'id', 'full_name', 'gender', 'age', 'birth_date', 'baptismal_name', 'priesthood_rank',
             'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
-            'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section', 'trainee_type',
+            'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
             'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
@@ -123,7 +123,6 @@ exports.registerStudent = async (req, res) => {
             studentData.is_graduated ?? studentData.isGraduated ?? false,
             (studentData.graduation_year || studentData.graduationYear) ? parseInt(studentData.graduation_year || studentData.graduationYear) : null,
             studentData.service_section || studentData.serviceSection || studentData.section,
-            studentData.trainee_type || studentData.traineeType,
             studentData.teacher_training || studentData.teacherTraining ? JSON.stringify(studentData.teacher_training || studentData.teacherTraining) : null,
             studentData.leadership_training || studentData.leadershipTraining ? JSON.stringify(studentData.leadership_training || studentData.leadershipTraining) : null,
             studentData.other_trainings || studentData.otherTrainings,
@@ -175,6 +174,15 @@ exports.updateStudent = async (req, res) => {
     try {
 
 
+        const validColumns = [
+            'id', 'full_name', 'gender', 'age', 'birth_date', 'baptismal_name', 'priesthood_rank',
+            'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
+            'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
+            'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
+            'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
+            'filled_by', 'verified_by', 'status', 'photo_url'
+        ];
+
         const processedUpdates = {};
         for (const [key, value] of Object.entries(updates)) {
             let k = key;
@@ -182,14 +190,20 @@ exports.updateStudent = async (req, res) => {
             if (k === 'birthYear' || k === 'birthDate') k = 'birth_date';
             if (k === 'fullName') k = 'full_name';
             if (k === 'gender') k = 'gender';
-            if (k === 'traineeType') k = 'trainee_type';
             if (k === 'studentId') k = 'id';
             if (k === 'photoUrl') k = 'photo_url';
             if (k === 'schoolInfo') k = 'school_info';
             if (k === 'serviceSection' || k === 'section') k = 'service_section';
+            if (k === 'centerAndWoreda') k = 'center_and_woreda';
+
+            if (!validColumns.includes(k)) continue;
 
             if (k === 'birth_date' && v && /^\d{4}$/.test(String(v))) {
                 v = `${v}-01-01`;
+            }
+
+            if (k === 'age' || k === 'graduation_year') {
+                v = (v === '' || v === null || v === undefined) ? null : parseInt(v);
             }
 
             if (typeof v === 'object' && v !== null) {
@@ -197,6 +211,11 @@ exports.updateStudent = async (req, res) => {
             }
 
             processedUpdates[k] = v;
+        }
+
+        // Remove ID from updates if it's the same as the anchor ID to avoid unnecessary PK updates
+        if (processedUpdates.id && processedUpdates.id === id) {
+            delete processedUpdates.id;
         }
 
         const fields = Object.keys(processedUpdates);
@@ -220,8 +239,8 @@ exports.updateStudent = async (req, res) => {
 
         res.json(rows[0]);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Update student error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
     }
 };
 
