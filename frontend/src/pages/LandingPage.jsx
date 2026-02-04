@@ -326,60 +326,14 @@ const LandingPage = () => {
             </section>
 
             {/* Structure Section */}
-            <section id="structure" className="py-20 relative overflow-hidden">
-                <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 lg:order-1">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-4 mt-8">
-                                    <div className="bg-blue-900 p-6 rounded-3xl text-white h-48 flex flex-col justify-end">
-                                        <Music size={32} className="mb-4 text-blue-400" />
-                                        <h4 className="text-xl font-bold">{lang === 'am' ? 'መዘምራን' : 'Choir'}</h4>
-                                        <p className="text-white/60 text-sm">{lang === 'am' ? 'ያሬዳዊ ዝማሬዎች' : 'Yaredic Hymns'}</p>
-                                    </div>
-                                    <div className="bg-gray-100 p-6 rounded-3xl h-64 flex flex-col justify-end">
-                                        <BookOpen size={32} className="mb-4 text-gray-400" />
-                                        <h4 className="text-xl font-bold text-gray-900">{lang === 'am' ? 'መምህራን' : 'Teachers'}</h4>
-                                        <p className="text-gray-500 text-sm">{lang === 'am' ? 'መንፈሳዊ ትምህርት' : 'Spiritual Education'}</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="bg-blue-600 p-6 rounded-3xl text-white h-64 flex flex-col justify-end">
-                                        <Cross size={32} className="mb-4 text-white/80" />
-                                        <h4 className="text-xl font-bold">{lang === 'am' ? 'ቅዱሳን ማህበራት' : 'Holy Associations'}</h4>
-                                        <p className="text-white/80 text-sm">{lang === 'am' ? 'የቅዱሳን ህይወት' : 'Lives of Saints'}</p>
-                                    </div>
-                                    <div className="bg-white border-2 border-dashed border-gray-200 p-6 rounded-3xl h-48 flex flex-col justify-center items-center text-center">
-                                        <Users size={32} className="mb-2 text-gray-400" />
-                                        <h4 className="text-lg font-bold text-gray-900">{lang === 'am' ? 'ምዕመናን' : 'Members'}</h4>
-                                        <p className="text-gray-500 text-xs">{lang === 'am' ? 'የጉባኤው መሰረት' : 'Foundation of the Assembly'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="order-1 lg:order-2">
-                            <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'መዋቅራችን' : 'Our Structure'}</h2>
-                            <h3 className="text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'ለመንፈሳዊ እድገት የተዋቀረ' : 'Designed for Spiritual Growth'}</h3>
-                            <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                                {lang === 'am'
-                                    ? 'ማህበረሰባችን ሁለንተናዊ መንፈሳዊ ድጋፍ ለመስጠት የተዋቀረ ነው። ከመዘምራን እስከ መምህራን፣ እያንዳንዱ ክፍል የተማሪዎችን እምነት ለማጠናከር ያገለግላል።'
-                                    : 'Our community is structured to provide holistic spiritual support. From choir to teachers, each department serves to strengthen students\' faith.'}
-                            </p>
-                            <ul className="space-y-4">
-                                {(lang === 'am'
-                                    ? ['ሥርዓተ ቅዳሴ', 'አጽዋማት', 'የጸሎት መርሐ ግብሮች', 'የማህበረሰብ አገልግሎት']
-                                    : ['Holy Liturgy', 'Fasting', 'Prayer Programs', 'Community Service']
-                                ).map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                                            <div className="w-2 h-2 rounded-full bg-green-600" />
-                                        </div>
-                                        <span className="text-gray-700 font-medium">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+            <section id="structure" className="py-20 bg-white">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-center">
+                        <img
+                            src="/stracture.jpg"
+                            alt="Structure"
+                            className="w-full max-w-6xl h-auto rounded-3xl shadow-2xl border border-gray-100"
+                        />
                     </div>
                 </div>
             </section>

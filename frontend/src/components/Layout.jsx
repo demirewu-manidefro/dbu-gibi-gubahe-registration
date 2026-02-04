@@ -19,6 +19,7 @@ import {
     ClipboardCheck,
     Clock,
     BarChart3,
+    Camera,
     ShieldCheck as CheckCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +47,7 @@ const Layout = ({ children }) => {
             { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
             { title: 'Student List', icon: <Users size={20} />, path: '/students' },
             { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },
-            { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+            { title: 'Gallery', icon: <Camera size={20} />, path: '/gallery' },
         ]
         : isStudent
             ? [
