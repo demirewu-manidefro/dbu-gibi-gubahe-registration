@@ -97,7 +97,7 @@ const Analytics = () => {
             return {
                 name: section,
                 value: sectionPresent,
-                percent: totalPresentGlobal > 0 ? ((sectionPresent / totalPresentGlobal) * 100).toFixed(1) : 0,
+                share: totalPresentGlobal > 0 ? ((sectionPresent / totalPresentGlobal) * 100).toFixed(1) : 0,
                 color: sectionColors[index % sectionColors.length]
             };
         }).filter(d => d.value > 0);
@@ -271,7 +271,7 @@ const Analytics = () => {
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                                         <span className="text-sm font-bold text-gray-700">{item.name}</span>
                                     </div>
-                                    <span className="text-sm font-black text-blue-600">{item.percent}%</span>
+                                    <span className="text-sm font-black text-blue-600">{item.share}%</span>
                                 </div>
                             ))}
                         </div>
