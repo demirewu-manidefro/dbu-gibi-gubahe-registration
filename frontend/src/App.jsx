@@ -36,6 +36,7 @@ const ChangePasswordRoute = () => {
 };
 
 import Register from './pages/Register';
+import Gallery from './pages/Gallery';
 
 // Wrapper component to access user context for NotificationProvider
 const AppContent = () => {
@@ -55,8 +56,7 @@ const AppContent = () => {
         <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
-
-        <Route path="/reports" element={<PrivateRoute><div className="p-20 text-center text-gray-400">Reports Generation module coming soon...</div></PrivateRoute>} />
+        <Route path="/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </NotificationProvider>
