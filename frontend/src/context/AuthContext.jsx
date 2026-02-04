@@ -97,6 +97,65 @@ export const AuthProvider = ({ children }) => {
     };
 
     const [attendanceHistory, setAttendanceHistory] = useState([]);
+    const [gallery, setGallery] = useState([]);
+
+    const fetchGallery = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        try {
+            const res = await fetch(`${API_BASE_URL}/gallery`, {
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setGallery(Array.isArray(data) ? data : []);
+            }
+        } catch (err) {
+            console.error('Error fetching gallery:', err);
+        }
+    };
+
+    const uploadGalleryItem = async (itemData) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/gallery`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(itemData)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setGallery(prev => [data, ...prev]);
+                recordActivity('gallery_upload', { title: itemData.title, year: itemData.year });
+                return true;
+            } else {
+                throw new Error(data.message || 'Upload failed');
+            }
+        } catch (err) {
+            console.error('Upload Error:', err);
+            throw err;
+        }
+    };
+
+    const deleteGalleryItem = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/gallery/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setGallery(prev => prev.filter(item => item.id !== id));
+                return true;
+            }
+        } catch (err) {
+            console.error('Delete Error:', err);
+            throw err;
+        }
+    };
 
     const fetchHistory = async () => {
         const token = localStorage.getItem('token');
@@ -212,6 +271,7 @@ export const AuthProvider = ({ children }) => {
             fetchActivityLog();
             fetchNotifications();
             fetchAdmins();
+            fetchGallery();
 
             // Poll notifications every 30 seconds
             const notifInterval = setInterval(fetchNotifications, 30000);
@@ -781,7 +841,11 @@ export const AuthProvider = ({ children }) => {
         changePassword,
         makeStudentAdmin,
         globalSearch,
-        setGlobalSearch
+        setGlobalSearch,
+        gallery,
+        fetchGallery,
+        uploadGalleryItem,
+        deleteGalleryItem
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
