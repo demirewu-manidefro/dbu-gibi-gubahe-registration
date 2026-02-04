@@ -75,17 +75,6 @@ CREATE TABLE IF NOT EXISTS activity_log (
     status VARCHAR(20) DEFAULT 'success'
 );
 
--- Notifications Table
-CREATE TABLE IF NOT EXISTS notifications (
-    id SERIAL PRIMARY KEY,
-    type VARCHAR(50) NOT NULL, -- 'registration', 'approval', 'system'
-    message TEXT NOT NULL,
-    target_section VARCHAR(50) NOT NULL, -- 'all', 'manager', 'section_name'
-    is_read BOOLEAN DEFAULT FALSE,
-    read_by JSONB DEFAULT '[]', -- Array of usernames who read it (for 'all' target)
-    from_username VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Gallery Table
 CREATE TABLE IF NOT EXISTS gallery (

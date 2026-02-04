@@ -23,7 +23,7 @@ app.use('/api/students', require('./routes/students'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/activity', require('./routes/activity'));
 app.use('/api/users', require('./routes/users'));
-app.use('/api/notifications', require('./routes/notifications'));
+
 app.use('/api/gallery', require('./routes/gallery'));
 
 // Basic Route
