@@ -86,3 +86,14 @@ CREATE TABLE IF NOT EXISTS notifications (
     from_username VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Gallery Table
+CREATE TABLE IF NOT EXISTS gallery (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    description TEXT,
+    image_url TEXT NOT NULL,
+    year INT NOT NULL,
+    uploaded_by VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

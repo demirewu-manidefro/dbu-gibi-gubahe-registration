@@ -18,6 +18,7 @@ const initDb = async () => {
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);
             ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_url TEXT;
+            ALTER TABLE gallery ADD COLUMN IF NOT EXISTS description TEXT;
             
             -- Backfill section for admins if missing (assuming username is the section name)
             UPDATE users SET section = username WHERE role = 'admin' AND section IS NULL;
