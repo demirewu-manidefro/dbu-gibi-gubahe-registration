@@ -70,9 +70,12 @@ const Dashboard = () => {
         );
     }
 
-    const filteredStudents = isManager
+    const baseStudents = isManager
         ? students
         : students.filter(s => s.section === mySection);
+
+    const activeStudents = baseStudents.filter(s => s.status === 'Student');
+    const graduatedStudents = baseStudents.filter(s => s.status === 'Graduated');
 
     const filteredLogs = isManager
         ? activityLog
@@ -81,21 +84,21 @@ const Dashboard = () => {
     const stats = [
         {
             label: isManager ? 'Total Students' : `${mySection} Students`,
-            value: filteredStudents.length.toLocaleString(),
+            value: activeStudents.length.toLocaleString(),
             sub: '+12% from last month',
             icon: <Users size={24} />,
             color: 'bg-blue-500'
         },
         {
             label: 'Graduating Class',
-            value: filteredStudents.filter(s => s.status === 'Graduated').length.toLocaleString(),
+            value: graduatedStudents.length.toLocaleString(),
             sub: 'Class of 2017/18',
             icon: <GraduationCap size={24} />,
             color: 'bg-blue-600'
         },
         {
             label: 'Active Servants',
-            value: filteredStudents.filter(s => s.status === 'Student').length.toLocaleString(),
+            value: activeStudents.length.toLocaleString(),
             sub: isManager ? 'Across all mahibers' : `In ${mySection}`,
             icon: <Award size={24} />,
             color: 'bg-blue-400'
