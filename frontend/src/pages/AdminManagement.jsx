@@ -11,12 +11,14 @@ import {
     Activity,
     MessageSquare,
     Camera,
-    Save
+    Save,
+    Settings,
+    ArrowDownCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminManagement = () => {
-    const { user, admins, toggleAdminStatus, registerAdmin, updateAdmin, sendNotification } = useAuth();
+    const { user, admins, toggleAdminStatus, registerAdmin, updateAdmin, sendNotification, students, demoteToStudent } = useAuth();
     const [isRegistering, setIsRegistering] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [broadcastTarget, setBroadcastTarget] = useState('all');
@@ -216,29 +218,43 @@ const AdminManagement = () => {
                                     <td className="px-8 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button
-                                                onClick={() => setBroadcastTarget(admin.username)}
-                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                title="Message Admin"
-                                            >
-                                                <MessageSquare size={18} />
-                                            </button>
-                                            <button
                                                 onClick={() => openEditModal(admin)}
                                                 className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                                                 title="Edit Admin"
                                             >
                                                 <UserIcon size={18} />
                                             </button>
-                                            <button
-                                                onClick={() => toggleAdminStatus(admin.id)}
-                                                className={`p-2 rounded-lg transition-all ${admin.status === 'active'
-                                                    ? 'text-gray-400 hover:bg-red-50 hover:text-red-600'
-                                                    : 'text-red-600 bg-red-50 hover:bg-green-50 hover:text-green-600'
-                                                    }`}
-                                                title={admin.status === 'active' ? 'Block Admin' : 'Unblock Admin'}
-                                            >
-                                                {admin.status === 'active' ? <Ban size={18} /> : <Unlock size={18} />}
-                                            </button>
+                                            {admin.username !== 'manager' && (
+                                                <button
+                                                    onClick={() => toggleAdminStatus(admin.id)}
+                                                    className={`p-2 rounded-lg transition-all ${admin.status === 'active'
+                                                        ? 'text-gray-400 hover:bg-red-50 hover:text-red-600'
+                                                        : 'text-red-600 bg-red-50 hover:bg-green-50 hover:text-green-600'
+                                                        }`}
+                                                    title={admin.status === 'active' ? 'Block Admin' : 'Unblock Admin'}
+                                                >
+                                                    {admin.status === 'active' ? <Ban size={18} /> : <Unlock size={18} />}
+                                                </button>
+                                            )}
+                                            {admin.username === 'manager' && (
+                                                <button
+                                                    onClick={() => {
+                                                        const confirmMsg = "Are you sure you want to demote yourself to a Student?\n\nWARNING: You will lose access to this Admin Dashboard immediately.\n\nEnsure there is at least one other Manager before proceeding, or this action will fail.";
+                                                        if (window.confirm(confirmMsg)) {
+                                                            demoteToStudent(admin.id)
+                                                                .then(msg => {
+                                                                    alert(msg);
+                                                                    // Redirect or logout logic is in AuthContext
+                                                                })
+                                                                .catch(err => alert("Failed: " + err.message));
+                                                        }
+                                                    }}
+                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                                                    title="Degrade to Student"
+                                                >
+                                                    <ArrowDownCircle size={18} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </motion.tr>
