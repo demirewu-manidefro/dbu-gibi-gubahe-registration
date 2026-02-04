@@ -123,7 +123,7 @@ const StudentList = () => {
             ((student.name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
                 (student.id || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
                 (student.dept || '').toLowerCase().includes(globalSearch.toLowerCase()))
-        );
+        ).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
     const openView = (student) => {
         setSelectedStudent(student);
@@ -761,19 +761,9 @@ const StudentList = () => {
                 {!isStudent && (
                     <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                         <div className="text-sm text-gray-500 font-medium">
-                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{safeStudents.length}</span> students
+                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{safeStudents.filter(s => s.status === 'Student').length}</span> students
                         </div>
-                        <div className="flex gap-2">
-                            <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-400 disabled:opacity-50" disabled>
-                                <ChevronLeft size={18} />
-                            </button>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md">1</button>
-                            <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">2</button>
-                            <button className="px-4 py-2 hover:bg-white text-gray-600 rounded-lg font-bold text-sm">3</button>
-                            <button className="p-2 border border-gray-200 rounded-lg hover:bg-white text-gray-600">
-                                <ChevronRight size={18} />
-                            </button>
-                        </div>
+
                     </div>
                 )}
             </div>
