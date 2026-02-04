@@ -180,8 +180,7 @@ exports.makeStudentAdmin = async (req, res) => {
             return res.status(400).json({ message: 'No user account found for this student' });
         }
 
-        // Update user role to admin
-        // We also default their section to their service_section or 'እቅድ' if not present
+       
         const section = service_section || 'እቅድ';
 
         const { rows: userUpdate } = await query(
@@ -199,6 +198,49 @@ exports.makeStudentAdmin = async (req, res) => {
 
     } catch (err) {
         console.error('Make admin error:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.demoteToStudent = async (req, res) => {
+    const { id } = req.params;
+
+    if (req.user.role !== 'manager') {
+        return res.status(403).json({ message: 'Only the Manager can demote users' });
+    }
+
+    try {
+        const { rows: users } = await query("SELECT username, name, role FROM users WHERE id = $1", [id]);
+        if (users.length === 0) return res.status(404).json({ message: 'User not found' });
+
+        const userToDemote = users[0];
+
+        // Check if the user is a manager and if they are the only one
+        if (userToDemote.role === 'manager') {
+            const { rows: managerCount } = await query("SELECT COUNT(*) FROM users WHERE role = 'manager'");
+            const count = parseInt(managerCount[0].count);
+
+            if (count <= 1) {
+                return res.status(400).json({ message: 'Cannot demote the last Super Manager. Please promote another user to Manager first.' });
+            }
+        }
+
+        // Update role to 'student'
+        // We set section to NULL as students don't usually manage sections
+        await query(
+            "UPDATE users SET role = 'student', section = NULL WHERE id = $1",
+            [id]
+        );
+
+        await createNotification(
+            'system',
+            `User demoted to Student: ${userToDemote.name}`,
+            'manager'
+        );
+
+        res.json({ message: `User ${userToDemote.name} demoted to student successfully` });
+    } catch (err) {
+        console.error('Demote error:', err);
         res.status(500).json({ message: 'Server Error' });
     }
 };

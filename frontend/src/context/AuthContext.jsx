@@ -812,6 +812,33 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const demoteToStudent = async (adminId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/demote/${adminId}`, {
+                method: 'PUT',
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                recordActivity('admin_demoted', { adminName: `Demoted User ${adminId}`, section: 'Demoted' });
+                // If the user demoted themselves, logout
+                if (user.id === adminId) {
+                    logout();
+                } else {
+                    // Update admin list
+                    fetchAdmins();
+                }
+                return data.message;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            console.error('Demote error:', err);
+            throw err;
+        }
+    };
+
     const value = {
         user,
         admins,
@@ -845,7 +872,8 @@ export const AuthProvider = ({ children }) => {
         gallery,
         fetchGallery,
         uploadGalleryItem,
-        deleteGalleryItem
+        deleteGalleryItem,
+        demoteToStudent
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
