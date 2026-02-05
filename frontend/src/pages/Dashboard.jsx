@@ -74,7 +74,7 @@ const Dashboard = () => {
         ? students
         : students.filter(s => s.section === mySection);
 
-    const activeStudents = baseStudents.filter(s => s.status === 'Student');
+    const activeStudents = baseStudents.filter(s => s.status === 'Student' && (s.full_name || s.name || '').toUpperCase() !== 'N/A');
     const graduatedStudents = baseStudents.filter(s => s.status === 'Graduated');
 
     const filteredLogs = isManager
@@ -147,50 +147,6 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <div className="lg:col-span-3 space-y-6">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Calendar className="text-blue-400" size={20} /> የሚቀጥሉ ፕሮግራሞች
-                    </h2>
-                    <div className="bg-blue-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[300px]">
-                        <div className="absolute top-0 right-0 p-10 opacity-10">
-                            <Church size={120} />
-                        </div>
-                        <div className="relative z-10 space-y-8">
-                            <div className="space-y-2">
-                                <div className="text-blue-400 font-bold text-xs uppercase tracking-widest">ምዝገባ በመካሄድ ላይ</div>
-                                <h3 className="text-2xl font-bold">2017 ዓ.ም ባች አንድ ምዝገባ</h3>
-                                <p className="text-white/60 text-sm leading-relaxed">እባክዎ ሁሉም የ1ኛ ዓመት ተማሪዎች የአብይ ጾም ከመጀመሩ በፊት መመዝገባቸውን ያረጋግጡ።</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                                    <div className="bg-blue-400 p-2 rounded-xl text-blue-900">
-                                        <Users size={18} />
-                                    </div>
-                                    <div>
-                                        <div className="font-bold text-sm">ጠቅላላ ጉባኤ</div>
-                                        <div className="text-xs text-white/40">ብሃቲት 12 • 8:00 ሰዓት</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                                    <div className="bg-blue-600 p-2 rounded-xl text-white">
-                                        <Calendar size={18} />
-                                    </div>
-                                    <div>
-                                        <div className="font-bold text-sm">የነነዌ ጾም</div>
-                                        <div className="text-xs text-white/40">በ3 ቀናት ውስጥ ይጀምራል</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button className="py-3 px-8 bg-white text-blue-900 rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
-                                + ፕሮግራም ጨምር
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
