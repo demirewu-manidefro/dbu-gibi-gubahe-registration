@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/auth';
-import { UserPlus, User, Lock, AlertCircle, ArrowLeft, Eye, EyeOff, UserCircle } from 'lucide-react';
+import { UserPlus, User, Lock, AlertCircle, ArrowLeft, Eye, EyeOff, UserCircle, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,8 @@ const Register = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        section: ''
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -27,31 +28,38 @@ const Register = () => {
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    const [sectionError, setSectionError] = useState('');
+
+    const validateSection = (value) => {
+        if (!value) {
+            setSectionError('ክፍል መምረጥ ግዴታ ነው (Section is required)');
+            return false;
+        }
+        setSectionError('');
+        return true;
+    };
 
     const validateUsername = (value) => {
         if (!value.trim()) {
-            setUsernameError('የተጠቃሚ ስም ያስፈልጋል (Username is required)');
+            setUsernameError('Username is required');
             return false;
         }
         if (value.length < 3) {
-            setUsernameError('የተጠቃሚ ስም ቢያንስ 3 ቁምፊዎች መሆን አለበት (Username must be at least 3 characters)');
+            setUsernameError('Username must be at least 3 characters');
             return false;
         }
-        if (!checkUsernameUnique(value)) {
-            setUsernameError('ይህ የተጠቃሚ ስም ተይዟል (Username taken)');
-            return false;
-        }
+
         setUsernameError('');
         return true;
     };
 
     const validatePassword = (value) => {
         if (!value) {
-            setPasswordError('የይለፍ ቃል ያስፈልጋል (Password is required)');
+            setPasswordError('Password is required');
             return false;
         }
         if (value.length < 6) {
-            setPasswordError('የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት (Password must be at least 6 characters)');
+            setPasswordError('Password must be at least 6 characters');
             return false;
         }
         setPasswordError('');
@@ -60,11 +68,11 @@ const Register = () => {
 
     const validateConfirmPassword = (value) => {
         if (!value) {
-            setConfirmPasswordError('የይለፍ ቃል ማረጋገጫ ያስፈልጋል (Confirm password is required)');
+            setConfirmPasswordError('Confirm password is required');
             return false;
         }
         if (value !== formData.password) {
-            setConfirmPasswordError('የይለፍ ቃል አይመሳሰልም (Passwords do not match)');
+            setConfirmPasswordError('Passwords do not match');
             return false;
         }
         setConfirmPasswordError('');
@@ -88,6 +96,9 @@ const Register = () => {
         if (name === 'confirmPassword' && confirmPasswordError) {
             validateConfirmPassword(value);
         }
+        if (name === 'section' && sectionError) {
+            validateSection(value);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -97,17 +108,21 @@ const Register = () => {
         const isUsernameValid = validateUsername(formData.username);
         const isPasswordValid = validatePassword(formData.password);
         const isConfirmPasswordValid = validateConfirmPassword(formData.confirmPassword);
+        const isSectionValid = validateSection(formData.section);
 
-        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) {
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isSectionValid) {
             return;
         }
 
         setLoading(true);
         try {
-            await signup(formData.username, formData.password);
+            console.log("Submitting registration...");
+            await signup(formData.username, formData.password, formData.section);
+            console.log("Registration successful");
             navigate('/login');
         } catch (err) {
-            setError(err.message);
+            console.error("Registration error:", err);
+            setError(err.message || "An unexpected error occurred");
         } finally {
             setLoading(false);
         }
@@ -197,8 +212,8 @@ const Register = () => {
                                         onChange={handleInputChange}
                                         onBlur={(e) => validateUsername(e.target.value)}
                                         className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${usernameError
-                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
                                             }`}
                                         placeholder="Username"
                                     />
@@ -207,6 +222,39 @@ const Register = () => {
                                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
                                         <AlertCircle size={12} />
                                         {usernameError}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">የአገልግሎት ክፍል (Service Section)</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Briefcase size={20} className={`transition-colors ${sectionError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
+                                    </div>
+                                    <select
+                                        name="section"
+                                        value={formData.section}
+                                        onChange={handleInputChange}
+                                        onBlur={(e) => validateSection(e.target.value)}
+                                        className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all appearance-none cursor-pointer ${sectionError
+                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            }`}
+                                    >
+                                        <option value="">ክፍል ይምረጡ</option>
+                                        {['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'].map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+                                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
+                                    </div>
+                                </div>
+                                {sectionError && (
+                                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                        <AlertCircle size={12} />
+                                        {sectionError}
                                     </p>
                                 )}
                             </div>
@@ -225,8 +273,8 @@ const Register = () => {
                                             onChange={handleInputChange}
                                             onBlur={(e) => validatePassword(e.target.value)}
                                             className={`block w-full pl-11 pr-10 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${passwordError
-                                                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
                                                 }`}
                                             placeholder="••••••"
                                         />
@@ -258,8 +306,8 @@ const Register = () => {
                                             onChange={handleInputChange}
                                             onBlur={(e) => validateConfirmPassword(e.target.value)}
                                             className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${confirmPasswordError
-                                                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
                                                 }`}
                                             placeholder="••••••"
                                         />

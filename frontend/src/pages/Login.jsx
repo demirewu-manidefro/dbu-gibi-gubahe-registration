@@ -12,15 +12,16 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const { login } = useAuth();
 
     const validateUsername = (value) => {
         if (!value.trim()) {
-            setUsernameError('የተጠቃሚ ስም ያስፈልጋል (Username is required)');
+            setUsernameError('Username is required');
             return false;
         }
         if (value.length < 3) {
-            setUsernameError('የተጠቃሚ ስም ቢያንስ 3 ቁምፊዎች መሆን አለበት (Username must be at least 3 characters)');
+            setUsernameError('Username must be at least 4 characters');
             return false;
         }
         setUsernameError('');
@@ -29,11 +30,11 @@ const Login = () => {
 
     const validatePassword = (value) => {
         if (!value) {
-            setPasswordError('የይለፍ ቃል ያስፈልጋል (Password is required)');
+            setPasswordError('Password is required');
             return false;
         }
-        if (value.length < 6) {
-            setPasswordError('የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት (Password must be at least 6 characters)');
+        if (value.length < 4) {
+            setPasswordError('Password must be at least 4 characters');
             return false;
         }
         setPasswordError('');
@@ -53,7 +54,7 @@ const Login = () => {
 
         setLoading(true);
         try {
-            await login(username, password);
+            await login(username, password, rememberMe);
         } catch (err) {
             // Check if the error is about user not found
             if (err.message && (err.message.includes('not found') || err.message.includes('Invalid credentials') || err.message.includes('User does not exist'))) {
@@ -215,13 +216,15 @@ const Login = () => {
                         <div className="flex items-center justify-between">
                             <label className="flex items-center gap-3 cursor-pointer group">
                                 <div className="relative flex items-center">
-                                    <input type="checkbox" className="peer h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 transition-all cursor-pointer" />
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="peer h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 transition-all cursor-pointer"
+                                    />
                                 </div>
                                 <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">አስታውሰኝ</span>
                             </label>
-                            <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
-                                የይለፍ ቃል ጠፋብዎ?
-                            </a>
                         </div>
 
                         <button

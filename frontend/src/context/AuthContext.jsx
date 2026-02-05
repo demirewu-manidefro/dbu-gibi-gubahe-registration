@@ -3,6 +3,21 @@ import { AuthContext } from './auth';
 
 const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
+const getToken = () => localStorage.getItem('token') || sessionStorage.getItem('token');
+const setToken = (token, remember) => {
+    if (remember) {
+        localStorage.setItem('token', token);
+        sessionStorage.removeItem('token');
+    } else {
+        sessionStorage.setItem('token', token);
+        localStorage.removeItem('token');
+    }
+};
+const removeToken = () => {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+};
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         try {
@@ -17,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     // Validate session on mount
     useEffect(() => {
         const validateSession = async () => {
-            const token = localStorage.getItem('token');
+            const token = getToken();
 
             // If we have a user in state but no token, logout immediately
             if (!token && user) {
@@ -60,7 +75,7 @@ export const AuthProvider = ({ children }) => {
 
     const [admins, setAdmins] = useState([]);
     const fetchAdmins = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/users/admins`, {
@@ -81,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     const [globalSearch, setGlobalSearch] = useState('');
 
     const fetchNotifications = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/notifications`, {
@@ -100,7 +115,7 @@ export const AuthProvider = ({ children }) => {
     const [gallery, setGallery] = useState([]);
 
     const fetchGallery = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/gallery`, {
@@ -116,7 +131,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const uploadGalleryItem = async (itemData) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/gallery`, {
                 method: 'POST',
@@ -141,7 +156,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const deleteGalleryItem = async (id) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/gallery/${id}`, {
                 method: 'DELETE',
@@ -158,7 +173,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const fetchHistory = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/attendance`, {
@@ -206,7 +221,7 @@ export const AuthProvider = ({ children }) => {
             }
         });
 
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/attendance`, {
                 method: 'POST',
@@ -226,7 +241,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const fetchStudents = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/students`, {
@@ -246,7 +261,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const fetchActivityLog = async () => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/activity`, {
@@ -308,7 +323,7 @@ export const AuthProvider = ({ children }) => {
     const [students, setStudents] = useState([]);
 
     const recordActivity = async (type, details) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             await fetch(`${API_BASE_URL}/activity`, {
@@ -354,26 +369,36 @@ export const AuthProvider = ({ children }) => {
         return !adminExists && !studentExists;
     };
 
-    const signup = async (username, password) => {
+    const signup = async (username, password, section) => {
         try {
             const res = await fetch(`${API_BASE_URL}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password, section })
             });
-            const data = await res.json();
+
+            const responseText = await res.text();
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                // If response is not JSON (e.g. 500 Error HTML), use text or default message
+                throw new Error(res.ok ? 'Server returned invalid response' : (responseText || 'Server error'));
+            }
+
             if (res.ok) {
                 return true;
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Registration failed');
             }
         } catch (err) {
+            console.error("Signup error:", err);
             throw err;
         }
     };
 
     const registerStudent = async (studentData) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const headers = {
                 'Content-Type': 'application/json'
@@ -431,7 +456,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const approveStudent = async (studentId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/students/${studentId}/approve`, {
                 method: 'POST',
@@ -453,7 +478,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const declineStudent = async (studentId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/students/${studentId}/decline`, {
                 method: 'POST',
@@ -473,7 +498,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const registerAdmin = async (adminData) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/admins`, {
                 method: 'POST',
@@ -500,7 +525,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const updateStudent = async (studentId, updates) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/students/${studentId}`, {
                 method: 'PUT',
@@ -531,7 +556,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const deleteStudent = async (studentId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/students/${studentId}`, {
                 method: 'DELETE',
@@ -553,7 +578,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const importStudents = async (newStudents) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/students/import`, {
                 method: 'POST',
@@ -581,7 +606,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const sendNotification = async ({ target, message }) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
         try {
             const res = await fetch(`${API_BASE_URL}/notifications`, {
@@ -607,7 +632,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const markNotificationsRead = async (username, notificationId = null) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
 
         try {
@@ -633,7 +658,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const dismissNotification = async (notificationId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) return;
 
         try {
@@ -647,7 +672,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async (username, password) => {
+    const login = async (username, password, remember = false) => {
         try {
             const res = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
@@ -657,7 +682,7 @@ export const AuthProvider = ({ children }) => {
 
             const data = await res.json();
             if (res.ok) {
-                localStorage.setItem('token', data.token);
+                setToken(data.token, remember);
                 setUser(data.user);
                 return true;
             } else {
@@ -669,13 +694,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
+        removeToken();
         setUser(null);
     };
 
     const toggleAdminStatus = async (adminId) => {
         if (user?.role !== 'manager') return;
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/admins/${adminId}/status`, {
                 method: 'PUT',
@@ -694,7 +719,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateAdmin = async (adminId, adminData) => {
         if (user?.role !== 'manager') return;
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/admins/${adminId}`, {
                 method: 'PUT',
@@ -719,7 +744,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const resetPassword = async (studentId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/reset-password/${studentId}`, {
                 method: 'PUT',
@@ -744,7 +769,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const changePassword = async (currentPassword, newPassword) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/change-password`, {
                 method: 'PUT',
@@ -768,7 +793,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const updateProfile = async (profileData) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/profile`, {
                 method: 'PUT',
@@ -793,7 +818,7 @@ export const AuthProvider = ({ children }) => {
 
     const makeStudentAdmin = async (studentId) => {
         if (user?.role !== 'manager') return;
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/make-admin/${studentId}`, {
                 method: 'PUT',
@@ -813,7 +838,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const demoteToStudent = async (adminId) => {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         try {
             const res = await fetch(`${API_BASE_URL}/users/demote/${adminId}`, {
                 method: 'PUT',
