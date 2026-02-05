@@ -84,12 +84,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         serviceSection: '',
         graduationYear: '',
         membershipYear: '',
-        specialEducation: '',
-        specialPlace: '',
 
         // This will now store the course names per year
         educationYearly: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-        participation: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        responsibility: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         attendance: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
 
         // New Training Sections
@@ -110,38 +108,48 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
             const isDefaultId = user.student_id === user.username;
             const isDefaultName = user.name === 'N/A' || user.name === 'New Student' || user.name === user.username;
 
-            setFormData(prev => ({
-                ...prev,
-                studentId: isDefaultId ? '' : (user.student_id || ''),
-                fullName: isDefaultName ? '' : (user.name || ''),
-                baptismalName: user.baptismal_name || '',
-                sex: user.gender || user.sex || '',
-                phone: user.phone || '',
-                birthYear: user.birth_date ? String(new Date(user.birth_date).getFullYear()) : '',
-                department: user.department || user.dept || '',
-                batch: user.batch || user.year || '',
-                serviceSection: user.service_section || user.section || '',
-                region: user.region || '',
-                zone: user.zone || '',
-                woreda: user.woreda || '',
-                kebele: user.kebele || '',
-                gibiName: user.gibi_name || '',
-                centerAndWoredaCenter: user.center_and_woreda || '',
-                parishChurch: user.parish_church || '',
-                emergencyName: user.emergency_name || '',
-                emergencyPhone: user.emergency_phone || '',
-                priesthoodRank: user.priesthood_rank || '',
-                motherTongue: user.mother_tongue || '',
-                specialEducation: user.special_education || '',
-                specialPlace: user.special_place || '',
-                membershipYear: user.membership_year || '',
-                graduationYear: user.graduation_year || '',
-                abinetEducation: user.abinet_education || '',
-                specialNeed: user.special_need || '',
-                attendance: user.school_info?.attendance || user.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                educationYearly: user.school_info?.educationYearly || user.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                participation: user.school_info?.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-            }));
+            setFormData(prev => {
+                const schoolInfo = typeof user.school_info === 'string' ? JSON.parse(user.school_info) : (user.school_info || {});
+
+                return {
+                    ...prev,
+                    studentId: isDefaultId ? '' : (user.student_id || user.id || ''),
+                    fullName: isDefaultName ? '' : (user.name || user.full_name || ''),
+                    baptismalName: user.baptismal_name || user.baptismalName || '',
+                    sex: user.gender || user.sex || '',
+                    phone: user.phone || '',
+                    birthYear: user.birth_date ? (String(user.birth_date).includes('-') ? user.birth_date.split('-')[0] : String(user.birth_date)) : (user.birthYear || ''),
+                    department: user.department || user.dept || '',
+                    batch: user.batch || user.year || '',
+                    serviceSection: user.service_section || user.section || '',
+                    region: user.region || '',
+                    zone: user.zone || '',
+                    woreda: user.woreda || '',
+                    kebele: user.kebele || '',
+                    gibiName: user.gibi_name || user.gibiName || '',
+                    centerAndWoredaCenter: user.center_and_woreda || user.centerAndWoreda || user.centerAndWoredaCenter || '',
+                    parishChurch: user.parish_church || user.parishChurch || '',
+                    emergencyName: user.emergency_name || user.emergencyName || '',
+                    emergencyPhone: user.emergency_phone || user.emergencyPhone || '',
+                    priesthoodRank: user.priesthood_rank || user.priesthoodRank || '',
+                    motherTongue: user.mother_tongue || user.motherTongue || '',
+                    otherLanguages: user.other_languages || user.otherLanguages || { l1: '', l2: '', l3: '' },
+                    membershipYear: user.membership_year || user.membershipYear || schoolInfo.membershipYear || '',
+                    graduationYear: user.graduation_year || user.graduationYear || schoolInfo.graduationYear || '',
+                    abinetEducation: user.abinet_education || user.abinetEducation || schoolInfo.abinetEducation || '',
+                    specialNeed: user.special_need || user.specialNeed || schoolInfo.specialNeed || '',
+                    cumulativeGPA: user.cumulative_gpa || user.cumulativeGPA || schoolInfo.cumulativeGPA || '',
+                    attendance: schoolInfo.attendance || user.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    educationYearly: schoolInfo.educationYearly || user.education_yearly || user.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    responsibility: schoolInfo.responsibility || user.responsibility || schoolInfo.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    gpa: schoolInfo.gpa || user.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    otherTrainings: user.other_trainings || user.otherTrainings || '',
+                    teacherTraining: user.teacher_training || user.teacherTraining || { level1: '', level2: '', level3: '' },
+                    leadershipTraining: user.leadership_training || user.leadershipTraining || { level1: '', level2: '', level3: '' },
+                    additionalInfo: user.additional_info || user.additionalInfo || '',
+                    photoUrl: user.photo_url || user.photoUrl || ''
+                };
+            });
         } else if (user && (user.role === 'admin' || user.role === 'manager') && !initialData) {
             setFormData(prev => ({
                 ...prev,
@@ -200,11 +208,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 ...prev,
                 leadershipTraining: { ...prev.leadershipTraining, [level]: value }
             }));
-        } else if (name.startsWith('participation-')) {
+        } else if (name.startsWith('participation-') || name.startsWith('responsibility-')) {
             const year = name.split('-')[1];
             setFormData(prev => ({
                 ...prev,
-                participation: { ...prev.participation, [year]: value }
+                responsibility: { ...prev.responsibility, [year]: value }
             }));
         } else if (name.startsWith('attendance-')) {
             const year = name.split('-')[1];
@@ -916,7 +924,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </div>
 
                                         <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
-                                            <h3 className="text-md font-bold">2. በግቢ ጉባኤው የተሳትፎ (Participation):-</h3>
+                                            <h3 className="text-md font-bold">2. በግቢ ጉባኤው የአገልግሎት ክፍልና ሃላፊነት (Service Section and Responsibility):-</h3>
                                         </div>
                                         <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
@@ -924,10 +932,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
-                                                        name={`participation-${year}`}
-                                                        value={formData.participation[year]}
+                                                        name={`responsibility-${year}`}
+                                                        value={formData.responsibility[year]}
                                                         onChange={handleInputChange}
-                                                        placeholder="ተሳትፎ..."
+                                                        placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
                                                         className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
                                                     />
                                                 </div>
