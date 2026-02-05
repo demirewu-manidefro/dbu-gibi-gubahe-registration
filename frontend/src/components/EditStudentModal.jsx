@@ -86,9 +86,8 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         serviceSection: getVal(['section', 'service_section']),
         graduationYear: getVal(['graduationYear', 'graduation_year']),
         membershipYear: getVal(['membershipYear', 'school_info.membershipYear']),
-        specialEducation: getVal(['specialEducation', 'school_info.specialEducation']),
-        specialPlace: getVal(['specialPlace', 'school_info.specialPlace']),
-        participation: getVal(['participation', 'school_info.participation'], { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
+        membershipYear: getVal(['membershipYear', 'school_info.membershipYear']),
+        responsibility: getVal(['responsibility', 'participation', 'school_info.responsibility', 'school_info.participation'], { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
         teacherTraining: getVal(['teacherTraining', 'teacher_training'], { level1: '', level2: '', level3: '' }),
         leadershipTraining: getVal(['leadershipTraining', 'leadership_training'], { level1: '', level2: '', level3: '' }),
         otherTrainings: getVal(['otherTrainings', 'other_trainings']),
@@ -113,7 +112,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
     // Also handle possible stringified JSON fields from DB
     useEffect(() => {
         const fieldsToJSON = [
-            'otherLanguages', 'gpa', 'participation', 'teacherTraining',
+            'otherLanguages', 'gpa', 'responsibility', 'teacherTraining',
             'leadershipTraining', 'attendance', 'educationYearly'
         ];
 
@@ -180,11 +179,11 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                 ...prev,
                 leadershipTraining: { ...prev.leadershipTraining, [level]: value }
             }));
-        } else if (name.startsWith('participation-')) {
+        } else if (name.startsWith('participation-') || name.startsWith('responsibility-')) {
             const year = name.split('-')[1];
             setFormData(prev => ({
                 ...prev,
-                participation: { ...prev.participation, [year]: value }
+                responsibility: { ...prev.responsibility, [year]: value }
             }));
         } else if (name.startsWith('attendance-')) {
             const year = name.split('-')[1];
@@ -259,9 +258,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
             const schoolInfo = {
                 gpa: formData.gpa,
-                participation: formData.participation,
-                specialEducation: formData.specialEducation,
-                specialPlace: formData.specialPlace,
+                responsibility: formData.responsibility,
                 attendance: formData.attendance,
                 educationYearly: formData.educationYearly,
                 abinetEducation: formData.abinetEducation,
@@ -294,6 +291,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                 batch: formData.batch,
                 school_info: schoolInfo,
                 service_section: formData.serviceSection,
+                responsibility: formData.responsibility,
                 graduation_year: formData.graduationYear,
 
                 teacher_training: formData.teacherTraining,
@@ -831,28 +829,6 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                             </h3>
 
                                             <div className="space-y-6">
-                                                <div>
-                                                    <label className="label-amharic">የተማረውና አሁን የደረሰበት</label>
-                                                    <input
-                                                        name="specialEducation"
-                                                        value={formData.specialEducation}
-                                                        onChange={handleInputChange}
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                        placeholder="የተማረው..."
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="label-amharic">የተማረው ልዩ ተሰጥኦ</label>
-                                                    <textarea
-                                                        name="specialPlace"
-                                                        value={formData.specialPlace}
-                                                        onChange={handleInputChange}
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
-                                                        placeholder="ልዩ ተሰጥኦ..."
-                                                    />
-                                                </div>
-
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div>
                                                         <label className="label-amharic">የአብነት ትምህርት</label>
@@ -931,18 +907,18 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                             {/* Participation */}
                                             <div className="p-6 bg-blue-50 border border-blue-100 rounded-xl mb-6">
                                                 <h3 className="bg-blue-600 text-white px-6 py-2 rounded-full inline-block text-md font-bold mb-6">
-                                                    2. በግቢ ጉባኤው ተሳትፎ:-
+                                                    2. በግቢ ጉባኤው የአገልግሎት ክፍልና ሃላፊነት:-
                                                 </h3>
                                                 <div className="space-y-3">
                                                     {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                         <div key={`part-${year}`} className="flex items-center gap-3">
                                                             <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 uppercase">{idx + 1}ኛ ዓመት</div>
                                                             <input
-                                                                name={`participation-${year}`}
-                                                                value={formData.participation[year]}
+                                                                name={`responsibility-${year}`}
+                                                                value={formData.responsibility[year]}
                                                                 onChange={handleInputChange}
                                                                 className="flex-1 bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                                                                placeholder="ተሳትፎ..."
+                                                                placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
                                                             />
                                                         </div>
                                                     ))}
