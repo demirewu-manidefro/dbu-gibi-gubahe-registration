@@ -15,6 +15,18 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS department VARCHAR(100);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS batch VARCHAR(20);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS verified_by VARCHAR(100);
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS responsibility JSONB;
+            ALTER TABLE students DROP COLUMN IF EXISTS participation;
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS attendance JSONB;
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS education_yearly JSONB;
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS gpa JSONB;
+            
+            -- Migrate data from school_info to new columns if new columns are empty
+            UPDATE students SET responsibility = school_info->'participation' WHERE responsibility IS NULL AND school_info->'participation' IS NOT NULL;
+            UPDATE students SET gpa = school_info->'gpa' WHERE gpa IS NULL AND school_info->'gpa' IS NOT NULL;
+            UPDATE students SET attendance = school_info->'attendance' WHERE attendance IS NULL AND school_info->'attendance' IS NOT NULL;
+            UPDATE students SET education_yearly = school_info->'educationYearly' WHERE education_yearly IS NULL AND school_info->'educationYearly' IS NOT NULL;
+
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);
             ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_url TEXT;
@@ -22,6 +34,9 @@ const initDb = async () => {
             
             -- Backfill section for admins if missing (assuming username is the section name)
             UPDATE users SET section = username WHERE role = 'admin' AND section IS NULL;
+            
+            -- Ensure all managers have the 'ሁሉም' section
+            UPDATE users SET section = 'ሁሉም' WHERE role = 'manager' AND (section IS NULL OR section <> 'ሁሉም');
         `);
 
         console.log('Database schema initialized and updated');
@@ -29,8 +44,8 @@ const initDb = async () => {
         if (rows.length === 0) {
             const hashedPassword = await bcrypt.hash('manager123', 10);
             await query(
-                "INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5)",
-                ['manager', hashedPassword, 'Super Manager', 'manager', 'active']
+                "INSERT INTO users (username, password, name, role, section, status) VALUES ($1, $2, $3, $4, $5, $6)",
+                ['manager', hashedPassword, 'Super Manager', 'manager', 'ሁሉም', 'active']
             );
             console.log('Default manager user created');
         }

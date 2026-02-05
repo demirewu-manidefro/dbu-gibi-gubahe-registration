@@ -39,6 +39,10 @@ CREATE TABLE IF NOT EXISTS students (
     is_graduated BOOLEAN DEFAULT FALSE,
     graduation_year INT,
     service_section VARCHAR(50),
+    participation JSONB, -- { y1, y2, y3, y4, y5, y6 }
+    gpa JSONB, -- { y1, y2, y3, y4, y5, y6 }
+    attendance JSONB, -- { y1, y2, y3, y4, y5, y6 }
+    education_yearly JSONB, -- { y1, y2, y3, y4, y5, y6 }
     trainee_type VARCHAR(50),
     teacher_training JSONB, -- { level1, level2, level3 }
     leadership_training JSONB, -- { level1, level2, level3 }
