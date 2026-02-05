@@ -18,8 +18,7 @@ const Register = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
-        confirmPassword: '',
-        section: ''
+        confirmPassword: ''
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -28,16 +27,6 @@ const Register = () => {
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
-    const [sectionError, setSectionError] = useState('');
-
-    const validateSection = (value) => {
-        if (!value) {
-            setSectionError('ክፍል መምረጥ ግዴታ ነው (Section is required)');
-            return false;
-        }
-        setSectionError('');
-        return true;
-    };
 
     const validateUsername = (value) => {
         if (!value.trim()) {
@@ -93,11 +82,8 @@ const Register = () => {
                 validateConfirmPassword(formData.confirmPassword);
             }
         }
-        if (name === 'confirmPassword' && confirmPasswordError) {
-            validateConfirmPassword(value);
-        }
-        if (name === 'section' && sectionError) {
-            validateSection(value);
+        if (confirmPasswordError && (name === 'confirmPassword' || name === 'password')) {
+            validateConfirmPassword(name === 'confirmPassword' ? value : formData.confirmPassword);
         }
     };
 
@@ -108,16 +94,14 @@ const Register = () => {
         const isUsernameValid = validateUsername(formData.username);
         const isPasswordValid = validatePassword(formData.password);
         const isConfirmPasswordValid = validateConfirmPassword(formData.confirmPassword);
-        const isSectionValid = validateSection(formData.section);
-
-        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isSectionValid) {
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) {
             return;
         }
 
         setLoading(true);
         try {
             console.log("Submitting registration...");
-            await signup(formData.username, formData.password, formData.section);
+            await signup(formData.username, formData.password);
             console.log("Registration successful");
             navigate('/login');
         } catch (err) {
@@ -129,9 +113,9 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex bg-white font-sans overflow-hidden">
+        <div className="min-h-screen w-full flex bg-white dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
             {/* Left Side - Image & Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 dark:bg-gray-800 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
 
@@ -170,7 +154,7 @@ const Register = () => {
             </div>
 
             {/* Right Side - Register Form */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 bg-gray-50 overflow-y-auto">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 bg-gray-50 dark:bg-gray-900 overflow-y-auto transition-colors duration-300">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -178,21 +162,21 @@ const Register = () => {
                 >
                     <div className="text-center lg:text-left">
                         <div className="lg:hidden flex justify-between items-center mb-6">
-                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 transition-colors">
-                                <ArrowLeft size={24} className="text-gray-700" />
+                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                <ArrowLeft size={24} className="text-gray-700 dark:text-gray-200" />
                             </Link>
                             <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-blue-600 shadow-lg" />
                             <div className="w-10"></div> {/* Spacer for centering */}
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">መለያ ይፍጠሩ</h2>
-                        <p className="mt-2 text-gray-600">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">መለያ ይፍጠሩ</h2>
+                        <p className="mt-2 text-gray-600 dark:text-gray-400">
                             አባል ለመሆን እባክዎ የሚከተለውን ቅጽ ይሙሉ
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                         {error && (
-                            <div className="flex items-center gap-3 text-red-700 bg-red-50 p-4 rounded-xl text-sm border border-red-100">
+                            <div className="flex items-center gap-3 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
                                 <AlertCircle size={20} className="shrink-0" />
                                 <span>{error}</span>
                             </div>
@@ -200,10 +184,10 @@ const Register = () => {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">የተጠቃሚ ስም </label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">የተጠቃሚ ስም </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <UserCircle size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
+                                        <UserCircle size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
                                     </div>
                                     <input
                                         type="text"
@@ -211,9 +195,9 @@ const Register = () => {
                                         value={formData.username}
                                         onChange={handleInputChange}
                                         onBlur={(e) => validateUsername(e.target.value)}
-                                        className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${usernameError
+                                        className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${usernameError
                                             ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
                                             }`}
                                         placeholder="Username"
                                     />
@@ -226,45 +210,13 @@ const Register = () => {
                                 )}
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">የአገልግሎት ክፍል (Service Section)</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Briefcase size={20} className={`transition-colors ${sectionError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
-                                    </div>
-                                    <select
-                                        name="section"
-                                        value={formData.section}
-                                        onChange={handleInputChange}
-                                        onBlur={(e) => validateSection(e.target.value)}
-                                        className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all appearance-none cursor-pointer ${sectionError
-                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
-                                            }`}
-                                    >
-                                        <option value="">ክፍል ይምረጡ</option>
-                                        {['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'].map(s => (
-                                            <option key={s} value={s}>{s}</option>
-                                        ))}
-                                    </select>
-                                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
-                                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
-                                    </div>
-                                </div>
-                                {sectionError && (
-                                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                                        <AlertCircle size={12} />
-                                        {sectionError}
-                                    </p>
-                                )}
-                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">የይለፍ ቃል</label>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">የይለፍ ቃል</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
+                                            <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -272,16 +224,16 @@ const Register = () => {
                                             value={formData.password}
                                             onChange={handleInputChange}
                                             onBlur={(e) => validatePassword(e.target.value)}
-                                            className={`block w-full pl-11 pr-10 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${passwordError
+                                            className={`block w-full pl-11 pr-10 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${passwordError
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
                                                 }`}
                                             placeholder="••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                                         >
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
@@ -294,10 +246,10 @@ const Register = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">ይለፍ ቃል ያረጋግጡ</label>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">ይለፍ ቃል ያረጋግጡ</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Lock size={20} className={`transition-colors ${confirmPasswordError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
+                                            <Lock size={20} className={`transition-colors ${confirmPasswordError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -305,9 +257,9 @@ const Register = () => {
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
                                             onBlur={(e) => validateConfirmPassword(e.target.value)}
-                                            className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${confirmPasswordError
+                                            className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${confirmPasswordError
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
                                                 }`}
                                             placeholder="••••••"
                                         />
@@ -338,7 +290,7 @@ const Register = () => {
                         </button>
 
                         <div className="text-center mt-6">
-                            <Link to="/login" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                            <Link to="/login" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                                 አካውንት አለኝ? ይግቡ
                             </Link>
                         </div>
