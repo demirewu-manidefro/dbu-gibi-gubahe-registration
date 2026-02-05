@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { useAuth } from './context/auth';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -16,6 +17,7 @@ import Analytics from './pages/Analytics';
 import NotFound from './pages/NotFound';
 import ChangePassword from './pages/ChangePassword';
 import PendingApprovals from './pages/PendingApprovals';
+import GraduationList from './pages/GraduationList';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -53,6 +55,7 @@ const AppContent = () => {
         <Route path="/add-student" element={<PrivateRoute><RegistrationForm /></PrivateRoute>} />
         <Route path="/attendance" element={<PrivateRoute><AttendanceSheet /></PrivateRoute>} />
         <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
+        <Route path="/graduates" element={<PrivateRoute><GraduationList /></PrivateRoute>} />
         <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
@@ -67,7 +70,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
       </AuthProvider>
     </Router>
   );
