@@ -30,19 +30,56 @@ exports.registerStudent = async (req, res) => {
     const studentData = req.body;
     console.log('DEBUG: registerStudent received data:', JSON.stringify(studentData, null, 2));
 
-    const studentId = studentData.studentId || studentData.student_id || studentData.id || studentData.username;
+    const studentId = (studentData.studentId || studentData.student_id || studentData.id || studentData.username || '').trim();
     const fullName = studentData.fullName || studentData.full_name || 'Unknown Student';
 
     try {
-        // 1. Determine if we are updating an existing student based on user_id or studentId
+        // 1. Determine if we are updating an existing student
         let existingProfile = [];
+        let shouldDeleteOldId = null;
+
+        // Check if the target student ID already exists in the table
+        const { rows: idMatch } = await query('SELECT * FROM students WHERE id = $1', [studentId]);
+        const targetRow = idMatch[0];
 
         if (req.user && req.user.role === 'student') {
-            const { rows } = await query('SELECT id FROM students WHERE user_id = $1', [req.user.id]);
-            existingProfile = rows;
+            // Current logged-in student check
+            const { rows: userMatch } = await query('SELECT * FROM students WHERE user_id = $1', [req.user.id]);
+            const myRow = userMatch[0];
+
+            if (myRow) {
+                // Scenario: User has a profile (possibly a placeholder with id=username)
+                if (targetRow && targetRow.id !== myRow.id) {
+                    // User wants to use an ID that already exists in another row
+                    if (targetRow.user_id && targetRow.user_id !== req.user.id) {
+                        return res.status(400).json({
+                            message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ ተጠቃሚ ተመዝግቧል። እባክዎ ትክክለኛ መለያ ቁጥርዎን ያስገቡ ወይም አስተዳዳሪውን ያነጋግሩ።`
+                        });
+                    }
+                    // Target row is unassigned (e.g. from bulk import) - we delete placeholder and take over this row
+                    shouldDeleteOldId = myRow.id;
+                    existingProfile = [targetRow];
+                } else {
+                    // No conflict with another row, update existing row (might be changing ID)
+                    existingProfile = [myRow];
+                }
+            } else if (targetRow) {
+                // User has no row attached to user_id, but the ID they entered exists
+                if (targetRow.user_id && targetRow.user_id !== req.user.id) {
+                    return res.status(400).json({
+                        message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ ተጠቃሚ ተመዝግቧል።`
+                    });
+                }
+                existingProfile = [targetRow];
+            }
         } else {
-            const { rows } = await query('SELECT id FROM students WHERE id = $1', [studentId]);
-            existingProfile = rows;
+            // Admin/Manager or unauthenticated signup - lookup primarily by ID
+            existingProfile = idMatch;
+        }
+
+        if (shouldDeleteOldId) {
+            console.log(`DEBUG: Adopting existing student record ${studentId} and deleting placeholder ${shouldDeleteOldId}`);
+            await query('DELETE FROM students WHERE id = $1', [shouldDeleteOldId]);
         }
 
 
@@ -70,6 +107,7 @@ exports.registerStudent = async (req, res) => {
             'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
+            'responsibility', 'gpa', 'attendance', 'education_yearly',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
             'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
@@ -103,16 +141,25 @@ exports.registerStudent = async (req, res) => {
             studentData.batch || studentData.year,
             (() => {
                 const info = studentData.school_info || studentData.schoolInfo || {};
-
                 let schoolObj = typeof info === 'string' ? JSON.parse(info) : { ...info };
 
+                // Merge with existing record's school_info to preserve data not present in form
+                if (existingProfile.length > 0) {
+                    const row = existingProfile[0];
+                    const existingInfo = row.school_info || row.schoolInfo;
+                    if (existingInfo) {
+                        const existingObj = typeof existingInfo === 'string' ? JSON.parse(existingInfo) : existingInfo;
+                        schoolObj = { ...existingObj, ...schoolObj };
+                    }
+                }
 
-                if (!schoolObj.gpa && studentData.gpa) schoolObj.gpa = studentData.gpa;
-                if (!schoolObj.participation && studentData.participation) schoolObj.participation = studentData.participation;
-                if (!schoolObj.specialEducation && studentData.specialEducation) schoolObj.specialEducation = studentData.specialEducation;
-                if (!schoolObj.specialPlace && studentData.specialPlace) schoolObj.specialPlace = studentData.specialPlace;
-                if (!schoolObj.attendance && studentData.attendance) schoolObj.attendance = studentData.attendance;
-                if (!schoolObj.educationYearly && studentData.educationYearly) schoolObj.educationYearly = studentData.educationYearly;
+                // Remove distinct columns from schoolObj to avoid duplication
+                delete schoolObj.gpa;
+                delete schoolObj.responsibility;
+                delete schoolObj.participation;
+                delete schoolObj.attendance;
+                delete schoolObj.educationYearly;
+
                 if (!schoolObj.abinetEducation && studentData.abinetEducation) schoolObj.abinetEducation = studentData.abinetEducation;
                 if (!schoolObj.specialNeed && studentData.specialNeed) schoolObj.specialNeed = studentData.specialNeed;
                 if (!schoolObj.cumulativeGPA && studentData.cumulativeGPA) schoolObj.cumulativeGPA = studentData.cumulativeGPA;
@@ -123,6 +170,10 @@ exports.registerStudent = async (req, res) => {
             studentData.is_graduated ?? studentData.isGraduated ?? false,
             (studentData.graduation_year || studentData.graduationYear) ? parseInt(studentData.graduation_year || studentData.graduationYear) : null,
             studentData.service_section || studentData.serviceSection || studentData.section,
+            studentData.responsibility || studentData.participation ? JSON.stringify(studentData.responsibility || studentData.participation) : null,
+            studentData.gpa ? JSON.stringify(studentData.gpa) : null,
+            studentData.attendance ? JSON.stringify(studentData.attendance) : null,
+            studentData.educationYearly || studentData.education_yearly ? JSON.stringify(studentData.educationYearly || studentData.education_yearly) : null,
             studentData.teacher_training || studentData.teacherTraining ? JSON.stringify(studentData.teacher_training || studentData.teacherTraining) : null,
             studentData.leadership_training || studentData.leadershipTraining ? JSON.stringify(studentData.leadership_training || studentData.leadershipTraining) : null,
             studentData.other_trainings || studentData.otherTrainings,
@@ -409,8 +460,18 @@ exports.importStudents = async (req, res) => {
                     'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
                     'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
                     'department', 'batch', 'service_section', 'school_info',
+                    'responsibility', 'gpa', 'attendance', 'education_yearly',
+                    'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
+                    'is_graduated', 'graduation_year',
                     'filled_by', 'verified_by', 'status', 'user_id'
                 ];
+
+                // Remove redundant fields from schoolInfo
+                delete schoolInfo.gpa;
+                delete schoolInfo.responsibility;
+                delete schoolInfo.participation;
+                delete schoolInfo.attendance;
+                delete schoolInfo.educationYearly;
 
                 const values = [
                     studentId,
@@ -421,7 +482,7 @@ exports.importStudents = async (req, res) => {
                     studentData.baptismalName,
                     studentData.priesthoodRank,
                     studentData.motherTongue,
-                    null,
+                    studentData.otherLanguages ? JSON.stringify(studentData.otherLanguages) : null,
                     studentData.region,
                     studentData.zone,
                     studentData.woreda,
@@ -436,6 +497,16 @@ exports.importStudents = async (req, res) => {
                     studentData.year || studentData.batch,
                     studentData.section || studentData.serviceSection,
                     JSON.stringify(schoolInfo),
+                    studentData.responsibility || studentData.participation ? JSON.stringify(studentData.responsibility || studentData.participation) : null,
+                    studentData.gpa ? JSON.stringify(studentData.gpa) : null,
+                    studentData.attendance ? JSON.stringify(studentData.attendance) : null,
+                    (studentData.educationYearly || studentData.education_yearly) ? JSON.stringify(studentData.educationYearly || studentData.education_yearly) : null,
+                    studentData.teacherTraining ? JSON.stringify(studentData.teacherTraining) : null,
+                    studentData.leadershipTraining ? JSON.stringify(studentData.leadershipTraining) : null,
+                    studentData.otherTrainings,
+                    studentData.additionalInfo,
+                    studentData.isGraduated || false,
+                    studentData.graduationYear ? parseInt(studentData.graduationYear) : null,
                     studentData.filledBy || 'Import',
                     studentData.verifiedBy,
                     studentData.status || 'Student',
@@ -448,10 +519,24 @@ exports.importStudents = async (req, res) => {
                     ON CONFLICT (id) DO UPDATE SET
                     full_name = EXCLUDED.full_name,
                     gender = EXCLUDED.gender,
+                    age = EXCLUDED.age,
+                    birth_date = EXCLUDED.birth_date,
                     department = EXCLUDED.department,
                     batch = EXCLUDED.batch,
                     service_section = EXCLUDED.service_section,
-                    status = EXCLUDED.status
+                    school_info = EXCLUDED.school_info,
+                    responsibility = EXCLUDED.responsibility,
+                    gpa = EXCLUDED.gpa,
+                    attendance = EXCLUDED.attendance,
+                    education_yearly = EXCLUDED.education_yearly,
+                    other_languages = EXCLUDED.other_languages,
+                    teacher_training = EXCLUDED.teacher_training,
+                    leadership_training = EXCLUDED.leadership_training,
+                    other_trainings = EXCLUDED.other_trainings,
+                    additional_info = EXCLUDED.additional_info,
+                    status = EXCLUDED.status,
+                    graduation_year = EXCLUDED.graduation_year,
+                    is_graduated = EXCLUDED.is_graduated
                     RETURNING id;
                 `;
 
