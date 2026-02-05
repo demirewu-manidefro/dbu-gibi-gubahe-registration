@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -46,17 +47,7 @@ const LandingPage = () => {
     const [lang, setLang] = useState('am');
     const [langOpen, setLangOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    }, [darkMode]);
+    const { darkMode, toggleTheme } = useTheme();
 
     useEffect(() => {
         const onScroll = () => {
@@ -124,7 +115,7 @@ const LandingPage = () => {
                                     {lang === 'am' ? 'መግቢያ' : 'Login'}
                                 </Link>
                                 <button
-                                    onClick={() => setDarkMode(prev => !prev)}
+                                    onClick={toggleTheme}
                                     className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
                                     aria-label="Toggle Dark Mode"
                                 >
@@ -227,7 +218,7 @@ const LandingPage = () => {
                                 </div>
                                 <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
                                     <button
-                                        onClick={() => setDarkMode(prev => !prev)}
+                                        onClick={toggleTheme}
                                         className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                     >
                                         {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
@@ -589,7 +580,7 @@ const LandingPage = () => {
                                         rel="noopener noreferrer"
                                         className="font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     >
-                                        Daniel 
+                                        Daniel
                                     </a>
                                     <span className="text-xs text-gray-400 ml-2">
                                         ({lang === 'am' ? 'ሶፍትዌር ኢንጂነር' : 'Software Engineer'})
@@ -602,7 +593,7 @@ const LandingPage = () => {
                                         rel="noopener noreferrer"
                                         className="font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     >
-                                        Demirew 
+                                        Demirew
                                     </a>
                                     <span className="text-xs text-gray-400 ml-2">
                                         ({lang === 'am' ? 'ዳታ ሳይንቲስት' : 'Data Scientist'})
