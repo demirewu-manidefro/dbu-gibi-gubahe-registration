@@ -58,7 +58,7 @@ const Gallery = () => {
         e.preventDefault();
         if (!newImageData.image_url || !newImageData.year) return;
         if (parseInt(newImageData.year) > CURRENT_ETHIOPIAN_YEAR) {
-            alert(`የመመዝገቢያ አመት ከ ${CURRENT_ETHIOPIAN_YEAR} መብለጥ አይችልም (Year cannot exceed ${CURRENT_ETHIOPIAN_YEAR} E.C.)`);
+            alert(`የመመዝገቢያ አመት ከ ${CURRENT_ETHIOPIAN_YEAR} መብለጥ አይችልም`);
             return;
         }
 
@@ -76,11 +76,11 @@ const Gallery = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this memory?')) {
+        if (window.confirm('ይህንን ምስል መሰረዝ ይፈልጋሉ?')) {
             try {
                 await deleteGalleryItem(id);
             } catch (err) {
-                alert('Deletion failed');
+                alert('ስረዛው አልተሳካም');
             }
         }
     };
@@ -153,8 +153,8 @@ const Gallery = () => {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black text-blue-900 tracking-tight mb-1">Gallery Archive</h1>
-                    <p className="text-blue-600/60 font-medium text-sm">Historical moments preserved in time</p>
+                    <h1 className="text-4xl font-black text-blue-900 tracking-tight mb-1">የምስል ማህደር</h1>
+                    <p className="text-blue-600/60 font-medium text-sm">ታሪካዊ የሆኑ የጉባኤው ትውስታዎች</p>
                 </div>
                 {isManager && (
                     <motion.button
@@ -164,7 +164,7 @@ const Gallery = () => {
                         className="bg-blue-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 hover:bg-blue-800 transition-all shadow-lg whitespace-nowrap"
                     >
                         <Plus size={24} strokeWidth={2.5} />
-                        Upload Memory
+                        ምስል ጨምር
                     </motion.button>
                 )}
             </div>
@@ -177,20 +177,20 @@ const Gallery = () => {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search for moments..."
+                        placeholder="ትውስታዎችን ይፈልጉ..."
                         className="pl-12 h-14 bg-blue-50/20 border-transparent focus:border-blue-100 rounded-2xl w-full text-blue-900 font-medium transition-all"
                     />
                 </div>
                 <div className="flex items-center gap-3 bg-blue-50/20 rounded-2xl px-5 h-14">
                     <Filter size={18} className="text-blue-400" />
-                    <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Year</span>
+                    <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">ዓመት</span>
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(e.target.value)}
                         className="bg-transparent border-none text-sm font-bold text-blue-900 focus:ring-0 p-0 pr-8 cursor-pointer"
                     >
                         {availableYears.map(year => (
-                            <option key={year} value={year}>{year === 'All' ? 'All Archive' : `${year} E.C`}</option>
+                            <option key={year} value={year}>{year === 'All' ? 'ሁሉም ማህደር' : `${year} ዓ.ም`}</option>
                         ))}
                     </select>
                 </div>
@@ -200,7 +200,7 @@ const Gallery = () => {
             {sortedYears.length === 0 ? (
                 <div className="bg-white rounded-[3rem] p-24 text-center border-2 border-dashed border-blue-50">
                     <History size={48} className="mx-auto text-blue-100 mb-6" />
-                    <h3 className="text-xl font-bold text-blue-900/30">No items found</h3>
+                    <h3 className="text-xl font-bold text-blue-900/30">ምንም ምስሎች አልተገኙም</h3>
                 </div>
             ) : (
                 <div className="space-y-16">
@@ -208,7 +208,7 @@ const Gallery = () => {
                         <div key={year} className="space-y-8">
                             <div className="flex items-center gap-4">
                                 <div className="bg-blue-900 text-white px-6 py-2 rounded-xl shadow-md">
-                                    <h2 className="text-xl font-black">{year} <span className="text-xs font-medium opacity-60 ml-1">E.C</span></h2>
+                                    <h2 className="text-xl font-black">{year} <span className="text-xs font-medium opacity-60 ml-1">ዓ.ም</span></h2>
                                 </div>
                                 <div className="h-[2px] flex-1 bg-blue-50"></div>
                             </div>
@@ -250,13 +250,13 @@ const Gallery = () => {
                                             {/* Year Overlay */}
                                             <div className="absolute top-3 left-3 pointer-events-none">
                                                 <div className="bg-white/90 backdrop-blur-md text-blue-900 px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white">
-                                                    {year} E.C
+                                                    {year} ዓ.ም
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Description with Vibrant Blue Gradient Background */}
-                                        <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-5 text-center group-hover:from-blue-500 group-hover:to-blue-700 transition-all duration-500">
+                                        <div className="bg-gradient-to-br from-blue-200 to-blue-600 pb-0 pt-0 text-center group-hover:from-blue-500 group-hover:to-blue-700 transition-all duration-500">
                                             <h4 className="font-extrabold text-white truncate text-base tracking-tight drop-shadow-sm">{item.title || 'Sacred Memory'}</h4>
                                             {item.description && (
                                                 <p className="text-white/70 text-[10px] mt-1 line-clamp-2 font-medium leading-tight">
@@ -305,8 +305,8 @@ const Gallery = () => {
                                     <Upload size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-900">Upload Memory</h2>
-                                    <p className="text-sm text-gray-500">Add a photo to the archive (Past to Present)</p>
+                                    <h2 className="text-xl font-bold text-gray-900">ምስል ይሙሉ</h2>
+                                    <p className="text-sm text-gray-500">ፎቶ ወደ ማህደር ጨምር (ያለፈውን እና አሁን)</p>
                                 </div>
                             </div>
 
@@ -319,7 +319,7 @@ const Gallery = () => {
                                         ) : (
                                             <div className="text-center">
                                                 <ImageIcon size={48} className="mx-auto text-gray-300 mb-2" />
-                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Select Image File</p>
+                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">ምስል ይምረጡ</p>
                                             </div>
                                         )}
                                         <input
@@ -334,18 +334,18 @@ const Gallery = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-2">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Event Title</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">የምስሉ ርዕስ</label>
                                         <input
                                             type="text"
                                             required
                                             value={newImageData.title}
                                             onChange={(e) => setNewImageData({ ...newImageData, title: e.target.value })}
                                             className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 h-12"
-                                            placeholder="e.g. Easter Celebration"
+                                            placeholder="ምሳሌ፡ የፋሲካ በአል አከባበር"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Year (E.C)</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">ዓመት (ዓ.ም)</label>
                                         <input
                                             type="number"
                                             required
@@ -359,12 +359,12 @@ const Gallery = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Detailed Description</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">ዝርዝር መግለጫ</label>
                                     <textarea
                                         value={newImageData.description}
                                         onChange={(e) => setNewImageData({ ...newImageData, description: e.target.value })}
                                         className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 p-3 h-24 resize-none"
-                                        placeholder="Add more details about this moment..."
+                                        placeholder="ስለዚህ ምስል ተጨማሪ ዝርዝሮችን ያክሉ..."
                                     />
                                 </div>
 
@@ -378,7 +378,7 @@ const Gallery = () => {
                                     ) : (
                                         <>
                                             <Plus size={18} />
-                                            Add to Archive
+                                            ወደ ማህደር አክል
                                         </>
                                     )}
                                 </button>
