@@ -837,6 +837,27 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const makeSuperManager = async (studentId) => {
+        if (user?.role !== 'manager') return;
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/make-super-manager/${studentId}`, {
+                method: 'PUT',
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                recordActivity('system', { type: 'promotion', detail: `Student ${studentId} promoted to Super Manager` });
+                return data.message;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (err) {
+            console.error('Make super manager error:', err);
+            throw err;
+        }
+    };
+
     const demoteToStudent = async (adminId) => {
         const token = getToken();
         try {
@@ -898,6 +919,7 @@ export const AuthProvider = ({ children }) => {
         fetchGallery,
         uploadGalleryItem,
         deleteGalleryItem,
+        makeSuperManager,
         demoteToStudent
     };
 
