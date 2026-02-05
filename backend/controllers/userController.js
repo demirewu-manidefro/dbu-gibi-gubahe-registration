@@ -83,12 +83,12 @@ exports.getAdmins = async (req, res) => {
 };
 
 exports.registerAdmin = async (req, res) => {
-    const { username, password, name, section, photo_url } = req.body;
+    const { username, password, name, section, photo_url, role } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const { rows } = await query(
-            "INSERT INTO users (username, password, name, role, section, status, photo_url) VALUES ($1, $2, $3, 'admin', $4, 'active', $5) RETURNING id, username, name, role, section, status, photo_url",
-            [username, hashedPassword, name, section, photo_url]
+            "INSERT INTO users (username, password, name, role, section, status, photo_url) VALUES ($1, $2, $3, $4, $5, 'active', $6) RETURNING id, username, name, role, section, status, photo_url",
+            [username, hashedPassword, name, role || 'admin', section, photo_url]
         );
 
         await createNotification(
@@ -144,12 +144,22 @@ exports.updateProfile = async (req, res) => {
 
 exports.updateAdmin = async (req, res) => {
     const { id } = req.params;
-    const { name, section, photo_url } = req.body;
+    const { name, section, photo_url, password, role } = req.body;
     try {
-        const { rows } = await query(
-            "UPDATE users SET name = COALESCE($1, name), section = COALESCE($2, section), photo_url = COALESCE($3, photo_url) WHERE id = $4 RETURNING id, username, name, role, section, status, photo_url",
-            [name, section, photo_url, id]
-        );
+        let updateQuery = "UPDATE users SET name = COALESCE($1, name), section = COALESCE($2, section), photo_url = COALESCE($3, photo_url), role = COALESCE($4, role)";
+        let queryParams = [name, section, photo_url, role];
+
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateQuery += ", password = $" + (queryParams.length + 1);
+            queryParams.push(hashedPassword);
+        }
+
+        updateQuery += " WHERE id = $" + (queryParams.length + 1) + " RETURNING id, username, name, role, section, status, photo_url";
+        queryParams.push(id);
+
+        const { rows } = await query(updateQuery, queryParams);
+
         if (rows.length === 0) return res.status(404).json({ message: 'Admin not found' });
         res.json(rows[0]);
     } catch (err) {
@@ -180,24 +190,86 @@ exports.makeStudentAdmin = async (req, res) => {
             return res.status(400).json({ message: 'No user account found for this student' });
         }
 
-       
+        const { rows: userRows } = await query('SELECT username FROM users WHERE id = $1', [user_id]);
+        const dbUsername = userRows[0].username;
+
+        // Use full_name if available and not a placeholder, otherwise use username
+        const displayName = (full_name && full_name !== 'N/A' && full_name !== 'Unknown Student' && full_name !== 'New Student')
+            ? full_name
+            : dbUsername;
+
         const section = service_section || 'እቅድ';
 
         const { rows: userUpdate } = await query(
-            "UPDATE users SET role = 'admin', section = COALESCE(section, $1) WHERE id = $2 RETURNING username",
-            [section, user_id]
+            "UPDATE users SET role = 'admin', name = $1, section = $2 WHERE id = $3 RETURNING username",
+            [displayName, section, user_id]
         );
 
         await createNotification(
             'admin_created',
-            `Student Promoted to Admin: ${full_name} (${section})`,
+            `Student Promoted to Admin: ${displayName} (${section})`,
             'manager'
         );
 
-        res.json({ message: `Student ${full_name} promoted to Admin successfully`, username: userUpdate[0].username });
+        // Delete the student record now that they are an admin
+        await query('DELETE FROM students WHERE id = $1', [studentId]);
+
+        res.json({ message: `Student ${displayName} promoted to Admin successfully and removed from student list`, username: userUpdate[0].username });
 
     } catch (err) {
         console.error('Make admin error:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.makeSuperManager = async (req, res) => {
+    const { studentId } = req.params;
+
+    // Only current Managers can promote others to Manager
+    if (req.user.role !== 'manager') {
+        return res.status(403).json({ message: 'Only a Super Manager can promote others to Super Manager' });
+    }
+
+    try {
+        // Find the user_id associated with the student
+        const { rows: studentRows } = await query('SELECT user_id, full_name FROM students WHERE id = $1', [studentId]);
+
+        if (studentRows.length === 0) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        const { user_id, full_name } = studentRows[0];
+
+        if (!user_id) {
+            return res.status(400).json({ message: 'No user account found for this student' });
+        }
+
+        const { rows: userRows } = await query('SELECT username FROM users WHERE id = $1', [user_id]);
+        const dbUsername = userRows[0].username;
+
+        // Use full_name if available and not a placeholder, otherwise use username
+        const displayName = (full_name && full_name !== 'N/A' && full_name !== 'Unknown Student' && full_name !== 'New Student')
+            ? full_name
+            : dbUsername;
+
+        const { rows: userUpdate } = await query(
+            "UPDATE users SET role = 'manager', name = $2, section = 'ሁሉም' WHERE id = $1 RETURNING username",
+            [user_id, displayName]
+        );
+
+        await createNotification(
+            'system',
+            `User Promoted to Super Manager: ${displayName}`,
+            'manager'
+        );
+
+        // Delete the student record now that they are a manager
+        await query('DELETE FROM students WHERE id = $1', [studentId]);
+
+        res.json({ message: `User ${displayName} promoted to Super Manager successfully and removed from student list`, username: userUpdate[0].username });
+
+    } catch (err) {
+        console.error('Make super manager error:', err);
         res.status(500).json({ message: 'Server Error' });
     }
 };
