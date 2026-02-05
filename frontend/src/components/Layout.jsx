@@ -20,7 +20,8 @@ import {
     Clock,
     BarChart3,
     Camera,
-    ShieldCheck as CheckCircle
+    ShieldCheck as CheckCircle,
+    GraduationCap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -47,6 +48,7 @@ const Layout = ({ children }) => {
             { title: 'ትንታኔ', icon: <BarChart3 size={20} />, path: '/analytics' },
             { title: 'አዲስ ምዝገባ', icon: <UserPlus size={20} />, path: '/add-student' },
             { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
+            { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
             { title: 'አስተዳዳሪ', icon: <ShieldAlert size={20} />, path: '/admins' },
             { title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' },
         ]
@@ -61,6 +63,7 @@ const Layout = ({ children }) => {
                 { title: 'ማረጋገጫዎች', icon: <CheckCircle size={20} />, path: '/approvals' },
                 { title: 'ክትትል', icon: <ClipboardCheck size={20} />, path: '/attendance' },
                 { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
+                { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
                 { title: 'ሪፖርቶች', icon: <FileText size={20} />, path: '/reports' },
             ];
 
@@ -112,12 +115,12 @@ const Layout = ({ children }) => {
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black z-40 md:hidden"
+            className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
         />
     );
 
     return (
-        <div className="flex h-screen w-screen bg-gray-50 overflow-hidden text-gray-800 transition-colors duration-300">
+        <div className="flex h-screen w-screen bg-gray-50 dark:bg-gray-900 overflow-hidden text-gray-800 dark:text-gray-100 transition-colors duration-300">
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isMobile && sidebarOpen && <Overlay />}
@@ -131,9 +134,9 @@ const Layout = ({ children }) => {
                     x: isMobile ? (sidebarOpen ? 0 : -280) : 0
                 }}
                 transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-                className={`bg-blue-900 text-white flex flex-col z-50 ${isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative'}`}
+                className={`bg-blue-900 dark:bg-gray-800 text-white flex flex-col z-50 ${isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative'}`}
             >
-                <div className="p-6 flex items-center gap-3 border-b border-white/10">
+                <div className="p-6 flex items-center gap-3 border-b border-white/10 dark:border-gray-700">
                     <div className="bg-blue-600 p-2 rounded-lg flex-shrink-0">
                         <ShieldCheck size={24} className="text-blue-400" />
                     </div>
@@ -182,7 +185,7 @@ const Layout = ({ children }) => {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-white/10 space-y-4">
+                <div className="p-4 border-t border-white/10 dark:border-gray-700 space-y-4">
                     <div className={`flex items-center gap-3 p-2 ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}>
                         <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold flex-shrink-0 overflow-hidden shadow-inner border-2 border-white/20">
                             {user?.photo_url || user?.photoUrl ? (
@@ -213,11 +216,11 @@ const Layout = ({ children }) => {
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Header */}
-                <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20 transition-colors duration-300">
+                <header className="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8 z-20 transition-colors duration-300">
                     <div className="flex items-center gap-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-100:bg-gray-700 rounded-lg transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
                         >
                             <Menu size={20} />
                         </button>
@@ -233,7 +236,7 @@ const Layout = ({ children }) => {
                                         setShowNotifications(prev => !prev);
                                         setShowMessages(false);
                                     }}
-                                    className="p-2 hover:bg-gray-100:bg-gray-700 rounded-full relative transition-colors"
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full relative transition-colors"
                                 >
                                     <Bell size={20} />
                                     {unreadAlerts > 0 && (
@@ -247,7 +250,7 @@ const Layout = ({ children }) => {
                                         setShowMessages(prev => !prev);
                                         setShowNotifications(false);
                                     }}
-                                    className="p-2 hover:bg-gray-100:bg-gray-700 rounded-full relative transition-colors"
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full relative transition-colors"
                                 >
                                     <MessageCircle size={20} />
                                     {unreadMessages > 0 && (
@@ -266,10 +269,10 @@ const Layout = ({ children }) => {
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowNotifications(false)}
                                 />
-                                <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
-                                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
-                                        <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
-                                            <Bell size={16} className="text-blue-600" />
+                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800">
+                                        <div className="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                            <Bell size={16} className="text-blue-600 dark:text-blue-400" />
                                             ማሳወቂያዎች
                                             {unreadAlerts > 0 && (
                                                 <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -279,7 +282,7 @@ const Layout = ({ children }) => {
                                         </div>
                                         <button
                                             onClick={() => markAllAsRead(user?.username)}
-                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700:text-blue-300"
+                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-300"
                                         >
                                             ሁሉንም እንደተነበበ ምልክት አድርግ
                                         </button>
@@ -287,8 +290,8 @@ const Layout = ({ children }) => {
                                     <div className="max-h-96 overflow-y-auto">
                                         {userAlerts.length === 0 ? (
                                             <div className="p-8 text-center">
-                                                <Bell size={48} className="mx-auto text-gray-300 mb-3" />
-                                                <p className="text-sm text-gray-500">ምንም ማሳወቂያዎች የሉም</p>
+                                                <Bell size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">ምንም ማሳወቂያዎች የሉም</p>
                                             </div>
                                         ) : (
                                             userAlerts.map((n) => {
@@ -297,7 +300,7 @@ const Layout = ({ children }) => {
                                                     <div
                                                         key={n.id}
                                                         onClick={() => markAsRead(n.id, user?.username)}
-                                                        className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-blue-50:bg-gray-700 transition-colors ${isUnread ? 'bg-blue-50/50/50' : ''}`}
+                                                        className={`px-4 py-3 border-b border-gray-50 dark:border-gray-700 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${isUnread ? 'bg-blue-50/50 dark:bg-gray-700/50' : ''}`}
                                                     >
                                                         <div className="flex items-start justify-between gap-2">
                                                             <div className="flex-1">
@@ -326,11 +329,11 @@ const Layout = ({ children }) => {
                                                                         <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                                                                     )}
                                                                 </div>
-                                                                <div className="text-sm text-gray-800 font-medium">
+                                                                <div className="text-sm text-gray-800 dark:text-gray-200 font-medium">
                                                                     {n.message}
                                                                 </div>
                                                                 <div className="flex items-center gap-2 mt-1">
-                                                                    <span className="text-xs text-gray-500">
+                                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
                                                                         ከ: {n.from}
                                                                     </span>
                                                                     <span className="text-xs text-gray-400">•</span>
@@ -344,7 +347,7 @@ const Layout = ({ children }) => {
                                                                     e.stopPropagation();
                                                                     removeNotification(n.id);
                                                                 }}
-                                                                className="text-gray-400 hover:text-red-600:text-red-400 p-1"
+                                                                className="text-gray-400 hover:text-red-600 dark:text-red-400 p-1"
                                                                 title="Remove notification"
                                                             >
                                                                 <X size={14} />
@@ -366,10 +369,10 @@ const Layout = ({ children }) => {
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowMessages(false)}
                                 />
-                                <div className="absolute right-0 top-12 w-96 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
-                                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100">
-                                        <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
-                                            <MessageCircle size={16} className="text-indigo-600" />
+                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-gray-700 dark:to-gray-800">
+                                        <div className="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                            <MessageCircle size={16} className="text-indigo-600 dark:text-indigo-400" />
                                             መልዕክቶች
                                             {unreadMessages > 0 && (
                                                 <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -379,7 +382,7 @@ const Layout = ({ children }) => {
                                         </div>
                                         <button
                                             onClick={() => setShowBroadcast(true)}
-                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700:text-indigo-300 bg-white/50/50 px-2 py-1 rounded-lg"
+                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 bg-white/50 dark:bg-gray-700/50 px-2 py-1 rounded-lg"
                                         >
                                             + አዲስ መልዕክት
                                         </button>
@@ -387,8 +390,8 @@ const Layout = ({ children }) => {
                                     <div className="max-h-96 overflow-y-auto">
                                         {userMessages.length === 0 ? (
                                             <div className="p-8 text-center">
-                                                <MessageCircle size={48} className="mx-auto text-gray-200 mb-3" />
-                                                <p className="text-sm text-gray-500 font-medium">ምንም መልዕክቶች የሉም</p>
+                                                <MessageCircle size={48} className="mx-auto text-gray-200 dark:text-gray-600 mb-3" />
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">ምንም መልዕክቶች የሉም</p>
                                                 <button
                                                     onClick={() => setShowBroadcast(true)}
                                                     className="mt-4 text-xs text-blue-600 font-bold hover:underline"
@@ -403,18 +406,18 @@ const Layout = ({ children }) => {
                                                     <div
                                                         key={m.id}
                                                         onClick={() => removeNotification(m.id)}
-                                                        className={`px-4 py-4 border-b border-gray-50 cursor-pointer hover:bg-indigo-50/30:bg-gray-700/30 transition-colors ${isUnread ? 'bg-indigo-50/20/20' : ''}`}
+                                                        className={`px-4 py-4 border-b border-gray-50 dark:border-gray-700 cursor-pointer hover:bg-indigo-50/30 dark:hover:bg-gray-700/30 transition-colors ${isUnread ? 'bg-indigo-50/20 dark:bg-gray-700/20' : ''}`}
                                                     >
                                                         <div className="flex items-start gap-3">
-                                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
+                                                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold text-xs flex-shrink-0">
                                                                 {(m.from || 'S').charAt(0).toUpperCase()}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center justify-between mb-0.5">
-                                                                    <span className="text-xs font-bold text-gray-900">@{m.from}</span>
-                                                                    <span className="text-[10px] text-gray-400 font-medium">{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">@{m.from}</span>
+                                                                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                                 </div>
-                                                                <div className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                                                                <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">
                                                                     {m.message}
                                                                 </div>
                                                             </div>
@@ -428,10 +431,10 @@ const Layout = ({ children }) => {
                                         )}
                                     </div>
                                     {userMessages.length > 0 && (
-                                        <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-900 text-center border-t border-gray-100 dark:border-gray-700">
                                             <button
                                                 onClick={() => markAllAsRead(user?.username)}
-                                                className="text-xs font-bold text-gray-500 hover:text-indigo-600:text-indigo-400 transition-colors"
+                                                className="text-xs font-bold text-gray-500 hover:text-indigo-600 dark:text-indigo-400 transition-colors"
                                             >
                                                 ሁሉንም እንደተነበበ ምልክት አድርግ
                                             </button>
@@ -441,8 +444,8 @@ const Layout = ({ children }) => {
                             </>
                         )}
 
-                        <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
-                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50:bg-gray-700 rounded-full border border-gray-100 transition-colors">
+                        <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full border border-gray-100 dark:border-gray-700 transition-colors">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
                                 {user?.photo_url || user?.photoUrl ? (
                                     <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -450,7 +453,7 @@ const Layout = ({ children }) => {
                                     <span className="lowercase">{(user?.name || 'U').charAt(0)}</span>
                                 )}
                             </div>
-                            <span className="text-sm font-bold text-gray-700 hidden sm:inline">{(user?.name || 'User').split(' ')[0]}</span>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200 hidden sm:inline">{(user?.name || 'User').split(' ')[0]}</span>
                         </button>
                     </div>
                 </header>
@@ -543,7 +546,7 @@ const Layout = ({ children }) => {
                 </AnimatePresence>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-8 no-scrollbar bg-gray-50 transition-colors duration-300">
+                <div className="flex-1 overflow-y-auto p-8 no-scrollbar bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
                     {children}
                 </div>
             </main>
