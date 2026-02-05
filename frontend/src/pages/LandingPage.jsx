@@ -17,7 +17,10 @@ import {
     X,
     Facebook,
     Instagram,
-    Send
+    Send,
+    Eye,
+    Rocket,
+    Target
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -70,10 +73,10 @@ const LandingPage = () => {
                             <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                             <div>
                                 <h1 className="text-xl font-bold text-gray-900 leading-none">
-                                    {lang === 'am' ? 'ደብረ ብርሃን ዩኒቨርስቲ ' : 'Debre Berhan University '}
+                                    {lang === 'am' ? 'በደብረ ብርሃን ዩኒቨርስቲ ' : 'Debre Berhan University '}
                                 </h1>
                                 <p className="text-xs text-blue-600 font-medium tracking-widest">
-                                    {lang === 'am' ? 'ግቢ ጉባኤ' : 'Gibi Gubae'}
+                                    {lang === 'am' ? 'የቀን ግቢ ጉባኤ' : 'Gibi Gubae'}
                                 </p>
                             </div>
                         </a>
@@ -246,11 +249,11 @@ const LandingPage = () => {
                             </motion.p>
 
                             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <Link to="/register" className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-2 group">
+                                <Link to="/register" className="px-7 py-2 rounded-2xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-2 group">
                                     {lang === 'am' ? 'ቤተሰብ ይሁኑ' : 'Join the Family'}
                                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <a href="#about" className="px-8 py-4 rounded-2xl bg-white border border-gray-200 text-gray-700 font-bold text-lg hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+                                <a href="#about" className="hidden sm:flex px-7 py-2 rounded-2xl bg-white border border-gray-200 text-gray-700 font-bold text-lg hover:bg-blue-50 transition-all items-center justify-center gap-2 hover:border-blue-600 hover:bg-transparent hover:text-white">
                                     {lang === 'am' ? 'ተጨማሪ ይወቁ' : 'Learn More'}
                                 </a>
                             </motion.div>
@@ -267,60 +270,146 @@ const LandingPage = () => {
             </section>
 
             {/* Mission Section */}
-            <section id="about" className="py-20 bg-gray-50">
-                <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'ተልዕኳችን' : 'Our Mission'}</h2>
-                        <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">{lang === 'am' ? 'እምነትን በትምህርት ማሳደግ' : 'Nurturing Faith through Education'}</h3>
-                        <p className="text-gray-600 text-lg">
-                            {lang === 'am'
-                                ? '"ያለ መንፈሳዊ መሰረት ትምህርት በአሸዋ ላይ እንደተሰራ ቤት ነው።" — ቅዱስ ያሬድ። ተማሪዎች መንፈሳዊ ህይወታቸውን እንዲጠብቁ እና የቤተሰብነት ስሜት እንዲሰማቸው እንሰራለን።'
-                                : '"Education without spiritual foundation is like a house built on sand." — St. Yared. We work to help students maintain their spiritual life and feel a sense of family.'}
-                        </p>
+            {/* Mission, Vision, Goals, Values Section */}
+            {/* Mission, Vision, Goals, Values Section - Professional Redesign */}
+            <section id="about" className="py-24 bg-white relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 skew-x-12 translate-x-1/2"></div>
+                <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+
+                <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center max-w-3xl mx-auto mb-20">
+                        <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold tracking-widest uppercase mb-4">
+                            {lang === 'am' ? 'ስለ እኛ' : 'About Us'}
+                        </div>
+                        <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                            {lang === 'am' ? 'ራዕይ እና ተልዕኮ' : 'Vision & Mission'}
+                        </h3>
+                        <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {[
-                            {
-                                icon: <Heart className="w-8 h-8 text-blue-600" />,
-                                title: "መንፈሳዊ እድገት",
-                                desc: "በጸሎት እና በጾም ከእግዚአብሔር ጋር ያለንን ግንኙነት ማጠናከር።"
-                            },
-                            {
-                                icon: <BookOpen className="w-8 h-8 text-blue-400" />,
-                                title: "የቤተክርስቲያን ትምህርት",
-                                desc: "የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያንን አስተምህሮ ማጥናት እና መረዳት።"
-                            },
-                            {
-                                icon: <Users className="w-8 h-8 text-blue-600" />,
-                                title: "የማህበረሰብ ድጋፍ",
-                                desc: "በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።"
-                            }
-                        ].map((feature, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={fadeIn}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true, amount: 0.2 }}
-                                whileHover={{ y: -10 }}
-                                className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-premium transition-all"
-                            >
-                                <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6">
-                                    {feature.icon}
+                    <div className="grid md:grid-cols-2 gap-12 mb-20">
+                        {/* Vision */}
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.2 }}
+                            className="group relative"
+                        >
+                            <div className="absolute inset-0 bg-blue-600 rounded-3xl transform rotate-1 opacity-5 group-hover:rotate-2 transition-transform duration-300"></div>
+                            <div className="relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 h-full flex flex-col items-center text-center">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-8 shadow-lg shadow-blue-500/20 text-white transform group-hover:scale-110 transition-transform duration-300">
+                                    <Eye size={36} strokeWidth={1.5} />
                                 </div>
-                                <h4 className="text-xl font-bold text-gray-900 mb-3">
-                                    {idx === 0 ? (lang === 'am' ? 'መንፈሳዊ እድገት' : 'Spiritual Growth')
-                                        : idx === 1 ? (lang === 'am' ? 'የቤተክርስቲያን ትምህርት' : 'Church Education')
-                                            : (lang === 'am' ? 'የማህበረሰብ ድጋፍ' : 'Community Support')}
-                                </h4>
-                                <p className="text-gray-600 leading-relaxed">
-                                    {idx === 0 ? (lang === 'am' ? 'በጸሎት እና በጾም ከእግዚአብሔር ጋር ያለንን ግንኙነት ማጠናከር።' : 'Deepening our relationship with God through prayer and fasting.')
-                                        : idx === 1 ? (lang === 'am' ? 'የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያንን አስተምህሮ ማጥናት እና መረዳት።' : 'Studying and understanding the Orthodox Tewahedo Church.')
-                                            : (lang === 'am' ? 'በእምነት፣ በትምህርት እና በህይወት ፈተናዎች እርስ በርስ መደጋገፍ።' : 'Mutual support in faith, study, and life.')}
+                                <h4 className="text-2xl font-bold text-gray-900 mb-6 font-serif tracking-wide">{lang === 'am' ? 'ራዕይ (Vision)' : 'Vision'}</h4>
+                                <p className="text-gray-600 text-xl leading-relaxed italic font-serif">
+                                    {lang === 'am'
+                                        ? '“ቤተ ክርስቲያን ሁለንተናዊ የመሪነት ሚናዋን ስትወጣ ማየት”'
+                                        : '“To see the Church fulfilling her universal leading role”'}
                                 </p>
-                            </motion.div>
-                        ))}
+                            </div>
+                        </motion.div>
+
+                        {/* Mission */}
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.2 }}
+                            className="group relative"
+                        >
+                            <div className="absolute inset-0 bg-blue-800 rounded-3xl transform -rotate-1 opacity-5 group-hover:-rotate-2 transition-transform duration-300"></div>
+                            <div className="relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 h-full flex flex-col items-center text-center">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center mb-8 shadow-lg shadow-blue-600/20 text-white transform group-hover:scale-110 transition-transform duration-300">
+                                    <Rocket size={36} strokeWidth={1.5} />
+                                </div>
+                                <h4 className="text-2xl font-bold text-gray-900 mb-6 font-serif tracking-wide">{lang === 'am' ? 'ተልዕኮ (Mission)' : 'Mission'}</h4>
+                                <p className="text-gray-600 text-xl leading-relaxed italic font-serif">
+                                    {lang === 'am'
+                                        ? '“ለቤተ ክርስቲያን ተልዕኮ መሳካት እና ለሕልውናዋ የሚተጋ፣ የተደራጀ፣ ምሉዕ ኦርቶዶክሳዊ፤ ርቱዕ ዘመናዊ፤ ሁለገብ መሪ ትውልድ ማፍራት እና ማሰማራት”'
+                                        : '“To produce and deploy an organized, fully Orthodox, rational modern, and versatile leading generation that strives for the success of the Church’s mission and her existence”'}
+                                </p>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-12">
+                        {/* Goals */}
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.2 }}
+                            className="bg-gray-50/50 p-10 rounded-3xl border border-gray-100"
+                        >
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-3 bg-blue-100 rounded-xl text-blue-700">
+                                    <Target size={28} strokeWidth={2} />
+                                </div>
+                                <h4 className="text-2xl font-bold text-gray-900 font-serif">{lang === 'am' ? 'ግቦች (Goals)' : 'Strategic Goals'}</h4>
+                            </div>
+                            <ul className="space-y-4">
+                                {[
+                                    'የቤተ ክርስቲያንን ተቋማዊ አስተዳደር',
+                                    'ስብከተ ወንጌልና ሐዋርያዊ ተልዕኮ',
+                                    'የከፍተኛ ትምህርት ተቋማት ተማሪዎችን',
+                                    'በቤተ ክርስቲያን ላይ የሚነሱትን የርዮተ ዓለም',
+                                    'የተተኪውን ትውልድ',
+                                    'ገዳማት እና አብነት ትምህርት ቤቶች',
+                                    'ቤተሰብ እና ኦርቶዶክሳዊ ማህበረሰብ',
+                                    'የኦርቶዶክሳዊያን ዓለም አቀፍ እና ሀገር አቀፍ ግንኙነትና ትብብር',
+                                    'ማኅበረ ቅዱሳን የውል ተቋማዊ የአሰራር ሥርዓት'
+                                ].map((item, idx) => (
+                                    <li key={idx} className="flex items-start gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 transition-colors">
+                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold shrink-0 mt-0.5">
+                                            {idx + 1}
+                                        </span>
+                                        <span className="text-gray-700 font-medium leading-relaxed">{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+
+                        {/* Values */}
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.2 }}
+                            className="bg-blue-900 p-10 rounded-3xl text-white relative overflow-hidden"
+                        >
+                            {/* Decorative circles */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="p-3 bg-white/10 rounded-xl text-white backdrop-blur-sm">
+                                        <Heart size={28} strokeWidth={2} />
+                                    </div>
+                                    <h4 className="text-2xl font-bold font-serif">{lang === 'am' ? 'ተቋማዊ እሴቶች (Values)' : 'Core Values'}</h4>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4">
+                                    {[
+                                        'መንፈሳዊነት (Spirituality)',
+                                        'አገልጋይነት (Servanthood)',
+                                        'የሃሳብ መሪነት (Thought Leadership)',
+                                        'ተባባሪነት (Collaboration)',
+                                        'ሙያ አክብሮት (Professionalism)',
+                                        'ምክንያታዊነት (Rationality)',
+                                        'ተጠያቂነት (Accountability)'
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="group flex items-center justify-between p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-all border border-white/5 cursor-default">
+                                            <span className="font-medium text-lg text-blue-50">{item.split('(')[0]}</span>
+                                            <span className="text-xs uppercase tracking-wider text-blue-200 opacity-60 group-hover:opacity-100 transition-opacity">
+                                                {item.split('(')[1]?.replace(')', '')}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -339,46 +428,42 @@ const LandingPage = () => {
             </section>
 
             {/* Weekly Activities */}
-            <section id="activities" className="py-20 bg-blue-900 text-white relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/church.png')]"></div>
+            <section id="activities" className="py-20 bg-gray-50 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/church.png')]"></div>
                 <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 className="text-blue-400 font-bold tracking-widest uppercase text-sm mb-3">{lang === 'am' ? 'ይሳተፉ' : 'Participate'}</h2>
-                            <h3 className="text-3xl md:text-4xl font-extrabold">{lang === 'am' ? 'ሳምንታዊ መርሐ ግብሮች' : 'Weekly Activities'}</h3>
+                            <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{'ይሳተፉ'}</h2>
+                            <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900">{'ሳምንታዊ መርሐ ግብሮች'}</h3>
                         </div>
-                        <Link to="/register" className="hidden md:flex items-center gap-2 text-blue-400 hover:text-white transition-colors font-bold">
-                            {lang === 'am' ? 'ሙሉ መርሐ ግብር ይመልከቱ' : 'View Full Schedule'} <ArrowRight size={20} />
+                        <Link to="/register" className="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-bold">
+                            {'ሙሉ መርሐ ግብር ይመልከቱ'} <ArrowRight size={20} />
                         </Link>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6">
-                        {(lang === 'am' ? [
-                            { title: "የጥምቀት በዓል", sub: "ዓመታዊ በዓል", desc: "የጌታችን ኢየሱስ ክርስቶስን ጥምቀት በድምቀት ማክበር።", color: "bg-blue-600" },
-                            { title: "የጸሎት ሥርዓት", sub: "ዕለታዊ", desc: "ከጥንታዊ ሥርዓታችን ጋር የሚያገናኘን የጸሎት ጊዜ።", color: "bg-blue-500" },
-                            { title: "መዝሙር ጥናት", sub: "ሳምንታዊ", desc: "የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ዝማሬዎችን መማር እና ማቅረብ።", color: "bg-blue-400" },
-                            { title: "የሕይወት ትምህርት", sub: "ሳምንታዊ", desc: "ሙሉ ክርስቶስን የምንማርበት ጊዜ።", color: "bg-blue-400" },
-                            { title: "የቅዱሳን ታሪክ", sub: "ሳምንታዊ", desc: "የቅዱሳን አባቶቻችንን ህይወት እና ተአምራት መማር።", color: "bg-blue-400" },
-                            { title: "ማህበረሰብ አገልግሎት", sub: "ወርሃዊ", desc: "ለህብረተሰብ የምናደርገው የፍቅር አገልግሎት።", color: "bg-blue-400" }
-                        ] : [
-                            { title: "Epiphany Celebration", sub: "Annual Festival", desc: "Celebrating the baptism of our Lord Jesus Christ.", color: "bg-blue-600" },
-                            { title: "Prayer Service", sub: "Daily", desc: "Prayer time connecting us with our ancient traditions.", color: "bg-blue-500" },
-                            { title: "Hymn Study", sub: "Weekly", desc: "Learning and presenting Ethiopian Orthodox Tewahedo hymns.", color: "bg-blue-400" },
-                            { title: "Life Education", sub: "Weekly", desc: "Time to learn about living in Christ.", color: "bg-blue-400" },
-                            { title: "Saints' History", sub: "Weekly", desc: "Learning the lives and miracles of our holy fathers.", color: "bg-blue-400" },
-                            { title: "Community Service", sub: "Monthly", desc: "Acts of love and service to the community.", color: "bg-blue-400" }
-                        ]).map((activity, idx) => (
+                        {[
+                            { title: "የክፍላት ውይይት", sub: "ሳምንታዊ - ቅዳሜ", desc: "በወቅታዊ ና በዐል ተኮር በሆኑ መንፈሳዊ አርዕስት ላይ በየክፍላት መወያያት።", color: "bg-blue-600" },
+                            { title: "ኮርስ", sub: "ሳምንታዊ - እሁድ", desc: "መሠረታዊ የሃይማኖት ት/ቶች ለሁሉም በየባቹ የሚሰጥ መርሐ ግብር።", color: "bg-blue-400" },
+                            { title: "ምላሽ የሚሰጥበት ቀን", sub: "ሳምንታዊ - ሰኞ ", desc: "ከአባላት ለሚነሱ ጥያቄዎች ምላሽ የሚሰጥበት መርሐ ግብር።", color: "bg-blue-500" },
+                            { title: "የቤተሰብ ና የዘርፍ ውይይት", sub: "ሳምንታዊ ፟ - ማክሰኞ", desc: "የቤተሰብ ና የዘርፍ ተጠሪዎች ወቅታዊ በሆኑ ና ሃላፊነት ተኮር መንፈሳዊ ውይይት።", color: "bg-blue-400" },
+                            { title: "የህይወት ት/ት", sub: "ሳምንታዊ ፟፟ - ረብዕ", desc: "የአባላትን መንፈሳዊ ህይወት በጥልቅ የሚዳሰስ ወይም የሚያስተምር መርሀ ግብር።", color: "bg-blue-400" },
+                            { title: "ደ/ሃ/ቅ/ገብርኤል አውደምረት", sub: "ሳምንታዊ - ሀሙስ", desc: "በድ/ኅ/ቅ/ገብርኤል ሰበካ ጉባኤ አማካኝነት የሚዘጋጅ የአውደ ምህረት መርሐ ግብር።", color: "bg-blue-400" },
+                            { title: "የአርብ ጸሎት ", sub: "ሳምንታዊ - አርብ", desc: "እንደ ማህበረ ቅዱሳን በየሳምንቱ አርብ የሚዘጋጅ የአንድነት የጸሎት መርሐ ግብር።", color: "bg-blue-400" },
+                            { title: "መዝሙር ጥናት", sub: "ሳምንታዊ - ሰኞ ና ማክሰኞ", desc: "ሁሌም ሰኞ ና ማክሰኞ ኦርቶዶክሳዊ የሆኑ ዝማሬዎችን ማጥናት ና መላማመድ።", color: "bg-blue-400" },
+                            { title: "የአብነት ት/ት", sub: "ሳምንታዊ - ሰኞ እስከ ቅዳሜ", desc: "ለእህቶችም ለወንድሞችም በሆኑ ሊቃውንት የሚሰጥ የአብነት ት/ት መርሐ ግብር።", color: "bg-blue-400" }
+                        ].map((activity, idx) => (
                             <motion.div
                                 key={idx}
                                 whileHover={{ y: -5 }}
-                                className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-all"
+                                className="bg-white border border-gray-100 p-8 rounded-3xl hover:shadow-xl hover:shadow-blue-900/5 transition-all"
                             >
-                                <div className={`w-12 h-12 rounded-xl ${activity.color} mb-6 flex items-center justify-center shadow-lg`}>
+                                <div className={`w-12 h-12 rounded-xl ${activity.color} mb-6 flex items-center justify-center shadow-lg shadow-blue-500/20`}>
                                     <Calendar className="text-white" size={24} />
                                 </div>
-                                <h4 className="text-xl font-bold mb-1">{activity.title}</h4>
-                                <p className="text-sm text-white/50 mb-4 font-serif">{activity.sub}</p>
-                                <p className="text-white/70 leading-relaxed text-sm">
+                                <h4 className="text-xl font-bold mb-1 text-gray-900">{activity.title}</h4>
+                                <p className="text-sm text-blue-500 mb-4 font-bold">{activity.sub}</p>
+                                <p className="text-gray-600 leading-relaxed text-sm">
                                     {activity.desc}
                                 </p>
                             </motion.div>
@@ -444,6 +529,16 @@ const LandingPage = () => {
                                     <Users size={18} className="text-blue-600 shrink-0" />
                                     <span>+251 *** *** ***</span>
                                 </li>
+                                <li className="flex items-center gap-3">
+                                    <img
+                                        src="/CBE Birr Logo.png"
+                                        alt="CBE Birr"
+                                        className="w-[18px] h-[18px] shrink-0 object-contain"
+                                    />
+                                    <span>
+                                        {lang === 'am' ? 'የንግድ ባንክ ቁጥር : ' : 'CBE Account : '}1000********
+                                    </span>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -454,9 +549,38 @@ const LandingPage = () => {
                                 ? `© ${new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሃን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።`
                                 : `© ${new Date().getFullYear()} Debre Berhan Gibi Gubae. All rights reserved.`}
                         </p>
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-blue-600">{lang === 'am' ? 'የግላዊነት መመሪያ' : 'Privacy Policy'}</a>
-                            <a href="#" className="hover:text-blue-600">{lang === 'am' ? 'የአገልግሎት ውል' : 'Terms of Service'}</a>
+                        <div className="text-left">
+                            <p className="text-xs text-gray-400 mb-2">
+                                Developed by
+                            </p>
+                            <div className="flex flex-col gap-1 text-left">
+                                <div className="text-sm text-left">
+                                    <a
+                                        href="https://www.linkedin.com/in/daniel-fekede-731943372"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                                    >
+                                        Daniel Fekede
+                                    </a>
+                                    <span className="text-xs text-gray-400 ml-2">
+                                        ({lang === 'am' ? 'ሶፍትዌር ኢንጂነር' : 'Software Engineer'})
+                                    </span>
+                                </div>
+                                <div className="text-sm text-left">
+                                    <a
+                                        href="https://www.linkedin.com/in/demirewu-manidefro-229a42395"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                                    >
+                                        Demirew Manidefiro
+                                    </a>
+                                    <span className="text-xs text-gray-400 ml-2">
+                                        ({lang === 'am' ? 'ዳታ ሳይንቲስት' : 'Data Scientist'})
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
