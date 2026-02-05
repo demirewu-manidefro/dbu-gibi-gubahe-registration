@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/auth';
 import { useNotifications } from '../context/NotificationContext';
 import {
@@ -28,6 +28,7 @@ const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const { user, logout, globalSearch, setGlobalSearch } = useAuth();
     const { getNotificationsForUser, markAsRead, markAllAsRead, removeNotification, addNotification } = useNotifications();
+    const location = useLocation();
 
     const [showNotifications, setShowNotifications] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
@@ -42,25 +43,25 @@ const Layout = ({ children }) => {
 
     const menuItems = isManager
         ? [
-            { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-            { title: 'Analytics', icon: <BarChart3 size={20} />, path: '/analytics' },
-            { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
-            { title: 'Student List', icon: <Users size={20} />, path: '/students' },
-            { title: 'Admin Management', icon: <ShieldAlert size={20} />, path: '/admins' },
-            { title: 'Gallery', icon: <Camera size={20} />, path: '/gallery' },
+            { title: 'ዳሽቦርድ', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+            { title: 'ትንታኔ', icon: <BarChart3 size={20} />, path: '/analytics' },
+            { title: 'አዲስ ምዝገባ', icon: <UserPlus size={20} />, path: '/add-student' },
+            { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
+            { title: 'አስተዳዳሪ', icon: <ShieldAlert size={20} />, path: '/admins' },
+            { title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' },
         ]
         : isStudent
             ? [
-                { title: 'Update Registration', icon: <UserPlus size={20} />, path: '/add-student' },
-                { title: 'My Information', icon: <Users size={20} />, path: '/students' },
+                { title: 'ምዝገባን አሻሽል', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'የግል መረጃ', icon: <Users size={20} />, path: '/students' },
             ]
             : [
-                { title: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-                { title: 'New Registration', icon: <UserPlus size={20} />, path: '/add-student' },
-                { title: 'Approvals', icon: <CheckCircle size={20} />, path: '/approvals' },
-                { title: 'Attendance', icon: <ClipboardCheck size={20} />, path: '/attendance' },
-                { title: 'Student List', icon: <Users size={20} />, path: '/students' },
-                { title: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+                { title: 'ዳሽቦርድ', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+                { title: 'አዲስ ምዝገባ', icon: <UserPlus size={20} />, path: '/add-student' },
+                { title: 'ማረጋገጫዎች', icon: <CheckCircle size={20} />, path: '/approvals' },
+                { title: 'ክትትል', icon: <ClipboardCheck size={20} />, path: '/attendance' },
+                { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
+                { title: 'ሪፖርቶች', icon: <FileText size={20} />, path: '/reports' },
             ];
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -142,7 +143,7 @@ const Layout = ({ children }) => {
                             animate={{ opacity: 1 }}
                             className="font-bold text-lg whitespace-nowrap"
                         >
-                            DBU Gibi Gubae
+                            ደብረ ብርሃን ግቢ ጉባኤ
                         </motion.div>
                     )}
                     {isMobile && (
@@ -187,13 +188,15 @@ const Layout = ({ children }) => {
                             {user?.photo_url || user?.photoUrl ? (
                                 <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
-                                <span className="text-lg lowercase">{(user?.name || 'U').charAt(0)}</span>
+                                <span className="text-lg lowercase">{(user?.name || 'ተ').charAt(0)}</span>
                             )}
                         </div>
                         {(!isMobile && !sidebarOpen) ? null : (
                             <div className="overflow-hidden">
-                                <div className="font-bold truncate text-sm max-w-[140px] tracking-tight lowercase">{user?.name || 'User'}</div>
-                                <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">{user?.role}</div>
+                                <div className="font-bold truncate text-sm max-w-[140px] tracking-tight lowercase">{user?.name || 'ተጠቃሚ'}</div>
+                                <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">
+                                    {user?.role === 'admin' ? 'አስተዳዳሪ' : user?.role === 'manager' ? 'ማኔጀር' : user?.role === 'student' ? 'ተማሪ' : user?.role}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -202,7 +205,7 @@ const Layout = ({ children }) => {
                         className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40:bg-gray-700 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
                     >
                         <LogOut size={20} className="flex-shrink-0" />
-                        {(!isMobile && !sidebarOpen) ? null : <span className="font-medium whitespace-nowrap">Sign Out</span>}
+                        {(!isMobile && !sidebarOpen) ? null : <span className="font-medium whitespace-nowrap">ውጣ</span>}
                     </button>
                 </div>
             </motion.aside>
@@ -218,18 +221,7 @@ const Layout = ({ children }) => {
                         >
                             <Menu size={20} />
                         </button>
-                        {!isStudent && (
-                            <div className="relative hidden md:block w-96">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Search students by name or ID..."
-                                    className="pl-10 pr-4 py-2 bg-gray-50 border-gray-200 rounded-full text-sm"
-                                    value={globalSearch}
-                                    onChange={(e) => setGlobalSearch(e.target.value)}
-                                />
-                            </div>
-                        )}
+
                     </div>
 
                     <div className="flex items-center gap-4 relative">
@@ -278,7 +270,7 @@ const Layout = ({ children }) => {
                                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
                                         <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
                                             <Bell size={16} className="text-blue-600" />
-                                            Notifications
+                                            ማሳወቂያዎች
                                             {unreadAlerts > 0 && (
                                                 <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                                                     {unreadAlerts}
@@ -289,14 +281,14 @@ const Layout = ({ children }) => {
                                             onClick={() => markAllAsRead(user?.username)}
                                             className="text-xs font-semibold text-blue-600 hover:text-blue-700:text-blue-300"
                                         >
-                                            Mark all read
+                                            ሁሉንም እንደተነበበ ምልክት አድርግ
                                         </button>
                                     </div>
                                     <div className="max-h-96 overflow-y-auto">
                                         {userAlerts.length === 0 ? (
                                             <div className="p-8 text-center">
                                                 <Bell size={48} className="mx-auto text-gray-300 mb-3" />
-                                                <p className="text-sm text-gray-500">No alerts</p>
+                                                <p className="text-sm text-gray-500">ምንም ማሳወቂያዎች የሉም</p>
                                             </div>
                                         ) : (
                                             userAlerts.map((n) => {
@@ -312,22 +304,22 @@ const Layout = ({ children }) => {
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     {n.type === 'registration' && (
                                                                         <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                                            New Registration
+                                                                            አዲስ ምዝገባ
                                                                         </span>
                                                                     )}
                                                                     {n.type === 'approval' && (
                                                                         <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                                            Approved
+                                                                            ጸድቋል
                                                                         </span>
                                                                     )}
                                                                     {n.type === 'decline' && (
                                                                         <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                                            Declined
+                                                                            ውድቅ ተደርጓል
                                                                         </span>
                                                                     )}
                                                                     {n.type === 'attendance' && (
                                                                         <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                                            Attendance
+                                                                            ክትትል
                                                                         </span>
                                                                     )}
                                                                     {isUnread && (
@@ -339,7 +331,7 @@ const Layout = ({ children }) => {
                                                                 </div>
                                                                 <div className="flex items-center gap-2 mt-1">
                                                                     <span className="text-xs text-gray-500">
-                                                                        From: {n.from}
+                                                                        ከ: {n.from}
                                                                     </span>
                                                                     <span className="text-xs text-gray-400">•</span>
                                                                     <span className="text-xs text-gray-400">
@@ -378,7 +370,7 @@ const Layout = ({ children }) => {
                                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100">
                                         <div className="font-bold text-sm text-gray-800 flex items-center gap-2">
                                             <MessageCircle size={16} className="text-indigo-600" />
-                                            Messages
+                                            መልዕክቶች
                                             {unreadMessages > 0 && (
                                                 <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
                                                     {unreadMessages}
@@ -389,19 +381,19 @@ const Layout = ({ children }) => {
                                             onClick={() => setShowBroadcast(true)}
                                             className="text-xs font-semibold text-indigo-600 hover:text-indigo-700:text-indigo-300 bg-white/50/50 px-2 py-1 rounded-lg"
                                         >
-                                            + New Message
+                                            + አዲስ መልዕክት
                                         </button>
                                     </div>
                                     <div className="max-h-96 overflow-y-auto">
                                         {userMessages.length === 0 ? (
                                             <div className="p-8 text-center">
                                                 <MessageCircle size={48} className="mx-auto text-gray-200 mb-3" />
-                                                <p className="text-sm text-gray-500 font-medium">No messages yet</p>
+                                                <p className="text-sm text-gray-500 font-medium">ምንም መልዕክቶች የሉም</p>
                                                 <button
                                                     onClick={() => setShowBroadcast(true)}
                                                     className="mt-4 text-xs text-blue-600 font-bold hover:underline"
                                                 >
-                                                    Send your first broadcast
+                                                    የመጀመሪያውን መልዕክት ላክ
                                                 </button>
                                             </div>
                                         ) : (
@@ -441,7 +433,7 @@ const Layout = ({ children }) => {
                                                 onClick={() => markAllAsRead(user?.username)}
                                                 className="text-xs font-bold text-gray-500 hover:text-indigo-600:text-indigo-400 transition-colors"
                                             >
-                                                Mark All as Read
+                                                ሁሉንም እንደተነበበ ምልክት አድርግ
                                             </button>
                                         </div>
                                     )}
@@ -488,18 +480,18 @@ const Layout = ({ children }) => {
                                     </div>
                                     <h3 className="text-2xl font-bold flex items-center gap-3">
                                         <MessageCircle size={28} className="text-blue-400" />
-                                        Global Broadcast
+                                        አጠቃላይ መልዕክት
                                     </h3>
-                                    <p className="text-blue-200 mt-2 text-sm font-medium">Send an urgent announcement to students or admins</p>
+                                    <p className="text-blue-200 mt-2 text-sm font-medium">ለተማሪዎች ወይም ለአስተዳዳሪዎች አስቸኳይ መልዕክት ይላኩ</p>
                                 </div>
 
                                 <div className="p-8 space-y-6">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Select Audience</label>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">ተቀባይ ይምረጡ</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {[
-                                                { id: 'all', label: 'Everyone', color: 'bg-indigo-50/30 text-indigo-700 border-indigo-100' },
-                                                { id: 'admin', label: 'All Admins', color: 'bg-blue-50/30 text-blue-700 border-blue-100' },
+                                                { id: 'all', label: 'ሁሉም', color: 'bg-indigo-50/30 text-indigo-700 border-indigo-100' },
+                                                { id: 'admin', label: 'ሁሉም አስተዳዳሪዎች', color: 'bg-blue-50/30 text-blue-700 border-blue-100' },
                                                 { id: 'እቅድ', label: 'እቅድ Section', color: 'bg-emerald-50/30 text-emerald-700 border-emerald-100' },
                                                 { id: 'ትምህርት', label: 'ትምህርት Section', color: 'bg-amber-50/30 text-amber-700 border-amber-100' }
                                             ].map(target => (
@@ -518,12 +510,12 @@ const Layout = ({ children }) => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Message Content</label>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">የመልዕክት ይዘት</label>
                                         <textarea
                                             rows={4}
                                             value={broadcastMessage}
                                             onChange={(e) => setBroadcastMessage(e.target.value)}
-                                            placeholder="Write your announcement here..."
+                                            placeholder="መልዕክትዎን እዚህ ይጻፉ..."
                                             className="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-700 focus:ring-2 focus:ring-blue-500 transition-all resize-none"
                                         />
                                     </div>
@@ -539,7 +531,7 @@ const Layout = ({ children }) => {
                                             ) : (
                                                 <>
                                                     <MessageCircle size={20} />
-                                                    Send Broadcast
+                                                    መልዕክት ላክ
                                                 </>
                                             )}
                                         </button>

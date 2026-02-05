@@ -113,8 +113,8 @@ const AttendanceSheet = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Attendance Sheet</h1>
-                    <p className="text-gray-500 font-medium">Track student attendance for events and services</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">የክትትል ቅጽ</h1>
+                    <p className="text-gray-500 font-medium">የተማሪዎችን የክስተቶች እና የአገልግሎት ክትትል ይከታተሉ</p>
                 </div>
                 <div className="flex gap-4">
                     <EthiopianDatePicker
@@ -126,7 +126,7 @@ const AttendanceSheet = () => {
                         className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md"
                     >
                         <Save size={18} />
-                        Save Sheet
+                        ቅጹን አስቀምጥ
                     </button>
                 </div>
             </div>
@@ -134,9 +134,9 @@ const AttendanceSheet = () => {
             <div className="bg-white/50 backdrop-blur-md rounded-2xl p-4 border border-gray-100 flex items-center gap-6 shadow-sm">
                 <div className="flex-1">
                     <div className="flex justify-between mb-2">
-                        <span className="text-sm font-bold text-gray-700">Completion Status</span>
+                        <span className="text-sm font-bold text-gray-700">የተጠናቀቀበት ሁኔታ</span>
                         <span className="text-sm font-black text-blue-600">
-                            {studentsInSheet.filter(s => attendanceData[s.id]).length} / {studentsInSheet.length} Marked
+                            {studentsInSheet.filter(s => attendanceData[s.id]).length} / {studentsInSheet.length} ተሞልቷል
                         </span>
                     </div>
                     <div className="h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
@@ -150,7 +150,7 @@ const AttendanceSheet = () => {
                     onClick={handleMarkAllPresent}
                     className="px-4 py-2 border-2 border-green-100 text-green-600 rounded-xl text-xs font-black uppercase tracking-tight hover:bg-green-50 transition-colors"
                 >
-                    Mark All Present
+                    ሁሉንም እንደተገኙ ምልክት አድርግ
                 </button>
             </div>
 
@@ -160,7 +160,7 @@ const AttendanceSheet = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
-                            placeholder="Search student..."
+                            placeholder="ተማሪ ይፈልጉ..."
                             className="pl-10 h-12 bg-gray-50/50 border-gray-200 rounded-2xl w-full"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -201,12 +201,12 @@ const AttendanceSheet = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-widest">
                             <tr>
-                                <th className="px-8 py-4">Student</th>
+                                <th className="px-8 py-4">ተማሪ</th>
                                 <th className="px-8 py-4">ክፍላት</th>
                                 <th className="px-8 py-4 text-center">ተገኝቷል</th>
                                 <th className="px-8 py-4 text-center">ቀርቷል</th>
                                 <th className="px-8 py-4 text-center">ፍቃድ</th>
-                                <th className="px-8 py-4 text-center">Status</th>
+                                <th className="px-8 py-4 text-center">ሁኔታ</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -266,7 +266,7 @@ const AttendanceSheet = () => {
                 </div>
                 <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                     <div className="text-sm text-gray-500 font-medium">
-                        Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> students
+                        <span className="text-gray-900 font-bold">{filteredStudents.length}</span> ተማሪዎችን በማሳየት ላይ
                     </div>
                 </div>
             </div>

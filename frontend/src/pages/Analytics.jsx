@@ -110,15 +110,15 @@ const Analytics = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Analytics & Reports</h1>
                     <div className="flex items-center gap-2">
-                        <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1" />
-                        <span className="text-gray-400 font-bold">to</span>
-                        <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1" />
+                        <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1" minYear={2018} maxYear={2030} />
+                        <span className="text-gray-400 font-bold">እስከ</span>
+                        <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
                 <div className="bg-white p-20 rounded-3xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
                     <Activity className="text-gray-200 mb-4" size={64} />
-                    <h3 className="text-xl font-bold text-gray-900">No Data Records</h3>
-                    <p className="text-gray-500">The attendance database is currently empty for the selected period.</p>
+                    <h3 className="text-xl font-bold text-gray-900">ምንም መረጃ የለም</h3>
+                    <p className="text-gray-500">በተመረጠው ጊዜ ውስጥ የተመዘገበ የክትትል መረጃ የለም።</p>
                 </div>
             </div>
         );
@@ -128,8 +128,8 @@ const Analytics = () => {
         <div className="space-y-8 animate-in fade-in duration-500 pb-20">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Analytics Dashboard</h1>
-                    <p className="text-gray-500 font-medium">Tracking performance across all sections</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">ትንታኔ ዳሽቦርድ</h1>
+                    <p className="text-gray-500 font-medium">በሁሉም ክፍሎች ላይ አፈጻጸምን መከታተል</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                     {isManager && (
@@ -139,16 +139,16 @@ const Analytics = () => {
                                 onChange={(e) => setSelectedSection(e.target.value)}
                                 className="pl-10 pr-8 py-2 border border-blue-100 rounded-xl bg-white text-gray-700 font-semibold shadow-sm focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
                             >
-                                <option value="All">Global Overview</option>
+                                <option value="All">ጠቅላላ እይታ</option>
                                 {sections.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                             <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400" />
                         </div>
                     )}
                     <div className="flex items-center gap-2">
-                        <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1 text-sm" />
-                        <span className="text-gray-400 font-bold text-sm">to</span>
-                        <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1 text-sm" />
+                        <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
+                        <span className="text-gray-400 font-bold text-sm">እስከ</span>
+                        <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
             </div>
@@ -160,7 +160,7 @@ const Analytics = () => {
                         <TrendingUp size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Attendance Rate</div>
+                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">የክትትል መጠን</div>
                         <div className="text-3xl font-black text-gray-900">{overallAverage}%</div>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ const Analytics = () => {
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Leading Section</div>
+                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">መሪ ክፍል</div>
                         <div className="text-2xl font-black text-gray-900">
                             {sectionAverages[0]?.average > 0 ? sectionAverages[0]?.section : '-'}
                         </div>
@@ -180,8 +180,8 @@ const Analytics = () => {
                         <Clock size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Recorded Sessions</div>
-                        <div className="text-2xl font-black text-gray-900">{totalSessions} <span className="text-sm text-gray-400">Gubaes</span></div>
+                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">የተመዘገቡ ጉባኤዎች</div>
+                        <div className="text-2xl font-black text-gray-900">{totalSessions} <span className="text-sm text-gray-400">ጉባኤዎች</span></div>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,7 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-8 rounded-[40px] shadow-premium border border-gray-50">
                     <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <Activity size={20} className="text-blue-500" /> Section Comparison (Presence Rate)
+                        <Activity size={20} className="text-blue-500" /> የክፍል ንጽጽር (Presence Rate)
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -207,7 +207,7 @@ const Analytics = () => {
 
                 <div className="bg-white p-8 rounded-[40px] shadow-premium border border-gray-50">
                     <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <TrendingUp size={20} className="text-emerald-500" /> Attendance Trends (Over Time)
+                        <TrendingUp size={20} className="text-emerald-500" /> የክትትል አዝማሚያ (በጊዜ ሂደት)
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -226,8 +226,8 @@ const Analytics = () => {
             {/* New Distribution Pie Chart */}
             <div className="bg-white p-10 rounded-[50px] shadow-mega border border-gray-50">
                 <div className="text-center mb-10">
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Presence Distribution</h2>
-                    <p className="text-gray-500 font-medium">Breakdown of total presence across all sections</p>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">የክትትል ስርጭት</h2>
+                    <p className="text-gray-500 font-medium">የሁሉም ክፍሎች ጠቅላላ ክትትል ክፍፍል</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-10">
@@ -249,7 +249,7 @@ const Analytics = () => {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value, name, props) => [`${value} Present`, props.payload.name]}
+                                        formatter={(value, name, props) => [`${value} ተገኝቷል`, props.payload.name]}
                                         contentStyle={{ borderRadius: '20px' }}
                                     />
                                     <Legend iconType="circle" />
@@ -257,13 +257,13 @@ const Analytics = () => {
                             </ResponsiveContainer>
                         ) : (
                             <div className="flex items-center justify-center h-full text-gray-400">
-                                No present records found for the selected range.
+                                በተመረጠው ክልል ውስጥ ምንም የሚገኝ መረጃ የለም።
                             </div>
                         )}
                     </div>
 
                     <div className="bg-gray-50/50 p-8 rounded-[40px] border border-gray-100 space-y-4">
-                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Section Comparison</div>
+                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">የክፍል ንጽጽር</div>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar">
                             {pieChartData.map((item, idx) => (
                                 <div key={idx} className="flex items-center justify-between group">
@@ -277,7 +277,7 @@ const Analytics = () => {
                         </div>
                         <div className="pt-6 border-t border-gray-200">
                             <p className="text-sm text-gray-600 leading-relaxed italic">
-                                This chart shows which sections contribute most to the total attendance volume during this period.
+                                ይህ ቻርት በዚህ ጊዜ ውስጥ ለጠቅላላ ክትትል መጠን የትኞቹ ክፍሎች የበለጠ አስተዋጽኦ እንዳበርከቱ ያሳያል።
                             </p>
                         </div>
                     </div>

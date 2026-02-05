@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { toEthiopian, toGregorian, ETHIOPIAN_MONTHS, ETHIOPIAN_MONTHS_AMHARIC } from '../utils/ethiopianDateUtils';
 import { Calendar } from 'lucide-react';
 
-const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
+const EthiopianDatePicker = ({ value, onChange, className = "", minYear, maxYear }) => {
     const [ethDate, setEthDate] = useState({ year: 2017, month: 1, day: 1 });
 
     useEffect(() => {
@@ -22,13 +23,13 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
 
     const handleChange = (field, val) => {
         const newEthDate = { ...ethDate, [field]: parseInt(val) };
-        
+
         if (newEthDate.month === 13 && newEthDate.day > 6) {
-           newEthDate.day = 1;
+            newEthDate.day = 1;
         }
 
         setEthDate(newEthDate);
-        
+
         try {
             const greg = toGregorian(newEthDate.year, newEthDate.month, newEthDate.day);
             const year = greg.getFullYear();
@@ -42,7 +43,13 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
     };
 
     const currentEthYear = toEthiopian(new Date()).year;
-    const years = Array.from({ length: 100 }, (_, i) => currentEthYear - 80 + i);
+
+    let years;
+    if (minYear && maxYear) {
+        years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+    } else {
+        years = Array.from({ length: 100 }, (_, i) => currentEthYear - 80 + i);
+    }
 
     const maxDays = ethDate.month === 13 ? 6 : 30;
     const days = Array.from({ length: maxDays }, (_, i) => i + 1);
@@ -51,7 +58,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
         <div className={`flex items-center gap-2 bg-white px-4 py-2 border border-gray-200 rounded-xl shadow-sm ${className}`}>
             <Calendar size={18} className="text-blue-600" />
             <div className="flex gap-2">
-                 <select 
+                <select
                     value={ethDate.day}
                     onChange={(e) => handleChange('day', e.target.value)}
                     className="bg-transparent font-medium text-gray-700 outline-none cursor-pointer p-1"
@@ -59,7 +66,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
                     {days.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
 
-                <select 
+                <select
                     value={ethDate.month}
                     onChange={(e) => handleChange('month', e.target.value)}
                     className="bg-transparent font-bold text-gray-900 outline-none cursor-pointer p-1"
@@ -69,7 +76,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "" }) => {
                     ))}
                 </select>
 
-                <select 
+                <select
                     value={ethDate.year}
                     onChange={(e) => handleChange('year', e.target.value)}
                     className="bg-transparent font-medium text-gray-700 outline-none cursor-pointer p-1"

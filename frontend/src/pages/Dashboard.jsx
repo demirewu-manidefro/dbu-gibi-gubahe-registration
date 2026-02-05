@@ -31,24 +31,24 @@ const Dashboard = () => {
                     <div className="relative z-10 space-y-4">
                         <h1 className="text-3xl font-bold">እንኳን በደህና መጡ, {(user?.name || 'User').split(' ')[0]}!</h1>
                         <p className="text-white/80 max-w-2xl text-lg leading-relaxed">
-                            Welcome to the DBU Gibi Gubae Student Portal.
+                            እንኳን ወደ ደብረ ብርሀን ዩኒቨርሲቲ ግቢ ጉባኤ የተማሪዎች ፖርታል በደህና መጡ።
                         </p>
                         <div className="pt-4 flex flex-wrap gap-4">
                             <div className="bg-white/10 px-6 py-3 rounded-xl border border-white/20">
-                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">Username</div>
+                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">መለያ ስም (Username)</div>
                                 <div className="text-xl font-bold">{user?.username}</div>
                             </div>
                             <div className="bg-white/10 px-6 py-3 rounded-xl border border-white/20">
-                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">Student ID</div>
+                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">የተማሪ መታወቂያ</div>
                                 <div className="text-xl font-bold">
                                     {user?.student_id && user?.student_id !== user?.username ? user.student_id : (
-                                        <span className="text-blue-400 text-sm font-medium italic">Pending Reg.</span>
+                                        <span className="text-blue-400 text-sm font-medium italic">ምዝገባ በመጠባበቅ ላይ</span>
                                     )}
                                 </div>
                             </div>
                             <div className="bg-white/10 px-6 py-3 rounded-xl border border-white/20">
-                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">Section</div>
-                                <div className="text-xl font-bold">{user?.section || 'General'}</div>
+                                <div className="text-xs text-blue-200 uppercase tracking-widest font-bold">ክፍል</div>
+                                <div className="text-xl font-bold">{user?.section || 'ጠቅላላ'}</div>
                             </div>
                         </div>
                     </div>
@@ -61,8 +61,8 @@ const Dashboard = () => {
                             <Calendar size={32} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-gray-900 text-lg">Upcoming Gubae</h3>
-                            <p className="text-gray-500">Check schedule -&gt; </p>
+                            <h3 className="font-bold text-gray-900 text-lg">ቀጣይ ጉባኤ</h3>
+                            <p className="text-gray-500">ፕሮግራም ይመልከቱ -&gt; </p>
                         </div>
                     </div>
                 </div>
@@ -83,35 +83,35 @@ const Dashboard = () => {
 
     const stats = [
         {
-            label: isManager ? 'Total Students' : `${mySection} Students`,
+            label: isManager ? 'አጠቃላይ ተማሪዎች' : `${mySection} ተማሪዎች`,
             value: activeStudents.length.toLocaleString(),
-            sub: '+12% from last month',
+            sub: '+12% ካለፈው ወር',
             icon: <Users size={24} />,
             color: 'bg-blue-500'
         },
         {
-            label: 'Graduating Class',
+            label: 'ተመራቂ ተማሪዎች',
             value: graduatedStudents.length.toLocaleString(),
-            sub: 'Class of 2017/18',
+            sub: 'የ 2017/18 ተመራቂ',
             icon: <GraduationCap size={24} />,
             color: 'bg-blue-600'
         },
         {
-            label: 'Active Servants',
+            label: 'ንቁ አገልጋዮች',
             value: activeStudents.length.toLocaleString(),
-            sub: isManager ? 'Across all mahibers' : `In ${mySection}`,
+            sub: isManager ? 'በሁሉም ማኅበራት' : `በ ${mySection} ውስጥ`,
             icon: <Award size={24} />,
             color: 'bg-blue-400'
         },
         {
-            label: 'Avg. Attendance',
+            label: 'አማካይ ክትትል',
             value: `${(() => {
                 if (!attendanceHistory || attendanceHistory.length === 0) return 0;
                 const totalPresent = attendanceHistory.reduce((acc, curr) => acc + (curr.present || 0), 0);
                 const totalPotential = attendanceHistory.reduce((acc, curr) => acc + (curr.total || 0), 0);
                 return totalPotential > 0 ? Math.round((totalPresent / totalPotential) * 100) : 0;
             })()}%`,
-            sub: 'Weekly Gubaes',
+            sub: 'ሳምንታዊ ጉባኤዎች',
             icon: <TrendingUp size={24} />,
             color: 'bg-green-500'
         },
@@ -121,8 +121,8 @@ const Dashboard = () => {
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
             {isManager && (
                 <div className="bg-blue-900/5 p-4 rounded-xl border border-blue-900/10 mb-6">
-                    <h2 className="text-lg font-bold text-blue-900">Manager Overview</h2>
-                    <p className="text-sm text-gray-600">You are viewing global statistics across all sections.</p>
+                    <h2 className="text-lg font-bold text-blue-900">የስራ አስኪያጅ አጠቃላይ እይታ</h2>
+                    <p className="text-sm text-gray-600">በሁሉም ክፍሎች ያሉ አጠቃላይ ስታቲስቲክስን እየተመለከቱ ነው።</p>
                 </div>
             )}
 
@@ -150,7 +150,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <div className="lg:col-span-3 space-y-6">
                     <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Calendar className="text-blue-400" size={20} /> Upcoming Events
+                        <Calendar className="text-blue-400" size={20} /> የሚቀጥሉ ፕሮግራሞች
                     </h2>
                     <div className="bg-blue-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden h-full min-h-[300px]">
                         <div className="absolute top-0 right-0 p-10 opacity-10">
@@ -158,9 +158,9 @@ const Dashboard = () => {
                         </div>
                         <div className="relative z-10 space-y-8">
                             <div className="space-y-2">
-                                <div className="text-blue-400 font-bold text-xs uppercase tracking-widest">Ongoing Registration</div>
-                                <h3 className="text-2xl font-bold">2017 E.C. Batch One Enrollment</h3>
-                                <p className="text-white/60 text-sm leading-relaxed">Please ensure all 1st year students are registered before the fasting season starts.</p>
+                                <div className="text-blue-400 font-bold text-xs uppercase tracking-widest">ምዝገባ በመካሄድ ላይ</div>
+                                <h3 className="text-2xl font-bold">2017 ዓ.ም ባች አንድ ምዝገባ</h3>
+                                <p className="text-white/60 text-sm leading-relaxed">እባክዎ ሁሉም የ1ኛ ዓመት ተማሪዎች የአብይ ጾም ከመጀመሩ በፊት መመዝገባቸውን ያረጋግጡ።</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,8 +169,8 @@ const Dashboard = () => {
                                         <Users size={18} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-sm">General Meeting</div>
-                                        <div className="text-xs text-white/40">Feb 12 • 2:00 PM</div>
+                                        <div className="font-bold text-sm">ጠቅላላ ጉባኤ</div>
+                                        <div className="text-xs text-white/40">ብሃቲት 12 • 8:00 ሰዓት</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
@@ -178,14 +178,14 @@ const Dashboard = () => {
                                         <Calendar size={18} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-sm">Saint Bashir Fasting</div>
-                                        <div className="text-xs text-white/40">Starts in 3 Days</div>
+                                        <div className="font-bold text-sm">የነነዌ ጾም</div>
+                                        <div className="text-xs text-white/40">በ3 ቀናት ውስጥ ይጀምራል</div>
                                     </div>
                                 </div>
                             </div>
 
                             <button className="py-3 px-8 bg-white text-blue-900 rounded-2xl font-bold shadow-xl hover:bg-gray-100 transition-all mt-6">
-                                + Add Schedule
+                                + ፕሮግራም ጨምር
                             </button>
                         </div>
                     </div>

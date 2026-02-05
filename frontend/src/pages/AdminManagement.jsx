@@ -111,8 +111,8 @@ const AdminManagement = () => {
                 <div className="bg-red-50 text-red-600 p-6 rounded-full mb-6">
                     <Ban size={48} />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">Access Denied</h1>
-                <p className="text-gray-500 mt-2 max-w-md">Only the system manager can access the admin management portal. Please contact the administrator if you believe this is an error.</p>
+                <h1 className="text-3xl font-bold text-gray-900">መዳረሻ ተከልክሏል</h1>
+                <p className="text-gray-500 mt-2 max-w-md">የአስተዳዳሪዎች ማስተዳደሪያ ገጽን ማግኘት የሚችለው የስርዓት አስተዳዳሪው ብቻ ነው። እባክዎ ይህ ስህተት ነው ብለው ካመኑ አስተዳዳሪውን ያነጋግሩ።</p>
             </div>
         );
     }
@@ -121,8 +121,8 @@ const AdminManagement = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Admin Management</h1>
-                    <p className="text-gray-500 font-medium">Manage system access and monitor admin performance</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">የአስተዳዳሪዎች አስተዳደር</h1>
+                    <p className="text-gray-500 font-medium">የስርዓት መዳረሻን ያስተዳድሩ እና የአስተዳዳሪ አፈጻጸምን ይቆጣጠሩ</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
@@ -130,7 +130,7 @@ const AdminManagement = () => {
                             <ShieldCheck size={20} />
                         </div>
                         <div>
-                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Admins</div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">ንቁ አስተዳዳሪዎች</div>
                             <div className="text-xl font-bold">{admins.filter(a => a.status === 'active').length}</div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ const AdminManagement = () => {
                             <Ban size={20} />
                         </div>
                         <div>
-                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Blocked</div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">ታግደዋል</div>
                             <div className="text-xl font-bold">{admins.filter(a => a.status === 'blocked').length}</div>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ const AdminManagement = () => {
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Find admin by name..."
+                            placeholder="አስተዳዳሪ በስም ይፈልጉ..."
                             className="pl-10 h-10 bg-gray-50/50 border-gray-200"
                         />
                     </div>
@@ -165,12 +165,12 @@ const AdminManagement = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-widest">
                             <tr>
-                                <th className="px-8 py-4">Admin Name</th>
-                                <th className="px-8 py-4">Section</th>
-                                <th className="px-8 py-4">Username</th>
-                                <th className="px-8 py-4">Status</th>
-                                <th className="px-8 py-4">Last Activity</th>
-                                <th className="px-8 py-4 text-right">Actions</th>
+                                <th className="px-8 py-4">የአስተዳዳሪ ስም</th>
+                                <th className="px-8 py-4">ክፍል</th>
+                                <th className="px-8 py-4">መለያ ስም (Username)</th>
+                                <th className="px-8 py-4">ሁኔታ</th>
+                                <th className="px-8 py-4">የመጨረሻ እንቅስቃሴ</th>
+                                <th className="px-8 py-4 text-right">እርምጃዎች</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -196,7 +196,7 @@ const AdminManagement = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-5 text-sm font-medium text-gray-600">
-                                        {admin.section || 'Unassigned'}
+                                        {admin.section || 'ያልተመደበ'}
                                     </td>
                                     <td className="px-8 py-5 text-sm font-medium text-gray-600">
                                         {admin.username}
@@ -212,7 +212,7 @@ const AdminManagement = () => {
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-2 text-xs text-gray-500">
                                             <Activity size={12} />
-                                            {new Date(admin.lastActivity).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Today
+                                            {new Date(admin.lastActivity).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ዛሬ
                                         </div>
                                     </td>
                                     <td className="px-8 py-5 text-right">
@@ -239,18 +239,18 @@ const AdminManagement = () => {
                                             {admin.username === 'manager' && (
                                                 <button
                                                     onClick={() => {
-                                                        const confirmMsg = "Are you sure you want to demote yourself to a Student?\n\nWARNING: You will lose access to this Admin Dashboard immediately.\n\nEnsure there is at least one other Manager before proceeding, or this action will fail.";
+                                                        const confirmMsg = "እርግጠኛ ነዎት እራስዎን ወደ ተማሪነት ዝቅ ማድረግ ይፈልጋሉ?\n\nማስጠንቀቂያ፡ ይህን የአስተዳዳሪ ዳሽቦርድ ወዲያውኑ ማግኘት አይችሉም።\n\nከመቀጠልዎ በፊት ቢያንስ አንድ ሌላ ስራ አስኪያጅ መኖሩን ያረጋግጡ፣ አለበለዚያ ይህ እርምጃ አይሳካም።";
                                                         if (window.confirm(confirmMsg)) {
                                                             demoteToStudent(admin.id)
                                                                 .then(msg => {
                                                                     alert(msg);
                                                                     // Redirect or logout logic is in AuthContext
                                                                 })
-                                                                .catch(err => alert("Failed: " + err.message));
+                                                                .catch(err => alert("ያልተሳካ: " + err.message));
                                                         }
                                                     }}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
-                                                    title="Degrade to Student"
+                                                    title="ወደ ተማሪነት ዝቅ አድርግ"
                                                 >
                                                     <ArrowDownCircle size={18} />
                                                 </button>
@@ -270,15 +270,15 @@ const AdminManagement = () => {
                     <MessageSquare size={120} />
                 </div>
                 <div className="relative z-10 max-w-xl">
-                    <h3 className="text-2xl font-bold mb-2">Internal Communication</h3>
-                    <p className="text-white/70 mb-6">Send a message to a specific admin or to all admins.</p>
+                    <h3 className="text-2xl font-bold mb-2">የውስጥ ግንኙነት</h3>
+                    <p className="text-white/70 mb-6">ለአንድ አስተዳዳሪ ወይም ለሁሉም አስተዳዳሪዎች መልዕክት ይላኩ።</p>
                     <div className="flex flex-col gap-3">
                         <select
                             value={broadcastTarget}
                             onChange={(e) => setBroadcastTarget(e.target.value)}
                             className="bg-white/10 border-white/20 text-white rounded-xl backdrop-blur-md"
                         >
-                            <option value="all" className="text-gray-900">All Admins</option>
+                            <option value="all" className="text-gray-900">ሁሉም አስተዳዳሪዎች</option>
                             {adminOptions.map((admin) => (
                                 <option key={admin.id} value={admin.username} className="text-gray-900">
                                     {admin.name} (@{admin.username})
@@ -290,14 +290,14 @@ const AdminManagement = () => {
                                 type="text"
                                 value={broadcastMessage}
                                 onChange={(e) => setBroadcastMessage(e.target.value)}
-                                placeholder="Important: Registration deadline extended..."
+                                placeholder="አስፈላጊ፡ የምዝገባ ጊዜ ተራዝሟል..."
                                 className="bg-white/10 border-white/20 text-white placeholder:text-white/40 rounded-xl flex-1 backdrop-blur-md"
                             />
                             <button
                                 onClick={handleBroadcastSend}
                                 className="bg-blue-400 text-blue-900 px-6 py-2 rounded-xl font-bold hover:bg-blue-300 transition-all"
                             >
-                                Send
+                                ላክ
                             </button>
                         </div>
                     </div>
@@ -333,8 +333,8 @@ const AdminManagement = () => {
                                     {isEditing ? <UserIcon size={24} /> : <UserPlus size={24} />}
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Admin' : 'New Admin'}</h2>
-                                    <p className="text-sm text-gray-500">{isEditing ? 'Update administrator details' : 'Create access for section leader'}</p>
+                                    <h2 className="text-xl font-bold text-gray-900">{isEditing ? 'አስተዳዳሪን አርትዕ' : 'አዲስ አስተዳዳሪ'}</h2>
+                                    <p className="text-sm text-gray-500">{isEditing ? 'የአስተዳዳሪ ዝርዝሮችን ያዘምኑ' : 'የስርዓት መዳረሻ ይፍጠሩ'}</p>
                                 </div>
                             </div>
 
@@ -352,23 +352,23 @@ const AdminManagement = () => {
                                             onChange={handlePhotoChange}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">Upload Profile Photo</p>
+                                    <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">የመገለጫ ፎቶ ይስቀሉ</p>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">ሙሉ ስም</label>
                                     <input
                                         type="text"
                                         required
                                         value={newAdminData.name}
                                         onChange={(e) => setNewAdminData({ ...newAdminData, name: e.target.value })}
                                         className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
-                                        placeholder="e.g. Deacon Abebe"
+                                        placeholder="ምሳሌ፡ ዲያቆን አበበ"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Username</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">መለያ ስም (Username)</label>
                                         <input
                                             type="text"
                                             required
@@ -380,20 +380,20 @@ const AdminManagement = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{isEditing ? 'New Password (Optional)' : 'Password'}</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{isEditing ? 'አዲስ የይለፍ ቃል (አማራጭ)' : 'የይለፍ ቃል'}</label>
                                         <input
                                             type="password"
                                             required={!isEditing}
                                             value={newAdminData.password}
                                             onChange={(e) => setNewAdminData({ ...newAdminData, password: e.target.value })}
                                             className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400"
-                                            placeholder={isEditing ? 'Leave blank to keep same' : '••••••••'}
+                                            placeholder={isEditing ? 'ተመሳሳይ ለማድረግ ባዶ ይተው' : '••••••••'}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Assigned Section</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">የተመደበበት ክፍል</label>
                                     <select
                                         value={newAdminData.section}
                                         onChange={(e) => setNewAdminData({ ...newAdminData, section: e.target.value })}
@@ -417,7 +417,7 @@ const AdminManagement = () => {
                                         className="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95"
                                     >
                                         {isEditing ? <Save size={18} /> : <UserPlus size={18} />}
-                                        {isEditing ? 'Save Changes' : 'Create Account'}
+                                        {isEditing ? 'ለውጦችን ያስቀምጡ' : 'መለያ ፍጠር'}
                                     </button>
                                 </div>
                             </form>
