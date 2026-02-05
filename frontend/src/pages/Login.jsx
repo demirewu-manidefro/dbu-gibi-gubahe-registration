@@ -10,16 +10,61 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const { login } = useAuth();
+
+    const validateUsername = (value) => {
+        if (!value.trim()) {
+            setUsernameError('የተጠቃሚ ስም ያስፈልጋል (Username is required)');
+            return false;
+        }
+        if (value.length < 3) {
+            setUsernameError('የተጠቃሚ ስም ቢያንስ 3 ቁምፊዎች መሆን አለበት (Username must be at least 3 characters)');
+            return false;
+        }
+        setUsernameError('');
+        return true;
+    };
+
+    const validatePassword = (value) => {
+        if (!value) {
+            setPasswordError('የይለፍ ቃል ያስፈልጋል (Password is required)');
+            return false;
+        }
+        if (value.length < 6) {
+            setPasswordError('የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት (Password must be at least 6 characters)');
+            return false;
+        }
+        setPasswordError('');
+        return true;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        const isUsernameValid = validateUsername(username);
+        const isPasswordValid = validatePassword(password);
+
+        if (!isUsernameValid || !isPasswordValid) {
+            return;
+        }
+
         setLoading(true);
         try {
-            login(username, password);
+            await login(username, password);
         } catch (err) {
-            setError(err.message);
+            // Check if the error is about user not found
+            if (err.message && (err.message.includes('not found') || err.message.includes('Invalid credentials') || err.message.includes('User does not exist'))) {
+                setError(
+                    <span>
+                        ይህ መለያ አልተገኘም። እባክዎ <Link to="/register" className="underline font-semibold hover:text-red-800">መለያ ይፍጠሩ</Link> (Account not found. Please <Link to="/register" className="underline font-semibold hover:text-red-800">register</Link>)
+                    </span>
+                );
+            } else {
+                setError(err.message || 'የመግቢያ ስህተት (Login error)');
+            }
         } finally {
             setLoading(false);
         }
@@ -75,8 +120,12 @@ const Login = () => {
                     className="w-full max-w-md space-y-8"
                 >
                     <div className="text-center lg:text-left">
-                        <div className="lg:hidden flex justify-center mb-6">
+                        <div className="lg:hidden flex justify-between items-center mb-6">
+                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 transition-colors">
+                                <ArrowLeft size={24} className="text-gray-700" />
+                            </Link>
                             <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-blue-600 shadow-lg" />
+                            <div className="w-10"></div> {/* Spacer for centering */}
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">እንኳን በደህና መጡ</h2>
                         <p className="mt-2 text-gray-600">
@@ -101,32 +150,50 @@ const Login = () => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">ተጠቃሚ ስም</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <User size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                                        <User size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
                                     </div>
                                     <input
                                         type="text"
                                         value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        className="block w-full pl-11 pr-4 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
+                                        onChange={(e) => {
+                                            setUsername(e.target.value);
+                                            if (usernameError) validateUsername(e.target.value);
+                                        }}
+                                        onBlur={(e) => validateUsername(e.target.value)}
+                                        className={`block w-full pl-11 pr-4 py-3.5 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400 ${usernameError
+                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            }`}
                                         placeholder="Username"
-                                        required
                                     />
                                 </div>
+                                {usernameError && (
+                                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                        <AlertCircle size={12} />
+                                        {usernameError}
+                                    </p>
+                                )}
                             </div>
 
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">የይለፍ ቃል</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                                        <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
                                     </div>
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full pl-11 pr-12 py-3.5 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400"
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            if (passwordError) validatePassword(e.target.value);
+                                        }}
+                                        onBlur={(e) => validatePassword(e.target.value)}
+                                        className={`block w-full pl-11 pr-12 py-3.5 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 placeholder-gray-400 ${passwordError
+                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            }`}
                                         placeholder="••••••••"
-                                        required
                                     />
                                     <button
                                         type="button"
@@ -136,6 +203,12 @@ const Login = () => {
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
                                 </div>
+                                {passwordError && (
+                                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                        <AlertCircle size={12} />
+                                        {passwordError}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
