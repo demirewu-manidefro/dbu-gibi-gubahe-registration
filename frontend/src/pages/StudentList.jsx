@@ -15,13 +15,16 @@ import {
     Upload,
     Key,
     CheckCircle,
-    ShieldCheck
+    ShieldCheck,
+    ShieldAlert,
+    GraduationCap,
+    RotateCcw
 } from 'lucide-react';
 import EditStudentModal from '../components/EditStudentModal';
 import { toEthiopian } from '../utils/ethiopianDateUtils';
 
-const StudentList = () => {
-    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, makeStudentAdmin, globalSearch, setGlobalSearch } = useAuth();
+const StudentList = ({ mode = 'Student' }) => {
+    const { students, user, updateStudent, deleteStudent, importStudents, resetPassword, approveStudent, makeStudentAdmin, makeSuperManager, globalSearch, setGlobalSearch } = useAuth();
     const [filterSection, setFilterSection] = useState('All');
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -88,7 +91,7 @@ const StudentList = () => {
             specialPlace: s.special_place || s.specialPlace || schoolInfo.specialPlace,
             dept: s.department || s.dept,
             year: s.batch || s.year,
-            graduationYear: s.graduation_year || s.graduationYear,
+            graduationYear: s.graduation_year || s.graduationYear || schoolInfo.graduation_year || schoolInfo.graduationYear,
             cumulativeGPA: s.cumulative_gpa || s.cumulativeGPA || schoolInfo.cumulativeGPA,
             membershipYear: s.membership_year || s.membershipYear || schoolInfo.membershipYear,
             photoUrl: s.photo_url || s.photoUrl,
@@ -114,7 +117,7 @@ const StudentList = () => {
         ? [normalizeStudent(user)].filter(s => s && s.id)
         : safeStudents.map(s => normalizeStudent(s)).filter(student =>
             student &&
-            student.status === 'Student' && // Only show approved students
+            student.status === mode && // Only show students for current mode
             (isManager ? (student.name || '').toUpperCase() !== 'N/A' : true) &&
             (isManager
                 ? (filterSection === 'All' || student.section === filterSection)
@@ -122,7 +125,8 @@ const StudentList = () => {
             ) &&
             ((student.name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
                 (student.id || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-                (student.dept || '').toLowerCase().includes(globalSearch.toLowerCase()))
+                (student.dept || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
+                (String(student.graduationYear || '')).includes(globalSearch))
         ).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
     const openView = (student) => {
@@ -157,6 +161,26 @@ const StudentList = () => {
         }
     };
 
+    const handleGraduate = async (student) => {
+        if (!window.confirm(`Are you sure you want to mark ${student.name} as Graduated?`)) return;
+        try {
+            await updateStudent(student.id, { status: 'Graduated' });
+            alert('Student marked as Graduated successfully!');
+        } catch (err) {
+            alert(err.message || 'Failed to update student status');
+        }
+    };
+
+    const handleRestore = async (student) => {
+        if (!window.confirm(`Are you sure you want to restore ${student.name} to the student list?`)) return;
+        try {
+            await updateStudent(student.id, { status: 'Student' });
+            alert('Student restored successfully!');
+        } catch (err) {
+            alert(err.message || 'Failed to restore student');
+        }
+    };
+
     const [activeModal, setActiveModal] = useState(null);
 
 
@@ -164,15 +188,15 @@ const StudentList = () => {
         'ተ.ቁ', 'የተማሪ መለያ', 'ሙሉ ስም', 'ጾታ', 'እድሜ', 'የልደት ዘመን', 'የክርስትና ስም', 'መንፈሳዊ ማዕረግ',
         'የአፍ መፍቻ ቋንቋ', 'ሌላ ቋንቋ 1', 'ሌላ ቋንቋ 2', 'ሌላ ቋንቋ 3',
         'ክልል', 'ዞን', 'ወረዳ', 'ቀበሌ', 'የተማሪ ስልክ',
-        'ማእከለ እና ወረዳ ማእከል', 'የግቢ ጉባኤው ስም',
         'የተጠሪ ስም', 'የተጠሪ ስልክ',
-        'አጥቢያ ቤተክርስቲያን', 'የአገልግሎት ክፍል', 'መንፈሳዊ ትምህርት ደረጃ', 'ልዩ ተሰጥኦ (CET)',
-        'የ1ኛ ዓመት ተሳትፎ', 'የ2ኛ ዓመት ተሳትፎ', 'የ3ኛ ዓመት ተሳትፎ',
-        'የ4ኛ ዓመት ተሳትፎ', 'የ5ኛ ዓመት ተሳትፎ', 'የ6ኛ ዓመት ተሳትፎ',
+        'ማእከለ እና ወረዳ ማእከል', 'የግቢ ጉባኤው ስም',
+        'አጥቢያ ቤተክርስቲያን', 'የአገልግሎት ክፍል',
+        '1ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት', '2ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት', '3ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት',
+        '4ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት', '5ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት', '6ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት',
         'የትምህርት ክፍል',
         '1ኛ ዓመት GPA', '2ኛ ዓመት GPA', '3ኛ ዓመት GPA',
         '4ኛ ዓመት GPA', '5ኛ ዓመት GPA', '6ኛ ዓመት GPA',
-        'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የምረቃ ዓመት',
+        'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የሚመረቁበት ዓ/ም',
         '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
         '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
         '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
@@ -197,10 +221,10 @@ const StudentList = () => {
     };
 
     const getStudentExcelData = (s, index, forExport = false) => {
-        const q = (val) => forExport ? `"${val || ''}"` : (val || '-');
+        const q = (val) => forExport ? (val || '') : (val || '-');
         const r = (val) => val || (forExport ? '' : '-');
 
-        const p = s.participation || {};
+        const p = s.responsibility || s.participation || {};
         const g = s.gpa || {};
         const att = s.attendance || {};
         const edu = s.educationYearly || {};
@@ -223,16 +247,12 @@ const StudentList = () => {
             q(s.woreda),
             q(s.kebele),
             q(s.phone),
-            q(s.centerAndWoredaCenter),
-            q(s.gibiName),
             q(s.emergencyName),
             q(s.emergencyPhone),
+            q(s.centerAndWoredaCenter),
+            q(s.gibiName),
             q(s.parishChurch),
             q(s.section),
-            q(s.specialEducation),
-            q(s.specialPlace),
-
-
             q(p.y1), q(p.y2), q(p.y3), q(p.y4), q(p.y5), q(p.y6),
 
             q(s.dept || s.department),
@@ -278,7 +298,7 @@ const StudentList = () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Students');
 
-        const headerRow = worksheet.addRow(excelHeaders.slice(1));
+        const headerRow = worksheet.addRow(excelHeaders);
 
 
         headerRow.eachCell((cell) => {
@@ -301,7 +321,7 @@ const StudentList = () => {
 
 
         filteredStudents.forEach((s, index) => {
-            const rowData = getStudentExcelData(s, index, false).slice(1);
+            const rowData = getStudentExcelData(s, index, true);
             const row = worksheet.addRow(rowData);
             row.eachCell((cell) => {
                 cell.border = {
@@ -355,93 +375,170 @@ const StudentList = () => {
             const headers = rows[0].map(h => h.toString().trim().toLowerCase());
 
             const headerMap = {
-                'id': 'id',
-                'student id': 'id',
-                'studentid': 'id',
+                'ተ.ቁ': 'index',
                 'የተማሪ መለያ': 'id',
-
-                'name': 'name',
+                'student id': 'id',
+                'id': 'id',
+                'ሙሉ ስም': 'name',
                 'full name': 'name',
                 'fullname': 'name',
-                'student name': 'name',
-                'ሙሉ ስም': 'name',
-
+                'ጾታ': 'sex',
                 'sex': 'sex',
                 'gender': 'sex',
-                'ጾታ': 'sex',
-
-                'department': 'dept',
-                'dept': 'dept',
-                'የትምህርት ክፍል': 'dept',
-
-                'year': 'year',
-                'batch': 'year',
-
-                'section': 'section',
-                'የአገልግሎት ክፍል': 'section',
-
-                'status': 'status',
-
-                'phone': 'phone',
-                'telephone': 'phone',
+                'እድሜ': 'age',
+                'age': 'age',
+                'የልደት ዘመን': 'birthYear',
+                'birth year': 'birthYear',
+                'የክርስትና ስም': 'baptismalName',
+                'baptismal name': 'baptismalName',
+                'መንፈሳዊ ማዕረግ': 'priesthoodRank',
+                'priesthood rank': 'priesthoodRank',
+                'የአፍ መፍቻ ቋንቋ': 'motherTongue',
+                'mother tongue': 'motherTongue',
+                'ሌላ ቋንቋ 1': 'l1',
+                'ሌላ ቋንቋ 2': 'l2',
+                'ሌላ ቋንቋ 3': 'l3',
+                'ክልል': 'region',
+                'region': 'region',
+                'ዞን': 'zone',
+                'zone': 'zone',
+                'ወረዳ': 'woreda',
+                'woreda': 'woreda',
+                'ቀበሌ': 'kebele',
+                'kebele': 'kebele',
                 'የተማሪ ስልክ': 'phone',
-
+                'phone': 'phone',
+                'ማእከለ እና ወረዳ ማእከል': 'centerAndWoredaCenter',
+                'ማእከል': 'centerAndWoredaCenter',
                 'center': 'centerAndWoredaCenter',
                 'woreda center': 'centerAndWoredaCenter',
-                'maekel': 'centerAndWoredaCenter',
-                'ማእከለ እና ወረዳ ማእከል': 'centerAndWoredaCenter',
-
-                'gibi': 'gibiName',
-                'gibi name': 'gibiName',
-                'gibigubae': 'gibiName',
                 'የግቢ ጉባኤው ስም': 'gibiName',
-
-                'parish': 'parishChurch',
-                'church': 'parishChurch',
-                'አጥቢያ ቤተክርስቲያን': 'parishChurch',
-
-                'እድሜ': 'age',
-                'የልደት ዘመን': 'birthYear',
-                'የክርስትና ስም': 'baptismalName',
-                'መንፈሳዊ ማዕረግ': 'priesthoodRank',
-                'የአፍ መፍቻ ቋንቋ': 'motherTongue',
-                'ክልል': 'region',
-                'ዞን': 'zone',
-                'ወረዳ': 'woreda',
-                'ቀበሌ': 'kebele',
+                'የግቢ ጉባኤ ስም': 'gibiName',
+                'የግቢ ጉባኤ': 'gibiName',
+                'gibi name': 'gibiName',
+                'campus ministry': 'gibiName',
                 'የተጠሪ ስም': 'emergencyName',
+                'emergency name': 'emergencyName',
                 'የተጠሪ ስልክ': 'emergencyPhone',
-                'መንፈሳዊ ትምህርት ደረጃ': 'specialEducation',
-                'ልዩ ተሰጥኦ (cet)': 'specialPlace',
+                'emergency phone': 'emergencyPhone',
+                'አጥቢያ ቤተክርስቲያን': 'parishChurch',
+                'parish church': 'parishChurch',
+                'የአገልግሎት ክፍል': 'section',
+                'section': 'section',
+                '1ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py1',
+                '2ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py2',
+                '3ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py3',
+                '4ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py4',
+                '5ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py5',
+                '6ኛ ዓመት የአገልግሎት ክፍልና ሃላፊነት': 'py6',
+                'የ1ኛ ዓመት ተሳትፎ': 'py1',
+                'የ2ኛ ዓመት ተሳትፎ': 'py2',
+                'የ3ኛ ዓመት ተሳትፎ': 'py3',
+                'የ4ኛ ዓመት ተሳትፎ': 'py4',
+                'የ5ኛ ዓመት ተሳትፎ': 'py5',
+                'የ6ኛ ዓመት ተሳትፎ': 'py6',
+                'የትምህርት ክፍል': 'dept',
+                'department': 'dept',
+                '1ኛ ዓመት gpa': 'gy1',
+                '2ኛ ዓመት gpa': 'gy2',
+                '3ኛ ዓመት gpa': 'gy3',
+                '4ኛ ዓመት gpa': 'gy4',
+                '5ኛ ዓመት gpa': 'gy5',
+                '6ኛ ዓመት gpa': 'gy6',
                 'አጠቃላይ ውጤት (cgpa)': 'cumulativeGPA',
+                'cgpa': 'cumulativeGPA',
                 'አባል የሆኑበት ዓመት': 'membershipYear',
+                'membership year': 'membershipYear',
+                'የሚመረቁበት ዓ/ም': 'graduationYear',
                 'የምረቃ ዓመት': 'graduationYear',
-                'ፎቶ': 'photoUrl',
+                'graduation year': 'graduationYear',
+                '1ኛ ዓመት ክትትል': 'ay1',
+                '2ኛ ዓመት ክትትል': 'ay2',
+                '3ኛ ዓመት ክትትል': 'ay3',
+                '4ኛ ዓመት ክትትል': 'ay4',
+                '5ኛ ዓመት ክትትል': 'ay5',
+                '6ኛ ዓመት ክትትል': 'ay6',
+                '1ኛ ዓመት ትምህርት': 'ey1',
+                '2ኛ ዓመት ትምህርት': 'ey2',
+                '3ኛ ዓመት ትምህርት': 'ey3',
+                '4ኛ ዓመት ትምህርት': 'ey4',
+                '5ኛ ዓመት ትምህርት': 'ey5',
+                '6ኛ ዓመት ትምህርት': 'ey6',
+                'የመምህራን ስልጠና 1': 'tl1',
+                'የመምህራን ስልጠና 2': 'tl2',
+                'የመምህራን ስልጠና 3': 'tl3',
+                'የአመራር ስልጠና 1': 'll1',
+                'የአመራር ስልጠና 2': 'll2',
+                'የአመራር ስልጠና 3': 'll3',
+                'ሌሎች ስልጠናዎች': 'otherTrainings',
                 'የአብነት ትምህርት': 'abinetEducation',
                 'ልዩ ፍላጎት': 'specialNeed',
                 'ተጨማሪ መረጃ': 'additionalInfo',
                 'የመዘገበው አካል': 'filledBy',
                 'ያረጋገጠው አካል': 'verifiedBy',
-                'የተሰጠበት ቀን': 'submissionDate'
+                'የተሰጠበት ቀን': 'submissionDate',
             };
 
             const parsedStudents = [];
             for (let i = 1; i < rows.length; i++) {
                 const values = rows[i];
-                if (values.every(v => v === '')) continue;
-                const student = {};
+                if (values.every(v => v === '' || v === null)) continue;
+
+                const rawData = {};
                 headers.forEach((header, index) => {
-                    const fieldName = headerMap[header] || header;
-                    student[fieldName] = values[index] || '';
+                    const fieldName = headerMap[header.trim().toLowerCase()] || header;
+                    let val = values[index] !== undefined && values[index] !== null ? String(values[index]).trim() : '';
+                    // Remove leading/trailing double quotes if they exist
+                    if (val.startsWith('"') && val.endsWith('"')) {
+                        val = val.substring(1, val.length - 1);
+                    }
+                    rawData[fieldName] = val;
                 });
 
-                if (student.id || student.name) {
-                    student.id = student.id || `IMPORT-${Date.now()}-${i}`;
-                    student.status = student.status || 'Student';
+                if (rawData.id || rawData.name) {
+                    const student = {
+                        id: rawData.id || `IMPORT-${Date.now()}-${i}`,
+                        name: rawData.name,
+                        sex: rawData.sex,
+                        age: rawData.age,
+                        birthYear: rawData.birthYear,
+                        baptismalName: rawData.baptismalName,
+                        priesthoodRank: rawData.priesthoodRank,
+                        motherTongue: rawData.motherTongue,
+                        otherLanguages: { l1: rawData.l1, l2: rawData.l2, l3: rawData.l3 },
+                        region: rawData.region,
+                        zone: rawData.zone,
+                        woreda: rawData.woreda,
+                        kebele: rawData.kebele,
+                        phone: rawData.phone,
+                        centerAndWoredaCenter: rawData.centerAndWoredaCenter,
+                        gibiName: rawData.gibiName,
+                        emergencyName: rawData.emergencyName,
+                        emergencyPhone: rawData.emergencyPhone,
+                        parishChurch: rawData.parishChurch,
+                        section: rawData.section,
+                        dept: rawData.dept,
+                        cumulativeGPA: rawData.cumulativeGPA,
+                        membershipYear: rawData.membershipYear,
+                        graduationYear: rawData.graduationYear,
+                        status: mode,
+                        isGraduated: mode === 'Graduated',
+                        responsibility: { y1: rawData.py1, y2: rawData.py2, y3: rawData.py3, y4: rawData.py4, y5: rawData.py5, y6: rawData.py6 },
+                        gpa: { y1: rawData.gy1, y2: rawData.gy2, y3: rawData.gy3, y4: rawData.gy4, y5: rawData.gy5, y6: rawData.gy6 },
+                        attendance: { y1: rawData.ay1, y2: rawData.ay2, y3: rawData.ay3, y4: rawData.ay4, y5: rawData.ay5, y6: rawData.ay6 },
+                        educationYearly: { y1: rawData.ey1, y2: rawData.ey2, y3: rawData.ey3, y4: rawData.ey4, y5: rawData.ey5, y6: rawData.ey6 },
+                        teacherTraining: { level1: rawData.tl1 === 'true' || rawData.tl1 === '1' || String(rawData.tl1).toLowerCase() === 'present', level2: rawData.tl2 === 'true' || rawData.tl2 === '1' || String(rawData.tl2).toLowerCase() === 'present', level3: rawData.tl3 === 'true' || rawData.tl3 === '1' || String(rawData.tl3).toLowerCase() === 'present' },
+                        leadershipTraining: { level1: rawData.ll1 === 'true' || rawData.ll1 === '1' || String(rawData.ll1).toLowerCase() === 'present', level2: rawData.ll2 === 'true' || rawData.ll2 === '1' || String(rawData.ll2).toLowerCase() === 'present', level3: rawData.ll3 === 'true' || rawData.ll3 === '1' || String(rawData.ll3).toLowerCase() === 'present' },
+                        otherTrainings: rawData.otherTrainings,
+                        abinetEducation: rawData.abinetEducation,
+                        specialNeed: rawData.specialNeed,
+                        additionalInfo: rawData.additionalInfo,
+                        filledBy: rawData.filledBy || (user?.name || 'Import'),
+                        verifiedBy: mode === 'Student' ? (user?.name || rawData.verifiedBy) : rawData.verifiedBy
+                    };
 
                     if (user?.role === 'admin') {
                         student.section = user.section;
-                        student.service_section = user.section;
                     }
 
                     parsedStudents.push(student);
@@ -476,15 +573,15 @@ const StudentList = () => {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        {isStudent ? 'የግል መረጃ' : 'የተማሪዎች ዝርዝር'}
+                        {isStudent ? 'የግል መረጃ' : (mode === 'Graduated' ? 'ተመርቀው የወጡ አባላት' : 'የተማሪዎች ዝርዝር')}
                     </h1>
                     <p className="text-gray-500 font-medium">
-                        {isStudent ? 'የግል መረጃ ይመልከቱ' : 'ሁሉንም የተመዘገቡ የግቢ ጉባኤ ተማሪዎችን ያስተዳድሩ እና ይመልከቱ'}
+                        {isStudent ? 'የግል መረጃ ይመልከቱ' : (mode === 'Graduated' ? 'ሁሉንም ተመርቀው የወጡ የግቢ ጉባኤ አባላትን ያስተዳድሩ እና ይመልከቱ' : 'ሁሉንም የተመዘገቡ የግቢ ጉባኤ ተማሪዎችን ያስተዳድሩ እና ይመልከቱ')}
                     </p>
                 </div>
             </div>
 
-            <input type="file" id="file-upload" className="hidden" accept=".csv" onChange={handleFileUpload} />
+            <input type="file" id="file-upload" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
 
             {!isStudent && (
                 <div className="flex flex-wrap gap-3 pb-4">
@@ -728,16 +825,8 @@ const StudentList = () => {
                                             <div className="font-medium text-gray-700">{selectedStudent.membershipYear || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">Cumulative GPA</div>
+                                            <div className="text-xs text-gray-400 font-bold uppercase">አጠቃላይ ውጤት (GPA)</div>
                                             <div className="font-medium text-gray-700">{selectedStudent.cumulativeGPA || '-'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">ልዩ ትምህርት</div>
-                                            <div className="font-medium text-gray-700">{selectedStudent.specialEducation || '-'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">ልዩ ተሰጥኦ (CET)</div>
-                                            <div className="font-medium text-gray-700">{selectedStudent.specialPlace || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -753,7 +842,7 @@ const StudentList = () => {
                                                 <tr>
                                                     <th className="px-3 py-2 border-r border-b">ዓመት</th>
                                                     <th className="px-3 py-2 border-r border-b">GPA</th>
-                                                    <th className="px-3 py-2 border-r border-b">ተሳትፎ</th>
+                                                    <th className="px-3 py-2 border-r border-b">የአገልግሎት ክፍልና ሃላፊነት</th>
                                                     <th className="px-3 py-2 border-r border-b">ክትትል</th>
                                                     <th className="px-3 py-2 border-b">ትምህርት</th>
                                                 </tr>
@@ -763,7 +852,7 @@ const StudentList = () => {
                                                     <tr key={year} className="hover:bg-gray-50/50">
                                                         <td className="px-3 py-2 border-r font-medium text-gray-500">Year {year}</td>
                                                         <td className="px-3 py-2 border-r">{selectedStudent.gpa?.[`y${year}`] || '-'}</td>
-                                                        <td className="px-3 py-2 border-r">{selectedStudent.participation?.[`y${year}`] || '-'}</td>
+                                                        <td className="px-3 py-2 border-r">{(selectedStudent.responsibility?.[`y${year}`]) || (selectedStudent.participation?.[`y${year}`]) || '-'}</td>
                                                         <td className="px-3 py-2 border-r">{selectedStudent.attendance?.[`y${year}`] || '-'}</td>
                                                         <td className="px-3 py-2">{selectedStudent.educationYearly?.[`y${year}`] || '-'}</td>
                                                     </tr>
@@ -921,6 +1010,29 @@ const StudentList = () => {
                                                             <CheckCircle size={18} />
                                                         </button>
                                                     )}
+                                                    {mode === 'Student' && (
+                                                        <button
+                                                            onClick={() => handleGraduate(student)}
+                                                            className="p-2 text-gray-400 hover:text-emerald-600 transition-colors"
+                                                            title="Mark as Graduated"
+                                                        >
+                                                            <GraduationCap size={18} />
+                                                        </button>
+                                                    )}
+                                                    {mode === 'Graduated' && (
+                                                        <div className="flex items-center gap-2 mr-2">
+                                                            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg whitespace-nowrap">
+                                                                {student.graduationYear || 'N/A'} ዓ.ም ተመራቂ
+                                                            </span>
+                                                            <button
+                                                                onClick={() => handleRestore(student)}
+                                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                                title="Restore to Student List"
+                                                            >
+                                                                <RotateCcw size={18} />
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                     <button
                                                         onClick={() => openView(student)}
                                                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
@@ -928,39 +1040,61 @@ const StudentList = () => {
                                                     >
                                                         <Eye size={18} />
                                                     </button>
-                                                    <button
-                                                        onClick={() => openEdit(student)}
-                                                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                        title="Edit Student"
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    {!isStudent && (
-                                                        <button
-                                                            onClick={() => setActiveModal(`password-${student.id}`)}
-                                                            className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
-                                                            title="Reset Password"
-                                                        >
-                                                            <Key size={16} />
-                                                        </button>
-                                                    )}
-                                                    {!isStudent && isManager && (
-                                                        <button
-                                                            onClick={async () => {
-                                                                if (window.confirm(`Are you sure you want to promote ${student.name} to Admin?`)) {
-                                                                    try {
-                                                                        await makeStudentAdmin(student.id);
-                                                                        alert('Student promoted to Admin successfully');
-                                                                    } catch (err) {
-                                                                        alert(err.message);
-                                                                    }
-                                                                }
-                                                            }}
-                                                            className="p-2 text-gray-400 hover:text-purple-600 transition-colors"
-                                                            title="Promote to Admin"
-                                                        >
-                                                            <ShieldCheck size={16} />
-                                                        </button>
+                                                    {mode === 'Student' && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => openEdit(student)}
+                                                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                                                title="Edit Student"
+                                                            >
+                                                                <Edit size={16} />
+                                                            </button>
+                                                            {!isStudent && (
+                                                                <button
+                                                                    onClick={() => setActiveModal(`password-${student.id}`)}
+                                                                    className="p-2 text-gray-400 hover:text-amber-600 transition-colors"
+                                                                    title="Reset Password"
+                                                                >
+                                                                    <Key size={16} />
+                                                                </button>
+                                                            )}
+                                                            {!isStudent && isManager && (
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        if (window.confirm(`Are you sure you want to promote ${student.name} to Admin?`)) {
+                                                                            try {
+                                                                                await makeStudentAdmin(student.id);
+                                                                                alert('Student promoted to Admin successfully');
+                                                                            } catch (err) {
+                                                                                alert(err.message);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    className="p-2 text-gray-400 hover:text-purple-600 transition-colors"
+                                                                    title="Promote to Admin"
+                                                                >
+                                                                    <ShieldCheck size={16} />
+                                                                </button>
+                                                            )}
+                                                            {!isStudent && isManager && (
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        if (window.confirm(`Are you sure you want to promote ${student.name} to Super Manager? This will give them full access to everything.`)) {
+                                                                            try {
+                                                                                await makeSuperManager(student.id);
+                                                                                alert('Student promoted to Super Manager successfully');
+                                                                            } catch (err) {
+                                                                                alert(err.message);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                                    title="Promote to Super Manager"
+                                                                >
+                                                                    <ShieldAlert size={16} />
+                                                                </button>
+                                                            )}
+                                                        </>
                                                     )}
                                                     {!isStudent && (
                                                         <button
@@ -984,7 +1118,13 @@ const StudentList = () => {
                 {!isStudent && (
                     <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
                         <div className="text-sm text-gray-500 font-medium">
-                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{safeStudents.filter(s => s.status === 'Student').length}</span> students
+                            Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 font-bold">{
+                                safeStudents.filter(s =>
+                                    s.status === mode &&
+                                    (isManager ? (s.full_name || s.name || '').toUpperCase() !== 'N/A' : true) &&
+                                    (isManager ? true : s.service_section === user?.section)
+                                ).length
+                            }</span> {mode === 'Graduated' ? 'graduates' : 'students'}
                         </div>
 
                     </div>
