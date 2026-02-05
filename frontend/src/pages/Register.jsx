@@ -25,19 +25,68 @@ const Register = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [usernameError, setUsernameError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const validateUsername = (value) => {
+        if (!value.trim()) {
+            setUsernameError('የተጠቃሚ ስም ያስፈልጋል (Username is required)');
+            return false;
+        }
+        if (value.length < 3) {
+            setUsernameError('የተጠቃሚ ስም ቢያንስ 3 ቁምፊዎች መሆን አለበት (Username must be at least 3 characters)');
+            return false;
+        }
+        if (!checkUsernameUnique(value)) {
+            setUsernameError('ይህ የተጠቃሚ ስም ተይዟል (Username taken)');
+            return false;
+        }
+        setUsernameError('');
+        return true;
+    };
+
+    const validatePassword = (value) => {
+        if (!value) {
+            setPasswordError('የይለፍ ቃል ያስፈልጋል (Password is required)');
+            return false;
+        }
+        if (value.length < 6) {
+            setPasswordError('የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት (Password must be at least 6 characters)');
+            return false;
+        }
+        setPasswordError('');
+        return true;
+    };
+
+    const validateConfirmPassword = (value) => {
+        if (!value) {
+            setConfirmPasswordError('የይለፍ ቃል ማረጋገጫ ያስፈልጋል (Confirm password is required)');
+            return false;
+        }
+        if (value !== formData.password) {
+            setConfirmPasswordError('የይለፍ ቃል አይመሳሰልም (Passwords do not match)');
+            return false;
+        }
+        setConfirmPasswordError('');
+        return true;
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        if (name === 'username') {
-            setUsernameError('');
+        // Clear errors while typing if they exist
+        if (name === 'username' && usernameError) {
+            validateUsername(value);
         }
-    };
-
-    const handleUsernameBlur = (e) => {
-        if (e.target.value && !checkUsernameUnique(e.target.value)) {
-            setUsernameError('ይህ የተጠቃሚ ስም ተይዟል (Username taken)');
+        if (name === 'password' && passwordError) {
+            validatePassword(value);
+            if (formData.confirmPassword) {
+                validateConfirmPassword(formData.confirmPassword);
+            }
+        }
+        if (name === 'confirmPassword' && confirmPasswordError) {
+            validateConfirmPassword(value);
         }
     };
 
@@ -45,13 +94,11 @@ const Register = () => {
         e.preventDefault();
         setError('');
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('የይለፍ ቃል አይመሳሰልም (Passwords do not match)');
-            return;
-        }
+        const isUsernameValid = validateUsername(formData.username);
+        const isPasswordValid = validatePassword(formData.password);
+        const isConfirmPasswordValid = validateConfirmPassword(formData.confirmPassword);
 
-        if (usernameError) {
-            setError('እባክዎ የተጠቃሚ ስም ያስተካክሉ (Please fix username error)');
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) {
             return;
         }
 
@@ -115,6 +162,13 @@ const Register = () => {
                     className="w-full max-w-md space-y-6"
                 >
                     <div className="text-center lg:text-left">
+                        <div className="lg:hidden flex justify-between items-center mb-6">
+                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 transition-colors">
+                                <ArrowLeft size={24} className="text-gray-700" />
+                            </Link>
+                            <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-blue-600 shadow-lg" />
+                            <div className="w-10"></div> {/* Spacer for centering */}
+                        </div>
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">መለያ ይፍጠሩ</h2>
                         <p className="mt-2 text-gray-600">
                             አባል ለመሆን እባክዎ የሚከተለውን ቅጽ ይሙሉ
@@ -134,20 +188,27 @@ const Register = () => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">የተጠቃሚ ስም </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <UserCircle size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                                        <UserCircle size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
                                     </div>
                                     <input
                                         type="text"
                                         name="username"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        onBlur={handleUsernameBlur}
-                                        className={`block w-full pl-11 pr-4 py-3 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all ${usernameError ? 'border-red-500 bg-red-50' : ''}`}
+                                        onBlur={(e) => validateUsername(e.target.value)}
+                                        className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${usernameError
+                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                            }`}
                                         placeholder="Username"
-                                        required
                                     />
                                 </div>
-                                {usernameError && <p className="text-xs text-red-500 mt-1 ml-1">{usernameError}</p>}
+                                {usernameError && (
+                                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                        <AlertCircle size={12} />
+                                        {usernameError}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,16 +216,19 @@ const Register = () => {
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">የይለፍ ቃል</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Lock size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                                            <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             name="password"
                                             value={formData.password}
                                             onChange={handleInputChange}
-                                            className="block w-full pl-11 pr-10 py-3 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
+                                            onBlur={(e) => validatePassword(e.target.value)}
+                                            className={`block w-full pl-11 pr-10 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${passwordError
+                                                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                    : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                }`}
                                             placeholder="••••••"
-                                            required
                                         />
                                         <button
                                             type="button"
@@ -174,23 +238,38 @@ const Register = () => {
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
                                     </div>
+                                    {passwordError && (
+                                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                            <AlertCircle size={12} />
+                                            {passwordError}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">ይለፍ ቃል ያረጋግጡ</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Lock size={20} className="text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                                            <Lock size={20} className={`transition-colors ${confirmPasswordError ? 'text-red-500' : 'text-gray-400 group-focus-within:text-blue-600'}`} />
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             name="confirmPassword"
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className="block w-full pl-11 pr-4 py-3 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
+                                            onBlur={(e) => validateConfirmPassword(e.target.value)}
+                                            className={`block w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 transition-all ${confirmPasswordError
+                                                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                    : 'border-gray-200 focus:border-blue-600 focus:ring-blue-600/20'
+                                                }`}
                                             placeholder="••••••"
-                                            required
                                         />
                                     </div>
+                                    {confirmPasswordError && (
+                                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                                            <AlertCircle size={12} />
+                                            {confirmPasswordError}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
