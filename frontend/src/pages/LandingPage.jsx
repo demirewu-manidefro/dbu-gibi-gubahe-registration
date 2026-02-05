@@ -20,7 +20,9 @@ import {
     Send,
     Eye,
     Rocket,
-    Target
+    Target,
+    Moon,
+    Sun
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -44,6 +46,17 @@ const LandingPage = () => {
     const [lang, setLang] = useState('am');
     const [langOpen, setLangOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [darkMode]);
 
     useEffect(() => {
         const onScroll = () => {
@@ -65,14 +78,14 @@ const LandingPage = () => {
     }, [mobileMenuOpen]);
 
     return (
-        <div className="min-h-screen bg-white font-sans overflow-x-hidden">
-            <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
+        <div className="min-h-screen bg-white dark:bg-gray-900 font-sans overflow-x-hidden transition-colors duration-300">
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800' : 'bg-transparent'}`}>
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <a href="#home" className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-90">
                             <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900 leading-none">
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white leading-none">
                                     {lang === 'am' ? 'በደብረ ብርሃን ዩኒቨርስቲ ' : 'Debre Berhan University '}
                                 </h1>
                                 <p className="text-xs text-blue-600 font-medium tracking-widest">
@@ -83,41 +96,48 @@ const LandingPage = () => {
 
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="md:hidden p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                            className="md:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                             aria-label="Open menu"
                         >
-                            <Menu size={24} className="text-gray-700" />
+                            <Menu size={24} className="text-gray-700 dark:text-gray-300" />
                         </button>
 
                         <div className="hidden md:flex items-center space-x-8">
-                            <a href="#home" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            <a href="#home" className="group relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                                 {lang === 'am' ? 'መነሻ' : 'Home'}
-                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full" />
                             </a>
-                            <a href="#about" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            <a href="#about" className="group relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                                 {lang === 'am' ? 'ስለ እኛ' : 'About'}
-                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full" />
                             </a>
-                            <a href="#structure" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            <a href="#structure" className="group relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                                 {lang === 'am' ? 'መዋቅር' : 'Structure'}
-                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full" />
                             </a>
-                            <a href="#activities" className="group relative text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            <a href="#activities" className="group relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                                 {lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}
-                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all group-hover:w-full" />
+                                <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full" />
                             </a>
                             <div className="flex items-center gap-3">
-                                <Link to="/login" className="px-6 py-2.5 rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 transition-all transform hover:scale-105 shadow-lg shadow-gray-200">
+                                <Link to="/login" className="px-6 py-2.5 rounded-full bg-blue-900 dark:bg-blue-700 text-white font-medium hover:bg-blue-800 dark:hover:bg-blue-600 transition-all transform hover:scale-105 shadow-lg shadow-gray-200 dark:shadow-none">
                                     {lang === 'am' ? 'መግቢያ' : 'Login'}
                                 </Link>
+                                <button
+                                    onClick={() => setDarkMode(prev => !prev)}
+                                    className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                                    aria-label="Toggle Dark Mode"
+                                >
+                                    {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+                                </button>
                                 <div className="relative">
-                                    <button onClick={() => setLangOpen(prev => !prev)} className="px-4 py-2.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 transition transform hover:scale-105">
+                                    <button onClick={() => setLangOpen(prev => !prev)} className="px-4 py-2.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition transform hover:scale-105">
                                         {lang === 'am' ? 'አማ' : 'EN'}
                                     </button>
                                     {langOpen && (
-                                        <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-xl shadow-lg py-1">
-                                            <button onClick={() => { setLang('en'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50">EN</button>
-                                            <button onClick={() => { setLang('am'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50">አማ</button>
+                                        <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1">
+                                            <button onClick={() => { setLang('en'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700">EN</button>
+                                            <button onClick={() => { setLang('am'); setLangOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700">አማ</button>
                                         </div>
                                     )}
                                 </div>
@@ -142,21 +162,21 @@ const LandingPage = () => {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 shadow-2xl md:hidden"
+                            className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 shadow-2xl md:hidden"
                         >
-                            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
                                 <div className="flex items-center gap-2">
                                     <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
-                                    <span className="font-bold text-gray-900">
+                                    <span className="font-bold text-gray-900 dark:text-white">
                                         {lang === 'am' ? 'ግቢ ጉባኤ' : 'Gibi Gubae'}
                                     </span>
                                 </div>
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                                    className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                     aria-label="Close menu"
                                 >
-                                    <X size={24} className="text-gray-700" />
+                                    <X size={24} className="text-gray-700 dark:text-gray-300" />
                                 </button>
                             </div>
                             <div className="p-6 space-y-2">
@@ -170,13 +190,13 @@ const LandingPage = () => {
                                         key={item.href}
                                         href={item.href}
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="block px-4 py-3 rounded-xl text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                        className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                     >
                                         {item.label}
                                     </a>
                                 ))}
                             </div>
-                            <div className="p-6 border-t border-gray-100 space-y-3">
+                            <div className="p-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
                                 <Link
                                     to="/login"
                                     onClick={() => setMobileMenuOpen(false)}
@@ -194,15 +214,23 @@ const LandingPage = () => {
                                 <div className="flex gap-2 pt-2">
                                     <button
                                         onClick={() => { setLang('am'); }}
-                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'am' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'am' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                     >
                                         አማርኛ
                                     </button>
                                     <button
                                         onClick={() => { setLang('en'); }}
-                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                        className={`flex-1 py-2 rounded-lg font-medium transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                     >
                                         English
+                                    </button>
+                                </div>
+                                <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+                                    <button
+                                        onClick={() => setDarkMode(prev => !prev)}
+                                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
                                     </button>
                                 </div>
                             </div>
@@ -215,7 +243,7 @@ const LandingPage = () => {
             <section id="home" className="relative min-h-screen pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-[url('/hero_image.jpeg')] bg-cover" style={{ backgroundPosition: `center ${-bgPosY}px` }} />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/10" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/10 dark:from-gray-900/90 dark:via-gray-900/80 dark:to-gray-900" />
                 </div>
 
                 {/* Abstract Background Shapes */}
@@ -238,11 +266,11 @@ const LandingPage = () => {
                                 {lang === 'en' && 'Founded 1977 E.C.'}
                             </motion.div>
 
-                            <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6" style={{ fontFamily: lang === 'am' ? 'Tint, sans-serif' : 'inherit' }}>
+                            <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6" style={{ fontFamily: lang === 'am' ? 'Tint, sans-serif' : 'inherit' }}>
                                 {lang === 'am' ? 'መንፈሳዊ አንድነት በ' : 'Spiritual Unity in '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">{lang === 'am' ? 'ዩኒቨርሲቲ' : 'University'}</span>
                             </motion.h1>
 
-                            <motion.p variants={fadeIn} className="text-xl text-white mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 drop-shadow-md">
+                            <motion.p variants={fadeIn} className="text-xl text-gray-800 dark:text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 drop-shadow-sm">
                                 {lang === 'am'
                                     ? 'ለተማሪዎች መንፈሳዊ መጠለያ፣ በኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ሥርዓት ላይ የተመሠረተ። "ትምህርትህ እምነትህን ያጠናክረው።"'
                                     : 'A spiritual refuge for students, rooted in the Ethiopian Orthodox Tewahedo tradition. "Let your education strengthen your faith."'}
@@ -253,7 +281,7 @@ const LandingPage = () => {
                                     {lang === 'am' ? 'ቤተሰብ ይሁኑ' : 'Join the Family'}
                                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <a href="#about" className="hidden sm:flex px-7 py-2 rounded-2xl bg-white border border-gray-200 text-gray-700 font-bold text-lg hover:bg-blue-50 transition-all items-center justify-center gap-2 hover:border-blue-600 hover:bg-transparent hover:text-white">
+                                <a href="#about" className="hidden sm:flex px-7 py-2 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-bold text-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-all items-center justify-center gap-2 hover:border-blue-600 hover:bg-transparent dark:hover:text-blue-400">
                                     {lang === 'am' ? 'ተጨማሪ ይወቁ' : 'Learn More'}
                                 </a>
                             </motion.div>
@@ -272,17 +300,17 @@ const LandingPage = () => {
             {/* Mission Section */}
             {/* Mission, Vision, Goals, Values Section */}
             {/* Mission, Vision, Goals, Values Section - Professional Redesign */}
-            <section id="about" className="py-24 bg-white relative overflow-hidden">
+            <section id="about" className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden transition-colors duration-300">
                 {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 skew-x-12 translate-x-1/2"></div>
-                <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 dark:bg-blue-900/10 skew-x-12 translate-x-1/2"></div>
+                <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
 
                 <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-20">
-                        <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold tracking-widest uppercase mb-4">
+                        <div className="inline-block px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-bold tracking-widest uppercase mb-4">
                             {lang === 'am' ? 'ስለ እኛ' : 'About Us'}
                         </div>
-                        <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                        <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
                             {lang === 'am' ? 'ራዕይ እና ተልዕኮ' : 'Vision & Mission'}
                         </h3>
                         <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
@@ -297,13 +325,13 @@ const LandingPage = () => {
                             viewport={{ once: true, amount: 0.2 }}
                             className="group relative"
                         >
-                            <div className="absolute inset-0 bg-blue-600 rounded-3xl transform rotate-1 opacity-5 group-hover:rotate-2 transition-transform duration-300"></div>
-                            <div className="relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 h-full flex flex-col items-center text-center">
+                            <div className="absolute inset-0 bg-blue-600 rounded-3xl transform rotate-1 opacity-5 dark:opacity-10 group-hover:rotate-2 transition-transform duration-300"></div>
+                            <div className="relative bg-white dark:bg-gray-800 p-10 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl shadow-blue-900/5 dark:shadow-none h-full flex flex-col items-center text-center transition-colors">
                                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-8 shadow-lg shadow-blue-500/20 text-white transform group-hover:scale-110 transition-transform duration-300">
                                     <Eye size={36} strokeWidth={1.5} />
                                 </div>
-                                <h4 className="text-2xl font-bold text-gray-900 mb-6 font-serif tracking-wide">{lang === 'am' ? 'ራዕይ (Vision)' : 'Vision'}</h4>
-                                <p className="text-gray-600 text-xl leading-relaxed italic font-serif">
+                                <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-serif tracking-wide">{lang === 'am' ? 'ራዕይ (Vision)' : 'Vision'}</h4>
+                                <p className="text-gray-600 dark:text-gray-300 text-xl leading-relaxed italic font-serif">
                                     {lang === 'am'
                                         ? '“ቤተ ክርስቲያን ሁለንተናዊ የመሪነት ሚናዋን ስትወጣ ማየት”'
                                         : '“To see the Church fulfilling her universal leading role”'}
@@ -319,13 +347,13 @@ const LandingPage = () => {
                             viewport={{ once: true, amount: 0.2 }}
                             className="group relative"
                         >
-                            <div className="absolute inset-0 bg-blue-800 rounded-3xl transform -rotate-1 opacity-5 group-hover:-rotate-2 transition-transform duration-300"></div>
-                            <div className="relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 h-full flex flex-col items-center text-center">
+                            <div className="absolute inset-0 bg-blue-800 rounded-3xl transform -rotate-1 opacity-5 dark:opacity-10 group-hover:-rotate-2 transition-transform duration-300"></div>
+                            <div className="relative bg-white dark:bg-gray-800 p-10 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl shadow-blue-900/5 dark:shadow-none h-full flex flex-col items-center text-center transition-colors">
                                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center mb-8 shadow-lg shadow-blue-600/20 text-white transform group-hover:scale-110 transition-transform duration-300">
                                     <Rocket size={36} strokeWidth={1.5} />
                                 </div>
-                                <h4 className="text-2xl font-bold text-gray-900 mb-6 font-serif tracking-wide">{lang === 'am' ? 'ተልዕኮ (Mission)' : 'Mission'}</h4>
-                                <p className="text-gray-600 text-xl leading-relaxed italic font-serif">
+                                <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-serif tracking-wide">{lang === 'am' ? 'ተልዕኮ (Mission)' : 'Mission'}</h4>
+                                <p className="text-gray-600 dark:text-gray-300 text-xl leading-relaxed italic font-serif">
                                     {lang === 'am'
                                         ? '“ለቤተ ክርስቲያን ተልዕኮ መሳካት እና ለሕልውናዋ የሚተጋ፣ የተደራጀ፣ ምሉዕ ኦርቶዶክሳዊ፤ ርቱዕ ዘመናዊ፤ ሁለገብ መሪ ትውልድ ማፍራት እና ማሰማራት”'
                                         : '“To produce and deploy an organized, fully Orthodox, rational modern, and versatile leading generation that strives for the success of the Church’s mission and her existence”'}
@@ -341,13 +369,13 @@ const LandingPage = () => {
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true, amount: 0.2 }}
-                            className="bg-gray-50/50 p-10 rounded-3xl border border-gray-100"
+                            className="bg-gray-50/50 dark:bg-gray-800/50 p-10 rounded-3xl border border-gray-100 dark:border-gray-700 transition-colors"
                         >
                             <div className="flex items-center gap-4 mb-8">
-                                <div className="p-3 bg-blue-100 rounded-xl text-blue-700">
+                                <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-xl text-blue-700 dark:text-blue-300">
                                     <Target size={28} strokeWidth={2} />
                                 </div>
-                                <h4 className="text-2xl font-bold text-gray-900 font-serif">{lang === 'am' ? 'ግቦች (Goals)' : 'Strategic Goals'}</h4>
+                                <h4 className="text-2xl font-bold text-gray-900 dark:text-white font-serif">{lang === 'am' ? 'ግቦች (Goals)' : 'Strategic Goals'}</h4>
                             </div>
                             <ul className="space-y-4">
                                 {[
@@ -361,11 +389,11 @@ const LandingPage = () => {
                                     'የኦርቶዶክሳዊያን ዓለም አቀፍ እና ሀገር አቀፍ ግንኙነትና ትብብር',
                                     'ማኅበረ ቅዱሳን የውል ተቋማዊ የአሰራር ሥርዓት'
                                 ].map((item, idx) => (
-                                    <li key={idx} className="flex items-start gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 transition-colors">
+                                    <li key={idx} className="flex items-start gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:border-blue-200 dark:hover:border-blue-600 transition-colors">
                                         <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold shrink-0 mt-0.5">
                                             {idx + 1}
                                         </span>
-                                        <span className="text-gray-700 font-medium leading-relaxed">{item}</span>
+                                        <span className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">{item}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -415,28 +443,28 @@ const LandingPage = () => {
             </section>
 
             {/* Structure Section */}
-            <section id="structure" className="py-20 bg-white">
+            <section id="structure" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-center">
                         <img
                             src="/stracture.jpg"
                             alt="Structure"
-                            className="w-full max-w-6xl h-auto rounded-3xl shadow-2xl border border-gray-100"
+                            className="w-full max-w-6xl h-auto rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800"
                         />
                     </div>
                 </div>
             </section>
 
             {/* Weekly Activities */}
-            <section id="activities" className="py-20 bg-gray-50 relative overflow-hidden">
+            <section id="activities" className="py-20 bg-gray-50 dark:bg-gray-800/50 relative overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/church.png')]"></div>
                 <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">{'ይሳተፉ'}</h2>
-                            <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900">{'ሳምንታዊ መርሐ ግብሮች'}</h3>
+                            <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">{'ሳምንታዊ መርሐ ግብሮች'}</h3>
                         </div>
-                        <Link to="/register" className="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-bold">
+                        <Link to="/register" className="hidden md:flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors font-bold">
                             {'ሙሉ መርሐ ግብር ይመልከቱ'} <ArrowRight size={20} />
                         </Link>
                     </div>
@@ -456,14 +484,14 @@ const LandingPage = () => {
                             <motion.div
                                 key={idx}
                                 whileHover={{ y: -5 }}
-                                className="bg-white border border-gray-100 p-8 rounded-3xl hover:shadow-xl hover:shadow-blue-900/5 transition-all"
+                                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-8 rounded-3xl hover:shadow-xl hover:shadow-blue-900/5 dark:hover:shadow-black/20 transition-all"
                             >
                                 <div className={`w-12 h-12 rounded-xl ${activity.color} mb-6 flex items-center justify-center shadow-lg shadow-blue-500/20`}>
                                     <Calendar className="text-white" size={24} />
                                 </div>
-                                <h4 className="text-xl font-bold mb-1 text-gray-900">{activity.title}</h4>
-                                <p className="text-sm text-blue-500 mb-4 font-bold">{activity.sub}</p>
-                                <p className="text-gray-600 leading-relaxed text-sm">
+                                <h4 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{activity.title}</h4>
+                                <p className="text-sm text-blue-500 dark:text-blue-400 mb-4 font-bold">{activity.sub}</p>
+                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
                                     {activity.desc}
                                 </p>
                             </motion.div>
@@ -473,17 +501,17 @@ const LandingPage = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
+            <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pt-16 pb-8 transition-colors duration-300">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-4 gap-12 mb-12">
                         <div className="col-span-2">
                             <div className="flex items-center gap-2 mb-6">
                                 <img src="/logo-mk.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-blue-600" />
-                                <span className="text-xl font-bold text-gray-900">
+                                <span className="text-xl font-bold text-gray-900 dark:text-white">
                                     {lang === 'am' ? 'ደብረ ብርሃን ጊቢ ጉባኤ' : 'Debre Berhan Gibi Gubae'}
                                 </span>
                             </div>
-                            <p className="text-gray-500 mb-6 max-w-sm">
+                            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm">
                                 {lang === 'am'
                                     ? 'የተማሪዎችን እምነት የሚያጎለብት ንቁ መንፈሳዊ ማህበረሰብ መፍጠር።'
                                     : 'Creating an active spiritual community that strengthens students\' faith.'}
@@ -505,18 +533,18 @@ const LandingPage = () => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-gray-900 mb-6">{lang === 'am' ? 'ፈጣን አገናኞች' : 'Quick Links'}</h4>
-                            <ul className="space-y-3 text-gray-600 text-sm">
-                                <li><a href="#about" className="hover:text-blue-600">{lang === 'am' ? 'ስለ እኛ' : 'About Us'}</a></li>
-                                <li><a href="#structure" className="hover:text-blue-600">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a></li>
-                                <li><a href="#activities" className="hover:text-blue-600">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a></li>
-                                <li><Link to="/login" className="hover:text-blue-600">{lang === 'am' ? 'መግቢያ' : 'Login'}</Link></li>
+                            <h4 className="font-bold text-gray-900 dark:text-white mb-6">{lang === 'am' ? 'ፈጣን አገናኞች' : 'Quick Links'}</h4>
+                            <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
+                                <li><a href="#about" className="hover:text-blue-600 dark:hover:text-blue-400">{lang === 'am' ? 'ስለ እኛ' : 'About Us'}</a></li>
+                                <li><a href="#structure" className="hover:text-blue-600 dark:hover:text-blue-400">{lang === 'am' ? 'መዋቅር' : 'Structure'}</a></li>
+                                <li><a href="#activities" className="hover:text-blue-600 dark:hover:text-blue-400">{lang === 'am' ? 'መርሐ ግብሮች' : 'Activities'}</a></li>
+                                <li><Link to="/login" className="hover:text-blue-600 dark:hover:text-blue-400">{lang === 'am' ? 'መግቢያ' : 'Login'}</Link></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-gray-900 mb-6">{lang === 'am' ? 'አድራሻ' : 'Contact'}</h4>
-                            <ul className="space-y-3 text-gray-600 text-sm">
+                            <h4 className="font-bold text-gray-900 dark:text-white mb-6">{lang === 'am' ? 'አድራሻ' : 'Contact'}</h4>
+                            <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
                                 <li className="flex items-start gap-3">
                                     <MapPin size={18} className="text-blue-600 shrink-0" />
                                     <span>
@@ -543,14 +571,14 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+                    <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                         <p>
                             {lang === 'am'
                                 ? `© ${new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሃን ጊቢ ጉባኤ። መብቱ በህግ የተጠበቀ ነው።`
                                 : `© ${new Date().getFullYear()} Debre Berhan Gibi Gubae. All rights reserved.`}
                         </p>
                         <div className="text-left">
-                            <p className="text-xs text-gray-400 mb-2">
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
                                 Developed by
                             </p>
                             <div className="flex flex-col gap-1 text-left">
@@ -559,9 +587,9 @@ const LandingPage = () => {
                                         href="https://www.linkedin.com/in/daniel-fekede-731943372"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="font-semibold text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                                        className="font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     >
-                                        Daniel Fekede
+                                        Daniel 
                                     </a>
                                     <span className="text-xs text-gray-400 ml-2">
                                         ({lang === 'am' ? 'ሶፍትዌር ኢንጂነር' : 'Software Engineer'})
@@ -572,9 +600,9 @@ const LandingPage = () => {
                                         href="https://www.linkedin.com/in/demirewu-manidefro-229a42395"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="font-semibold text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                                        className="font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     >
-                                        Demirew Manidefiro
+                                        Demirew 
                                     </a>
                                     <span className="text-xs text-gray-400 ml-2">
                                         ({lang === 'am' ? 'ዳታ ሳይንቲስት' : 'Data Scientist'})
