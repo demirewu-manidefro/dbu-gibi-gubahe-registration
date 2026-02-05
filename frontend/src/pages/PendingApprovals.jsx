@@ -72,15 +72,15 @@ const PendingApprovals = () => {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Pending Approvals</h1>
-                    <p className="text-gray-500">Review and approve new student registrations for {isManager ? 'all sections' : (mySection || 'your section')}.</p>
+                    <h1 className="text-2xl font-bold text-gray-900">በሂደት ላይ ያሉ ማረጋገጫዎች</h1>
+                    <p className="text-gray-500">ለ {isManager ? 'ሁሉም ክፍላት' : (mySection || 'የእርስዎ ክፍል')} የተላኩ አዲስ ምዝገባዎችን ይገምግሙ እና ያጽድቁ።</p>
                 </div>
 
                 <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         type="text"
-                        placeholder="Search pending..."
+                        placeholder="በሂደት ላይ ያሉ ይፈልጉ..."
                         value={globalSearch}
                         onChange={(e) => setGlobalSearch(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -93,9 +93,9 @@ const PendingApprovals = () => {
                     <div className="bg-gray-50 p-4 rounded-full mb-4">
                         <Clock size={32} className="text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">No Pending Requests</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">ምንም የሚጠብቅ ጥያቄ የለም</h3>
                     <p className="text-gray-500 text-center max-w-sm mt-1">
-                        There are no students waiting for approval in your section at the moment.
+                        በአሁኑ ሰዓት በእርስዎ ክፍል ውስጥ ማረጋገጫ የሚጠብቁ ተማሪዎች የሉም።
                     </p>
                 </div>
             ) : (
@@ -125,25 +125,25 @@ const PendingApprovals = () => {
                                         </div>
                                     </div>
                                     <div className="bg-orange-50 text-orange-600 px-2 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                                        Pending
+                                        በሂደት ላይ
                                     </div>
                                 </div>
 
                                 <div className="space-y-2 mb-6">
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-gray-500">Phone:</span>
+                                        <span className="text-gray-500">ስልክ:</span>
                                         <span className="font-medium text-gray-900">{student.phone ? `+251${student.phone}` : 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-gray-500">Department:</span>
+                                        <span className="text-gray-500">የትምህርት ክፍል:</span>
                                         <span className="font-medium text-gray-900">{student.dept || student.department || 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-gray-500">Year:</span>
+                                        <span className="text-gray-500">አመት:</span>
                                         <span className="font-medium text-gray-900">{student.year || student.batch || 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-gray-500">Section:</span>
+                                        <span className="text-gray-500">ክፍል:</span>
                                         <span className="font-medium text-gray-900 flex items-center gap-1">
                                             {student.section || <span className="text-red-500 italic">Unassigned</span>}
                                             {/* Debug indicator for section mismatch */}
@@ -158,7 +158,7 @@ const PendingApprovals = () => {
                                     <button
                                         onClick={() => setSelectedStudent(student)}
                                         className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
-                                        title="See Details"
+                                        title="ዝርዝር ይመልከቱ"
                                     >
                                         <Eye size={20} />
                                     </button>
@@ -167,14 +167,14 @@ const PendingApprovals = () => {
                                         className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-100 text-red-600 hover:bg-red-50 font-semibold transition-colors"
                                     >
                                         <XCircle size={18} />
-                                        Decline
+                                        ውድቅ አድርግ
                                     </button>
                                     <button
                                         onClick={() => handleApprove(student.id)}
                                         className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-lg shadow-blue-200 transition-colors"
                                     >
                                         <CheckCircle size={18} />
-                                        Approve
+                                        አጽድቅ
                                     </button>
                                 </div>
                             </motion.div>
@@ -194,7 +194,7 @@ const PendingApprovals = () => {
                             className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
                         >
                             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                                <h2 className="text-xl font-bold text-gray-900">Applicant Details</h2>
+                                <h2 className="text-xl font-bold text-gray-900">የአመልካች ዝርዝር</h2>
                                 <button
                                     onClick={() => setSelectedStudent(null)}
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -217,47 +217,47 @@ const PendingApprovals = () => {
                                         <h3 className="text-xl font-bold text-gray-900">{selectedStudent.name}</h3>
                                         <p className="text-gray-500">{selectedStudent.id}</p>
                                         <div className="inline-flex items-center gap-2 mt-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">
-                                            Status: {selectedStudent.status}
+                                            ሁኔታ: {selectedStudent.status}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
-                                        <h4 className="font-bold text-gray-900 border-b pb-2">Personal Info</h4>
-                                        <InfoRow label="Phone" value={selectedStudent.phone ? `+251${selectedStudent.phone}` : 'N/A'} />
-                                        <InfoRow label="Emergency Phone" value={selectedStudent.emergencyPhone || selectedStudent.emergency_phone} />
-                                        <InfoRow label="Sex" value={selectedStudent.gender || selectedStudent.sex} />
-                                        <InfoRow label="Age" value={selectedStudent.age} />
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">የግል መረጃ</h4>
+                                        <InfoRow label="ስልክ" value={selectedStudent.phone ? `+251${selectedStudent.phone}` : 'N/A'} />
+                                        <InfoRow label="የአደጋ ጊዜ ስልክ" value={selectedStudent.emergencyPhone || selectedStudent.emergency_phone} />
+                                        <InfoRow label="ጾታ" value={selectedStudent.gender || selectedStudent.sex} />
+                                        <InfoRow label="እድሜ" value={selectedStudent.age} />
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h4 className="font-bold text-gray-900 border-b pb-2">Academic Info</h4>
-                                        <InfoRow label="Department" value={selectedStudent.dept || selectedStudent.department} />
-                                        <InfoRow label="Year/Batch" value={selectedStudent.year || selectedStudent.batch} />
-                                        <InfoRow label="Graduation Year" value={selectedStudent.graduationYear || selectedStudent.graduation_year} />
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">የትምህርት መረጃ</h4>
+                                        <InfoRow label="የትምህርት ክፍል" value={selectedStudent.dept || selectedStudent.department} />
+                                        <InfoRow label="አመት/ባች" value={selectedStudent.year || selectedStudent.batch} />
+                                        <InfoRow label="የምረቃ አመት" value={selectedStudent.graduationYear || selectedStudent.graduation_year} />
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h4 className="font-bold text-gray-900 border-b pb-2">Spiritual / Gibi Info</h4>
-                                        <InfoRow label="Service Section" value={selectedStudent.section || selectedStudent.service_section} highlight />
-                                        <InfoRow label="Gibi Name" value={selectedStudent.gibiName || selectedStudent.gibi_name} />
-                                        <InfoRow label="Parish Church" value={selectedStudent.parishChurch || selectedStudent.parish_church} />
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">መንፈሳዊ / ግቢ መረጃ</h4>
+                                        <InfoRow label="የአገልግሎት ክፍል" value={selectedStudent.section || selectedStudent.service_section} highlight />
+                                        <InfoRow label="የግቢ ስም" value={selectedStudent.gibiName || selectedStudent.gibi_name} />
+                                        <InfoRow label="አጥቢያ ቤተክርስቲያን" value={selectedStudent.parishChurch || selectedStudent.parish_church} />
 
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h4 className="font-bold text-gray-900 border-b pb-2">Verification</h4>
-                                        <InfoRow label="Filled By" value={selectedStudent.filledBy || selectedStudent.filled_by} />
-                                        <InfoRow label="Verified By" value={selectedStudent.verifiedBy || selectedStudent.verified_by} />
-                                        <InfoRow label="Submission Date" value={selectedStudent.created_at ? new Date(selectedStudent.created_at).toLocaleDateString() : 'N/A'} />
+                                        <h4 className="font-bold text-gray-900 border-b pb-2">ማረጋገጫ</h4>
+                                        <InfoRow label="የሞላው አካል" value={selectedStudent.filledBy || selectedStudent.filled_by} />
+                                        <InfoRow label="ያረጋገጠው አካል" value={selectedStudent.verifiedBy || selectedStudent.verified_by} />
+                                        <InfoRow label="የተመዘገበበት ቀን" value={selectedStudent.created_at ? new Date(selectedStudent.created_at).toLocaleDateString() : 'N/A'} />
                                     </div>
                                 </div>
 
                                 {/* Additional Info Area */}
                                 {selectedStudent.additionalInfo && (
                                     <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h4 className="font-bold text-gray-900 mb-2">Additional Info</h4>
+                                        <h4 className="font-bold text-gray-900 mb-2">ተጨማሪ መረጃ</h4>
                                         <p className="text-gray-600 text-sm">{selectedStudent.additionalInfo || selectedStudent.additional_info}</p>
                                     </div>
                                 )}
