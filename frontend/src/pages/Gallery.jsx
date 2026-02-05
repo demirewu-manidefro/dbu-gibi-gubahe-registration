@@ -9,7 +9,8 @@ import {
     Trash2,
     Search,
     Filter,
-    History
+    History,
+    Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -256,14 +257,25 @@ const Gallery = () => {
                                         </div>
 
                                         {/* Description with Vibrant Blue Gradient Background */}
-                                        <div className="bg-gradient-to-br from-blue-200 to-blue-600 pb-0 pt-0 text-center group-hover:from-blue-500 group-hover:to-blue-700 transition-all duration-500">
-                                            <h4 className="font-extrabold text-white truncate text-base tracking-tight drop-shadow-sm">{item.title || 'Sacred Memory'}</h4>
-                                            {item.description && (
-                                                <p className="text-white/70 text-[10px] mt-1 line-clamp-2 font-medium leading-tight">
-                                                    {item.description}
-                                                </p>
-                                            )}
-                                            <div className="h-1 w-10 bg-white/20 mx-auto rounded-full mt-3 group-hover:w-20 group-hover:bg-white/40 transition-all duration-700"></div>
+                                        <div className="bg-gradient-to-br from-blue-200 to-blue-600 p-4 group-hover:from-blue-500 group-hover:to-blue-700 transition-all duration-500 flex items-center justify-between gap-3">
+                                            <div className="flex-1 min-w-0 text-left">
+                                                <h4 className="font-extrabold text-white truncate text-base tracking-tight drop-shadow-sm">{item.title || 'Sacred Memory'}</h4>
+                                                {item.description && (
+                                                    <p className="text-white/70 text-[10px] mt-1 line-clamp-2 font-medium leading-tight">
+                                                        {item.description}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <a
+                                                href={item.image_url}
+                                                download={`gallery-${item.year}-${item.title || 'image'}.jpg`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-xl backdrop-blur-sm transition-colors shrink-0 shadow-sm"
+                                                title="Download Image"
+                                            >
+                                                <Download size={18} strokeWidth={2.5} />
+                                            </a>
                                         </div>
                                     </motion.div>
                                 ))}
