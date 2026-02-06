@@ -4,7 +4,7 @@ import { toEthiopian, toGregorian, ETHIOPIAN_MONTHS, ETHIOPIAN_MONTHS_AMHARIC } 
 import { Calendar } from 'lucide-react';
 
 const EthiopianDatePicker = ({ value, onChange, className = "", minYear, maxYear }) => {
-    const [ethDate, setEthDate] = useState({ year: 2017, month: 1, day: 1 });
+    const [ethDate, setEthDate] = useState({ year: toEthiopian(new Date()).year, month: toEthiopian(new Date()).month, day: toEthiopian(new Date()).day });
 
     useEffect(() => {
         if (value) {
@@ -55,13 +55,13 @@ const EthiopianDatePicker = ({ value, onChange, className = "", minYear, maxYear
     const days = Array.from({ length: maxDays }, (_, i) => i + 1);
 
     return (
-        <div className={`flex items-center gap-2 bg-white px-4 py-2 border border-gray-200 rounded-xl shadow-sm ${className}`}>
-            <Calendar size={18} className="text-blue-600" />
+        <div className={`flex items-center gap-2 bg-white dark:bg-gray-700 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl shadow-sm ${className}`}>
+            <Calendar size={18} className="text-blue-600 dark:text-blue-400" />
             <div className="flex gap-2">
                 <select
                     value={ethDate.day}
                     onChange={(e) => handleChange('day', e.target.value)}
-                    className="bg-transparent font-medium text-gray-700 outline-none cursor-pointer p-1"
+                    className="bg-transparent font-medium text-gray-700 dark:text-gray-200 outline-none cursor-pointer p-1 [&>option]:text-gray-900 [&>option]:bg-white dark:[&>option]:bg-gray-700 dark:[&>option]:text-white"
                 >
                     {days.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -69,7 +69,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "", minYear, maxYear
                 <select
                     value={ethDate.month}
                     onChange={(e) => handleChange('month', e.target.value)}
-                    className="bg-transparent font-bold text-gray-900 outline-none cursor-pointer p-1"
+                    className="bg-transparent font-bold text-gray-900 dark:text-white outline-none cursor-pointer p-1 [&>option]:text-gray-900 [&>option]:bg-white dark:[&>option]:bg-gray-700 dark:[&>option]:text-white"
                 >
                     {ETHIOPIAN_MONTHS_AMHARIC.map((m, i) => (
                         <option key={m} value={i + 1}>{m}</option>
@@ -79,7 +79,7 @@ const EthiopianDatePicker = ({ value, onChange, className = "", minYear, maxYear
                 <select
                     value={ethDate.year}
                     onChange={(e) => handleChange('year', e.target.value)}
-                    className="bg-transparent font-medium text-gray-700 outline-none cursor-pointer p-1"
+                    className="bg-transparent font-medium text-gray-700 dark:text-gray-200 outline-none cursor-pointer p-1 [&>option]:text-gray-900 [&>option]:bg-white dark:[&>option]:bg-gray-700 dark:[&>option]:text-white"
                 >
                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>

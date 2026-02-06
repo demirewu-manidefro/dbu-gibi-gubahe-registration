@@ -78,10 +78,10 @@ const AdminManagement = () => {
     if (user?.role !== 'manager') {
         return (
             <div className="flex flex-col items-center justify-center p-20 text-center">
-                <div className="bg-red-50 text-red-600 p-6 rounded-full mb-6">
+                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-6 rounded-full mb-6">
                     <Ban size={48} />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">መዳረሻ ተከልክሏል</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">መዳረሻ ተከልክሏል</h1>
                 <p className="text-gray-500 mt-2 max-w-md">የአስተዳዳሪዎች ማስተዳደሪያ ገጽን ማግኘት የሚችለው የስርዓት አስተዳዳሪው ብቻ ነው። እባክዎ ይህ ስህተት ነው ብለው ካመኑ አስተዳዳሪውን ያነጋግሩ።</p>
             </div>
         );
@@ -91,33 +91,33 @@ const AdminManagement = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">የአስተዳዳሪዎች አስተዳደር</h1>
-                    <p className="text-gray-500 font-medium">የስርዓት መዳረሻን ያስተዳድሩ እና የአስተዳዳሪ አፈጻጸምን ይቆጣጠሩ</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">የአስተዳዳሪዎች አስተዳደር</h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">የስርዓት መዳረሻን ያስተዳድሩ እና የአስተዳዳሪ አፈጻጸምን ይቆጣጠሩ</p>
                 </div>
                 <div className="flex gap-4">
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="bg-green-100 text-green-600 p-2 rounded-lg">
+                    <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                        <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 p-2 rounded-lg">
                             <ShieldCheck size={20} />
                         </div>
                         <div>
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">ንቁ አስተዳዳሪዎች</div>
-                            <div className="text-xl font-bold">{admins.filter(a => a.status === 'active').length}</div>
+                            <div className="text-xl font-bold text-gray-900 dark:text-white">{admins.filter(a => a.status === 'active').length}</div>
                         </div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="bg-red-100 text-red-600 p-2 rounded-lg">
+                    <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                        <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg">
                             <Ban size={20} />
                         </div>
                         <div>
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">ታግደዋል</div>
-                            <div className="text-xl font-bold">{admins.filter(a => a.status === 'blocked').length}</div>
+                            <div className="text-xl font-bold text-gray-900 dark:text-white">{admins.filter(a => a.status === 'blocked').length}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-100 flex items-center justify-between gap-6 bg-white">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-premium border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <div className="p-8 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between gap-6 bg-white dark:bg-slate-800">
                     <div className="relative flex-1 max-w-md group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                         <input
@@ -125,14 +125,14 @@ const AdminManagement = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="አስተዳዳሪ በስም፣ በክፍል ወይንም በዩዘርኔም ይፈልጉ..."
-                            className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all font-medium text-slate-800"
+                            className="w-full pl-12 pr-6 py-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-[1.25rem] focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all font-medium text-slate-800 dark:text-white"
                         />
                     </div>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                        <thead className="bg-gray-50/50 dark:bg-slate-700/50 text-gray-400 dark:text-gray-300 text-xs font-bold uppercase tracking-widest">
                             <tr>
                                 <th className="px-8 py-4">የአስተዳዳሪ ስም</th>
                                 <th className="px-8 py-4">ክፍል</th>
@@ -142,12 +142,12 @@ const AdminManagement = () => {
                                 <th className="px-8 py-4 text-right">እርምጃዎች</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                             {filteredAdmins.map((admin) => (
                                 <motion.tr
                                     layout
                                     key={admin.id}
-                                    className="hover:bg-gray-50/30 transition-colors"
+                                    className="hover:bg-gray-50/30 dark:hover:bg-slate-700/30 transition-colors"
                                 >
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-3">
@@ -159,23 +159,23 @@ const AdminManagement = () => {
                                                 )}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-gray-900">{admin.name}</div>
+                                                <div className="font-bold text-gray-900 dark:text-white">{admin.name}</div>
                                                 <div className="text-xs text-gray-400">ID: #00{admin.id}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-8 py-5">
-                                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">
+                                        <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold">
                                             {admin.section}
                                         </span>
                                     </td>
-                                    <td className="px-8 py-5 text-sm font-medium text-gray-600">
+                                    <td className="px-8 py-5 text-sm font-medium text-gray-600 dark:text-gray-300">
                                         {admin.username}
                                     </td>
                                     <td className="px-8 py-5">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${admin.status === 'active'
-                                            ? 'bg-green-50 text-green-600 border-green-100'
-                                            : 'bg-red-50 text-red-600 border-red-100'
+                                            ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800'
+                                            : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800'
                                             }`}>
                                             {admin.status}
                                         </span>
@@ -190,7 +190,7 @@ const AdminManagement = () => {
                                         <div className="flex items-center justify-end gap-1">
                                             <button
                                                 onClick={() => openEditModal(admin)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                                                 title="Edit Admin"
                                             >
                                                 <Edit size={18} />
@@ -199,8 +199,8 @@ const AdminManagement = () => {
                                                 <button
                                                     onClick={() => toggleAdminStatus(admin.id)}
                                                     className={`p-2 rounded-lg transition-all ${admin.status === 'active'
-                                                        ? 'text-gray-400 hover:bg-red-50 hover:text-red-600'
-                                                        : 'text-red-600 bg-red-50 hover:bg-green-50 hover:text-green-600'
+                                                        ? 'text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400'
+                                                        : 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400'
                                                         }`}
                                                     title={admin.status === 'active' ? 'Block Admin' : 'Unblock Admin'}
                                                 >
@@ -221,7 +221,7 @@ const AdminManagement = () => {
                                                             .catch(err => alert("ያልተሳካ: " + err.message));
                                                     }
                                                 }}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-red-200 dark:border-red-900"
                                                 title="ወደ ተማሪነት ዝቅ አድርግ"
                                             >
                                                 <ArrowDownCircle size={16} />

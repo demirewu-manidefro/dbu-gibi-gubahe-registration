@@ -54,15 +54,15 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden"
+                className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden"
             >
                 {/* Header - Matching EditStudentModal */}
-                <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-blue-100">
+                <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800">
                     <div>
-                        <h2 className="text-2xl font-extrabold text-gray-900">
+                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">
                             {isEditing ? 'የአስተዳዳሪ መረጃ ማስተካከያ (Edit Admin)' : 'አዲስ አስተዳዳሪ (Add New Admin)'}
                         </h2>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {isEditing ? `ለ${formData.name} መረጃዎችን ያሻሽሉ` : 'አዲስ የሲስተም አስተዳዳሪ መመዝገቢያ'}
                         </p>
                     </div>
@@ -75,14 +75,14 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                 </div>
 
                 {/* Tab Navigation - Matching EditStudentModal */}
-                <div className="flex gap-2 px-8 pt-6 pb-2 border-b border-gray-50 bg-white overflow-x-auto no-scrollbar">
+                <div className="flex gap-2 px-8 pt-6 pb-2 border-b border-gray-50 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-x-auto no-scrollbar">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-3 px-5 py-2.5 rounded-full transition-all whitespace-nowrap ${activeTab === tab.id
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                : 'bg-white text-gray-500 border border-gray-100 hover:border-blue-300 hover:text-blue-600'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-none'
+                                : 'bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-600 hover:border-blue-300 dark:hover:border-slate-500 hover:text-blue-600 dark:hover:text-blue-400'
                                 }`}
                         >
                             <div className={`${activeTab === tab.id ? 'text-white' : 'text-gray-400'}`}>
@@ -97,7 +97,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                 </div>
 
                 {/* Form Content */}
-                <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 bg-gray-50/30">
+                <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 bg-gray-50/30 dark:bg-slate-900/30">
                     <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -119,14 +119,14 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                     value={formData.name}
                                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                     placeholder="አስገቡ..."
-                                                    className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-800"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-800 dark:text-white"
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
                                             <div className="relative mx-auto">
-                                                <div className="w-32 h-32 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
+                                                <div className="w-32 h-32 rounded-2xl bg-gray-50 dark:bg-slate-700 border-2 border-dashed border-gray-200 dark:border-slate-600 flex items-center justify-center overflow-hidden">
                                                     {photoPreview ? (
                                                         <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
                                                     ) : (
@@ -148,7 +148,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                         setFormData({ ...formData, photo_url: e.target.value });
                                                         setPhotoPreview(e.target.value);
                                                     }}
-                                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-200"
                                                 />
                                             </div>
                                         </div>
@@ -162,7 +162,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                             <select
                                                 value={formData.role}
                                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-gray-800"
+                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-gray-800 dark:text-white"
                                             >
                                                 <option value="admin">አስተዳዳሪ (Admin)</option>
                                                 <option value="manager">ዋና አስተዳዳሪ (Manager)</option>
@@ -174,7 +174,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                             <select
                                                 value={formData.section}
                                                 onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                                                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-gray-800"
+                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-gray-800 dark:text-white"
                                             >
                                                 <option value="ሁሉም">ሁሉም (Super Manager)</option>
                                                 <option value="እቅድ">እቅድ</option>
@@ -194,7 +194,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
 
                                 {activeTab === 2 && (
                                     <div className="max-w-md mx-auto space-y-6 py-2">
-                                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-md space-y-6">
+                                        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-gray-100 dark:border-slate-700 shadow-md space-y-6">
                                             <div className="flex items-center gap-4 text-blue-600 mb-2 justify-center">
                                                 <Lock size={32} />
                                             </div>
@@ -209,7 +209,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                         value={formData.username}
                                                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                                         placeholder="username"
-                                                        className={`w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-mono font-bold ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed border-dashed' : 'bg-white text-gray-800'}`}
+                                                        className={`w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-mono font-bold ${isEditing ? 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-dashed' : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-white'}`}
                                                     />
                                                 </div>
 
@@ -223,7 +223,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                         value={formData.password}
                                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                                         placeholder={isEditing ? 'ተመሳሳይ ለማድረግ ባዶ ይተው' : '••••••••'}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-white text-gray-800 font-bold"
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-white dark:bg-slate-700 text-gray-800 dark:text-white font-bold"
                                                     />
                                                 </div>
                                             </div>
@@ -233,7 +233,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
 
                                 {activeTab === 3 && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-2">
-                                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                                        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-gray-100 dark:border-slate-700 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
                                             <div className="text-gray-400 uppercase text-[10px] font-black tracking-widest">የመለያ ሁኔታ</div>
                                             <div className={`text-2xl font-black uppercase tracking-tight ${formData.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
                                                 {formData.status === 'active' ? 'Active' : 'Blocked'}
@@ -266,11 +266,11 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                     </div>
 
                     {/* Footer Actions - Matching EditStudentModal */}
-                    <div className="flex items-center justify-between px-8 py-6 border-t border-gray-100 bg-white">
+                    <div className="flex items-center justify-between px-8 py-6 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors shadow-sm"
+                            className="px-6 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors shadow-sm"
                         >
                             ሰርዝ (Cancel)
                         </button>
@@ -280,7 +280,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab(prev => prev - 1)}
-                                    className="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                                    className="px-6 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                                 >
                                     ወደኋላ (Back)
                                 </button>

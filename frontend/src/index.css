@@ -41,7 +41,7 @@ body {
   place-content: center;
   min-width: 320px;
   min-height: 100vh;
-  @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+  @apply bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 transition-colors duration-300;
 }
 
 html {
@@ -53,7 +53,7 @@ html {
   input,
   select,
   textarea {
-    @apply bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 transition-colors duration-200 outline-none;
+    @apply bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 transition-colors duration-200 outline-none;
   }
 
   button {
@@ -68,12 +68,13 @@ html {
 }
 
 .dark .glass-card {
-  background: rgba(31, 41, 55, 0.8);
+  background: rgba(15, 23, 42, 0.8);
+  /* Slate 900 with opacity */
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .label-amharic {
-  @apply block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2;
+  @apply block text-sm font-bold text-gray-700 dark:text-white mb-2;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -100,7 +101,8 @@ html {
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: #475569;
+  /* Slate 600 */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -108,5 +110,6 @@ html {
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #6B7280;
+  background: #64748b;
+  /* Slate 500 */
 }

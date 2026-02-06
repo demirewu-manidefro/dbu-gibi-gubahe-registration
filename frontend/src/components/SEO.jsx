@@ -11,7 +11,7 @@ const SEO = ({
 }) => {
     const siteName = 'የደብረ ብርሀን ዩኒቨርስቲ የቀን ጊቢ ጉባኤ';
     const fullTitle = title ? `${title} | ${siteName}` : siteName;
-    const siteUrl = 'https://dbu-gibi-gubae.org'; // Replace with actual domain if known
+    const siteUrl = 'https://dbu-gibi-gubae.org';
     const fullUrl = `${siteUrl}${canonical || window.location.pathname}`;
 
     // Default description if none provided
