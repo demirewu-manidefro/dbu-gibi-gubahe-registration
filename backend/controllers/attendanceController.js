@@ -1,5 +1,4 @@
 const { query } = require('../config/db');
-const { createNotification } = require('./notificationController');
 
 exports.getAttendanceHistory = async (req, res) => {
     try {
@@ -46,18 +45,6 @@ exports.saveAttendanceBatch = async (req, res) => {
             results.push(rows[0]);
         }
 
-        // Add notification for attendance recording
-        if (results.length > 0) {
-            const sections = [...new Set(results.map(r => r.section))];
-            for (const section of sections) {
-                await createNotification(
-                    'attendance',
-                    `Attendance recorded for ${section} on ${date}`,
-                    'manager'
-                );
-            }
-        }
-
         res.status(200).json(results);
     } catch (err) {
         console.error(err.message);
@@ -67,7 +54,7 @@ exports.saveAttendanceBatch = async (req, res) => {
 
 exports.getAnalyticsStats = async (req, res) => {
     try {
-        
+
         const { rows: stats } = await query(`
             SELECT 
                 section,
