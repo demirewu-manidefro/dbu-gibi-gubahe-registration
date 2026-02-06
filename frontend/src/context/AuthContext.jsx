@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthContext } from './auth';
 
 const API_BASE_URL = 'http://127.0.0.1:5000/api';

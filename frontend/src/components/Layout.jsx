@@ -324,6 +324,11 @@ const Layout = ({ children }) => {
                                                                             ክትትል
                                                                         </span>
                                                                     )}
+                                                                    {n.type === 'info' && (
+                                                                        <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+                                                                            ሰላምታ
+                                                                        </span>
+                                                                    )}
                                                                     {isUnread && (
                                                                         <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                                                                     )}
