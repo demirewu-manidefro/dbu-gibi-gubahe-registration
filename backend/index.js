@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: '*', // Allow all origins for development
+    origin: process.env.FRONTEND_URL || '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
 }));
@@ -32,39 +32,29 @@ app.get('/', (req, res) => {
     res.json({ message: 'DBU Gibi Gubae API is running' });
 });
 
-// Global error handler - ensures all errors return JSON, not HTML
+// Global error handler
 app.use((err, req, res, next) => {
     console.error('Global error handler:', err);
-
-    // Handle payload too large error
     if (err.type === 'entity.too.large') {
-        return res.status(413).json({ message: 'Request payload too large. Please use a smaller image.' });
+        return res.status(413).json({ message: 'Request payload too large.' });
     }
-
-    // Handle JSON parse errors
-    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-        return res.status(400).json({ message: 'Invalid JSON in request body' });
-    }
-
-    // Default error response
     res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        message: err.message || 'Internal Server Error'
     });
 });
 
-// Start Server
-app.listen(PORT, async () => {
-    console.log(`Server is running on port ${PORT}`);
+// Start Server (Skip if on Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(PORT, async () => {
+        console.log(`Server is running on port ${PORT}`);
+        await initDb();
+        try {
+            await query('SELECT NOW()');
+            console.log('Database connected');
+        } catch (err) {
+            console.error('DB failed:', err.message);
+        }
+    });
+}
 
-    // Initialize/Update Database Schema
-    await initDb();
-
-    // Test DB connection
-    try {
-        await query('SELECT NOW()');
-        console.log('Database connection verified successfully');
-    } catch (err) {
-        console.error('Database connection failed:', err.message);
-    }
-});
+module.exports = app;
