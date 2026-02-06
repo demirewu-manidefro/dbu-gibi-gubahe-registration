@@ -57,6 +57,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         photoUrl: '',
         motherTongue: '',
         otherLanguages: { l1: '', l2: '', l3: '' },
+        username: '',
+        password: '',
 
         // Tab 2: Address
         phone: '',
@@ -263,6 +265,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         if (!formData.baptismalName) return validationError("ክርስትና ስም ያስፈልጋል", 0);
         if (!formData.priesthoodRank) return validationError("ሥልጣነ ክህነት መመረጥ አለበት", 0);
         if (!formData.motherTongue) return validationError("የአፍ መፍቻ ቋንቋ ያስፈልጋል", 0);
+        if (['admin', 'manager'].includes(user?.role) && !isEditingMode) {
+            if (!formData.username) return validationError("Username is required", 0);
+            if (!formData.password) return validationError("Password is required", 0);
+        }
 
         // Tab 1 Validation
         if (!formData.phone) return validationError("ስልክ ቁጥር ያስፈልጋል", 1);
@@ -360,7 +366,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                             key={tab.id}
                             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeTab === tab.id
                                 ? 'bg-blue-600 text-white shadow-lg'
-                                : 'bg-white text-gray-400 border border-gray-100'
+                                : 'bg-white dark:bg-slate-800 text-gray-400 border border-gray-100 dark:border-slate-700'
                                 }`}
                         >
                             {tab.icon}
@@ -378,14 +384,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden min-h-[600px] flex flex-col">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-premium border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[600px] flex flex-col">
                 {/* Tab Header for Desktop */}
-                <div className="grid grid-cols-4 border-b border-gray-50 bg-gray-50/50">
+                <div className="grid grid-cols-4 border-b border-gray-50 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-6 py-4 flex flex-col items-center gap-1 transition-all relative ${activeTab === tab.id ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
+                            className={`px-6 py-4 flex flex-col items-center gap-1 transition-all relative ${activeTab === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                 }`}
                         >
                             <span className="text-xs font-bold uppercase tracking-wider">{tab.subLabel}</span>
@@ -438,9 +444,34 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         }
                                                     }}
                                                     required
-                                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-wide"
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-wide"
                                                 />
                                             </div>
+                                            {['admin', 'manager'].includes(user?.role) && (
+                                                <>
+                                                    <div>
+                                                        <label className="label-amharic">Username</label>
+                                                        <input
+                                                            name="username"
+                                                            value={formData.username}
+                                                            onChange={handleInputChange}
+                                                            placeholder="Username"
+                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="label-amharic">Password</label>
+                                                        <input
+                                                            name="password"
+                                                            type="password"
+                                                            value={formData.password}
+                                                            onChange={handleInputChange}
+                                                            placeholder="Password"
+                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                                        />
+                                                    </div>
+                                                </>
+                                            )}
                                             <div className="col-span-2">
                                                 <label className="label-amharic">የተማሪው ሙሉ ሥም <span className="text-red-500">*</span></label>
                                                 <input
@@ -474,7 +505,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">ዕድሜ</label>
-                                                    <input name="age" value={formData.age} readOnly className="bg-gray-50 font-bold" />
+                                                    <input name="age" value={formData.age} readOnly className="bg-gray-50 dark:bg-slate-700 dark:text-white border dark:border-slate-600 font-bold rounded-lg px-3 py-2" />
                                                 </div>
                                             </div>
                                             <div>
@@ -499,7 +530,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="ቋንቋዎን ያስገቡ"
                                                         required
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
@@ -531,7 +562,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                     </div>
 
                                     <div className="w-full md:w-64 flex flex-col items-center">
-                                        <div className="w-48 h-56 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 group hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden">
+                                        <div className="w-48 h-56 bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 group hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden">
                                             {formData.photoUrl || formData.profilePhoto ? (
                                                 <img
                                                     src={formData.photoUrl || (formData.profilePhoto ? URL.createObjectURL(formData.profilePhoto) : '')}
@@ -557,7 +588,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 value={formData.photoUrl || ''}
                                                 onChange={handleInputChange}
                                                 placeholder="https://..."
-                                                className="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1"
+                                                className="w-full text-xs bg-white dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1"
                                             />
                                         </div>
                                         <p className="mt-4 text-xs text-center text-gray-500 leading-relaxed italic">
@@ -606,7 +637,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         maxLength={9}
                                                         pattern="9[0-9]{8}"
                                                         title="Phone number must start with 9 and be 9 digits long"
-                                                        className="w-full pl-28 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                                                         required
                                                     />
                                                 </div>
@@ -614,7 +645,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">ክልል <span className="text-red-500">*</span></label>
-                                                    <select name="region" value={formData.region} onChange={handleInputChange} required className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <select name="region" value={formData.region} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                                         <option value="">ክልል ይምረጡ...</option>
                                                         {Object.keys(ethiopianRegions).map(region => (
                                                             <option key={region} value={region}>{region}</option>
@@ -629,7 +660,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         onChange={handleInputChange}
                                                         disabled={!formData.region}
                                                         required
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
                                                         <option value="">{formData.region ? 'ዞን ይምረጡ...' : 'መጀመሪያ ክልል ይምረጡ'}</option>
                                                         {formData.region && ethiopianRegions[formData.region]?.map(zone => (
@@ -648,7 +679,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="ወረዳ"
                                                         required
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
@@ -659,7 +690,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="ቀበሌ"
                                                         required
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             </div>
@@ -671,7 +702,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         value={formData.gibiName}
                                                         onChange={handleInputChange}
                                                         required
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
                                                         <option value="">ምረጥ...</option>
                                                         <option value="ደ/ቀ/ግ/ጉባኤ">ደ/ቀ/ግ/ጉባኤ</option>
@@ -687,7 +718,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         value={formData.centerAndWoredaCenter}
                                                         onChange={handleInputChange}
                                                         placeholder="ማእከል/ወረዳ"
-                                                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             </div>
@@ -698,7 +729,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     value={formData.parishChurch}
                                                     onChange={handleInputChange}
                                                     required
-                                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="ቅዱስ ገብርኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
@@ -709,7 +740,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     <input
                                                         type="text"
                                                         placeholder="Specify Church Name"
-                                                        className="mt-2 w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="mt-2 w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                         onChange={(e) => setFormData(prev => ({ ...prev, parishChurch: e.target.value }))}
                                                     />
                                                 )}
@@ -717,7 +748,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-6 bg-gray-50/50 p-8 rounded-2xl border border-gray-100">
+                                    <div className="space-y-6 bg-gray-50/50 dark:bg-slate-900/50 p-8 rounded-2xl border border-gray-100 dark:border-slate-700">
                                         <h3 className="text-lg font-bold text-blue-600 flex items-center gap-2">
                                             የቅርብ ተጠሪ መረጃ
                                         </h3>
@@ -757,7 +788,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         maxLength={9}
                                                         pattern="9[0-9]{8}"
                                                         title="Phone number must start with 9 and be 9 digits long"
-                                                        className="w-full pl-28 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                                                         required
                                                     />
                                                 </div>
@@ -798,13 +829,13 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                     </div>
 
                                     <div className="space-y-6">
-                                        <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                                             የውጤት መረጃ
                                         </h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year}>
-                                                    <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">ዓመት {idx + 1}</label>
+                                                    <label className="text-xs font-bold text-gray-500 dark:text-white uppercase mb-1 block">ዓመት {idx + 1}</label>
                                                     <input
                                                         type="number"
                                                         step="0.01"
@@ -814,12 +845,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         placeholder="0.00"
                                                         value={formData.gpa[year]}
                                                         onChange={handleInputChange}
-                                                        className="text-center font-bold text-blue-600"
+                                                        className="text-center font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             ))}
                                             <div className="col-span-2 md:col-span-1">
-                                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">አማካይ ውጤት</label>
+                                                <label className="text-xs font-bold text-gray-500 dark:text-white uppercase mb-1 block">አማካይ ውጤት</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
@@ -828,7 +859,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     name="cumulativeGPA"
                                                     value={formData.cumulativeGPA}
                                                     onChange={handleInputChange}
-                                                    className="text-center font-bold text-green-600 bg-green-50 border-green-200"
+                                                    className="text-center font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800"
                                                     placeholder="0.00"
                                                 />
                                             </div>
@@ -840,8 +871,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                             {/* TAB 4: SPIRITUAL */}
                             {activeTab === 3 && (
                                 <div className="space-y-8">
-                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                        <h3 className="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2 mb-4">የአገልግሎት ክፍል</h3>
+                                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 border-b border-gray-200 dark:border-slate-700 pb-2 mb-4">የአገልግሎት ክፍል</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
                                                 <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ <span className="text-red-500">*</span></label>
@@ -851,7 +882,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     onChange={handleInputChange}
                                                     required
                                                     disabled={user?.role === 'admin'}
-                                                    className={`w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 cursor-not-allowed opacity-75' : ''}`}
+                                                    className={`w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed opacity-75' : ''}`}
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="እቅድ">እቅድ</option>
@@ -869,55 +900,55 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         </div>
                                     </div>
 
-                                    <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                                        <h3 className="text-lg font-bold text-blue-800 border-b border-blue-200 pb-2 mb-4">የአብነት ትምህርት እና ልዩ ፍላጎት:-</h3>
+                                    <div className="bg-blue-50/50 dark:bg-slate-900/40 p-6 rounded-2xl border border-blue-100 dark:border-slate-700">
+                                        <h3 className="text-lg font-bold text-blue-800 dark:text-blue-400 border-b border-blue-200 dark:border-slate-700 pb-2 mb-4">የአብነት ትምህርት እና ልዩ ፍላጎት:-</h3>
                                         <div className="space-y-4">
                                             <div>
                                                 <label className="label-amharic">የተማረውና አሁን የደረሰበት (Spiritual Education Level)</label>
-                                                <input name="specialEducation" value={formData.specialEducation} onChange={handleInputChange} />
+                                                <input name="specialEducation" value={formData.specialEducation} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
                                             <div>
                                                 <label className="label-amharic">የተማረው ልዩ ተሰጥኦ (Special Talent)</label>
-                                                <input name="specialPlace" value={formData.specialPlace} onChange={handleInputChange} />
+                                                <input name="specialPlace" value={formData.specialPlace} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">የአብነት ትምህርት (General)</label>
-                                                    <input name="abinetEducation" value={formData.abinetEducation} onChange={handleInputChange} />
+                                                    <input name="abinetEducation" value={formData.abinetEducation} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">ልዩ ፍላጎት (Special Need)</label>
-                                                    <input name="specialNeed" value={formData.specialNeed} onChange={handleInputChange} />
+                                                    <input name="specialNeed" value={formData.specialNeed} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">በግቢ ጉባኤው አባል የሆኑበት ዓ.ም</label>
-                                                    <input name="membershipYear" type="number" min="2000" max={currentEthYear} value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" />
+                                                    <input name="membershipYear" type="number" min="2000" max={currentEthYear} value={formData.membershipYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">የሚመረቁበት ዓ/ም</label>
-                                                    <input name="graduationYear" type="number" min={currentEthYear} value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" />
+                                                    <input name="graduationYear" type="number" min={currentEthYear} value={formData.graduationYear} onChange={handleInputChange} placeholder="20XX" className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                                    <div className="bg-gray-50/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
                                         <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
                                             <h3 className="text-md font-bold">1. በግቢ ጉባኤው የተማረው ትምህርት (Courses):-</h3>
                                         </div>
                                         <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`educationYearly-${year}`}
                                                         value={formData.educationYearly[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="ኮርስ..."
-                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
                                                     />
                                                 </div>
                                             ))}
@@ -929,14 +960,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`responsibility-${year}`}
                                                         value={formData.responsibility[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
-                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
                                                     />
                                                 </div>
                                             ))}
@@ -948,21 +979,21 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         <div className="grid grid-cols-1 gap-y-3">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`attendance-${year}`}
                                                         value={formData.attendance[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="ክትትል..."
-                                                        className="flex-1 bg-white border-blue-100 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
                                                     />
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                                    <div className="bg-gray-50/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
                                         <div className="bg-blue-600 text-white px-4 py-1 inline-block rounded-r-full -ml-6 mb-6 shadow-sm">
                                             <h3 className="text-md font-bold">በግቢ ጉባኤው የወሰዳቸው ሥልጠናዎች:-</h3>
                                         </div>
@@ -970,17 +1001,17 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                         <div className="space-y-6">
                                             {/* Teacher Training */}
                                             <div>
-                                                <h4 className="font-bold text-gray-700 mb-3 border-b border-gray-200 pb-1 inline-block">የተተኪ መምህር ሥልጠና ፤- ደረጃና የቀን ብዛት</h4>
+                                                <h4 className="font-bold text-gray-700 dark:text-slate-300 mb-3 border-b border-gray-200 dark:border-slate-700 pb-1 inline-block">የተተኪ መምህር ሥልጠና ፤- ደረጃና የቀን ብዛት</h4>
                                                 <div className="space-y-3">
                                                     {['level1', 'level2', 'level3'].map((level, idx) => (
                                                         <div key={level} className="flex items-center gap-4">
-                                                            <span className="font-bold text-sm text-gray-600 w-20">ደረጃ {idx + 1}</span>
+                                                            <span className="font-bold text-sm text-gray-600 dark:text-slate-400 w-20">ደረጃ {idx + 1}</span>
                                                             <input
                                                                 type="text"
                                                                 name={`teacherTraining-${level}`}
                                                                 value={formData.teacherTraining[level]}
                                                                 onChange={handleInputChange}
-                                                                className="flex-1 bg-white border-blue-100 focus:border-blue-500"
+                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500"
                                                             />
                                                         </div>
                                                     ))}
@@ -989,17 +1020,17 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
 
                                             {/* Leadership Training */}
                                             <div>
-                                                <h4 className="font-bold text-gray-700 mb-3 border-b border-gray-200 pb-1 inline-block">የተተኪ አመራር ሥልጠና ፤- ደረጃና የቀን ብዛት</h4>
+                                                <h4 className="font-bold text-gray-700 dark:text-slate-300 mb-3 border-b border-gray-200 dark:border-slate-700 pb-1 inline-block">የተተኪ አመራር ሥልጠና ፤- ደረጃና የቀን ብዛት</h4>
                                                 <div className="space-y-3">
                                                     {['level1', 'level2', 'level3'].map((level, idx) => (
                                                         <div key={level} className="flex items-center gap-4">
-                                                            <span className="font-bold text-sm text-gray-600 w-20">ደረጃ {idx + 1}</span>
+                                                            <span className="font-bold text-sm text-gray-600 dark:text-slate-400 w-20">ደረጃ {idx + 1}</span>
                                                             <input
                                                                 type="text"
                                                                 name={`leadershipTraining-${level}`}
                                                                 value={formData.leadershipTraining[level]}
                                                                 onChange={handleInputChange}
-                                                                className="flex-1 bg-white border-blue-100 focus:border-blue-500"
+                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500"
                                                             />
                                                         </div>
                                                     ))}
@@ -1013,7 +1044,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 value={formData.otherTrainings}
                                                 onChange={handleInputChange}
                                                 placeholder="ሌላ የወሰዱት ስልጠና ካለ ይጥቀሱ..."
-                                                className="w-full bg-white border border-blue-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-blue-100 dark:border-blue-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                     </div>
@@ -1026,22 +1057,22 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                 value={formData.additionalInfo}
                                                 onChange={handleInputChange}
                                                 rows="2"
-                                                className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                                className="w-full rounded-xl border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="label-amharic">መረጃውን የሞላው <span className="text-red-500">*</span></label>
-                                                <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                                                <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500" />
                                             </div>
                                             <div>
                                                 <label className="label-amharic">መረጃውን ያረጋገጠው <span className="text-red-500">*</span></label>
-                                                <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                                                <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500" />
                                             </div>
                                         </div>
                                         <div>
                                             <label className="label-amharic">ቀን <span className="text-red-500">*</span></label>
-                                            <input type="date" name="submissionDate" value={formData.submissionDate} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                                            <input type="date" name="submissionDate" value={formData.submissionDate} onChange={handleInputChange} required className="w-full rounded-xl border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500" />
                                         </div>
                                     </div>
                                 </div>
@@ -1052,14 +1083,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 </form>
 
                 {/* Footer Actions */}
-                <div className="p-8 border-t border-gray-50 bg-gray-50/30 flex items-center justify-between">
+                <div className="p-8 border-t border-gray-50 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-900/30 flex items-center justify-between">
                     <button
                         type="button"
                         onClick={handleBack}
                         disabled={activeTab === 0}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 0
-                            ? 'text-gray-300 cursor-not-allowed'
-                            : 'text-gray-600 hover:bg-white shadow-sm'
+                            ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                            : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-700 shadow-sm'
                             }`}
                     >
                         <ChevronLeft size={20} /> ተመለስ
@@ -1133,6 +1164,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
           font-weight: 600;
           color: #374151;
           margin-bottom: 0.5rem;
+        }
+        @media (prefers-color-scheme: dark) {
+          .label-amharic {
+            color: #ffffff;
+          }
         }
         .no-scrollbar::-webkit-scrollbar {
           display: none;
