@@ -12,15 +12,12 @@ import {
     Menu,
     X,
     LayoutDashboard,
-    Search,
-    Bell,
-    MessageCircle,
-    Settings,
-    ClipboardCheck,
-    Clock,
     BarChart3,
     Camera,
     ShieldCheck as CheckCircle,
+    Bell,
+    MessageCircle,
+    ClipboardCheck,
     GraduationCap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -228,6 +225,8 @@ const Layout = ({ children }) => {
                     </div>
 
                     <div className="flex items-center gap-4 relative">
+                        {/* Theme Toggle */}
+
                         {/* Notifications - Hidden for students */}
                         {!isStudent && (
                             <>
