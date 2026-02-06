@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Users,
     GraduationCap,
-    Calendar,
+
     TrendingUp,
     Award,
     Church
@@ -54,17 +54,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* You can add specific student widgets here later if needed */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center gap-6">
-                        <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-full text-blue-600 dark:text-blue-400">
-                            <Calendar size={32} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-gray-900 dark:text-white text-lg">ቀጣይ ጉባኤ</h3>
-                            <p className="text-gray-500 dark:text-gray-400">ፕሮግራም ይመልከቱ -&gt; </p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         );
     }
