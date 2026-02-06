@@ -353,7 +353,7 @@ export const AuthProvider = ({ children }) => {
 
                 const message = activityMessages[type];
                 if (message) {
-                    
+
                     fetchNotifications();
                 }
             }

@@ -62,6 +62,8 @@ const Layout = ({ children }) => {
                 { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
                 { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
                 { title: 'ሪፖርቶች', icon: <FileText size={20} />, path: '/reports' },
+                // Add Gallery for 'እቅድ' admins
+                ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : [])
             ];
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);

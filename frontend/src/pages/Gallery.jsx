@@ -40,7 +40,7 @@ const Gallery = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const isManager = user?.role === 'manager';
+    const isManager = user?.role === 'manager' || (user?.role === 'admin' && user?.section === 'እቅድ');
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
