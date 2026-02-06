@@ -1,0 +1,79 @@
+export const normalizeStudent = (s) => {
+    if (!s) return null;
+    const parse = (val) => {
+        if (typeof val === 'string') {
+            try { return JSON.parse(val); } catch (e) { return val; }
+        }
+        if (typeof val === 'object' && val !== null) return val;
+        return {};
+    };
+
+    let schoolInfo = parse(s.school_info || s.schoolInfo);
+    let otherLanguages = parse(s.other_languages || s.otherLanguages);
+    let teacherTraining = parse(s.teacher_training || s.teacherTraining);
+    let leadershipTraining = parse(s.leadership_training || s.leadershipTraining);
+    let participation = parse(s.participation || schoolInfo.participation);
+    let attendance = parse(s.attendance || schoolInfo.attendance);
+    let educationYearly = parse(s.educationYearly || schoolInfo.educationYearly);
+    let gpa = s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
+    let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
+    let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
+
+    let birthYear = s.birthYear || s.birth_year;
+    if (!birthYear && s.birth_date) {
+        const date = new Date(s.birth_date);
+        if (!isNaN(date.getTime())) {
+            birthYear = date.getFullYear();
+        } else {
+            birthYear = s.birth_date;
+        }
+    }
+
+    return {
+        ...s,
+        id: s.id || s.student_id || s.studentId,
+        name: s.full_name || s.fullName || s.name,
+        sex: s.gender || s.sex,
+        age: s.age,
+        birthYear: birthYear,
+        baptismalName: s.baptismal_name || s.baptismalName,
+        priesthoodRank: s.priesthood_rank || s.priesthoodRank,
+        motherTongue: s.mother_tongue || s.motherTongue,
+        otherLanguages: otherLanguages,
+        region: s.region,
+        zone: s.zone,
+        woreda: s.woreda,
+        kebele: s.kebele,
+        phone: s.phone,
+        centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoredaCenter,
+        gibiName: s.gibi_name || s.gibiName,
+        emergencyName: s.emergency_name || s.emergencyName,
+        emergencyPhone: s.emergency_phone || s.emergencyPhone,
+        parishChurch: s.parish_church || s.parishChurch,
+        section: s.service_section || s.section,
+        specialEducation: s.special_education || s.specialEducation || schoolInfo.specialEducation,
+        specialPlace: s.special_place || s.specialPlace || schoolInfo.specialPlace,
+        dept: s.department || s.dept,
+        year: s.batch || s.year,
+        graduationYear: s.graduation_year || s.graduationYear || schoolInfo.graduation_year || schoolInfo.graduationYear,
+        cumulativeGPA: s.cumulative_gpa || s.cumulativeGPA || schoolInfo.cumulativeGPA,
+        membershipYear: s.membership_year || s.membershipYear || schoolInfo.membershipYear,
+        photoUrl: s.photo_url || s.photoUrl,
+        traineeType: s.trainee_type || s.traineeType,
+        gpa: gpa,
+        participation: participation,
+        responsibility: s.responsibility || participation,
+        teacherTraining: teacherTraining,
+        leadershipTraining: leadershipTraining,
+        otherTrainings: s.other_trainings || s.otherTrainings,
+        additionalInfo: s.additional_info || s.additionalInfo,
+        filledBy: s.filled_by || s.filledBy,
+        verifiedBy: s.verified_by || s.verifiedBy,
+        submissionDate: s.created_at || s.submissionDate,
+        attendance: attendance,
+        educationYearly: educationYearly,
+        abinetEducation: abinetEducation,
+        specialNeed: specialNeed,
+        username: s.username
+    };
+};
