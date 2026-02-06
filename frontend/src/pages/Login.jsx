@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/auth';
-import { LogIn, User, Lock, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { LogIn, User, Lock, AlertCircle, ArrowLeft, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+import SEO from '../components/SEO';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -14,6 +16,21 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const { login } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+    React.useEffect(() => {
+        if (location.state?.registrationSuccess) {
+            setShowSuccessToast(true);
+            if (location.state?.username) {
+                setUsername(location.state.username);
+            }
+
+            const timer = setTimeout(() => setShowSuccessToast(false), 10000); // Hide after 10s
+            return () => clearTimeout(timer);
+        }
+    }, [location]);
 
     const validateUsername = (value) => {
         if (!value.trim()) {
@@ -73,6 +90,7 @@ const Login = () => {
 
     return (
         <div className="min-h-screen w-full flex bg-white dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
+            <SEO title="መግቢያ" description="ወደ ደብረ ብርሀን ዩኒቨርስቲ ጊቢ ጉባኤ ሲስተም ይግቡ።" />
             <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 dark:bg-gray-800 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548625361-987dc79d6e50?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
@@ -250,9 +268,40 @@ const Login = () => {
                     </form>
 
                     <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-                        © 2018 ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ
+                        © {new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ
                     </p>
                 </motion.div>
+                {/* Success Toast for Registration */}
+                <AnimatePresence>
+                    {showSuccessToast && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 50 }}
+                            className="fixed top-5 right-5 z-50 w-full max-w-md bg-green-600 shadow-2xl rounded-2xl p-6 border-l-4 border-yellow-400 text-white"
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="bg-white/20 p-2 rounded-full shrink-0">
+                                    <CheckCircle2 size={24} className="text-white" />
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                    <h3 className="text-lg font-bold">
+                                        በተሳካ ተመዝግበዋል!
+                                    </h3>
+                                    <div className="text-white/90 text-sm space-y-2">
+                                        <p>
+                                            <span className="font-bold text-yellow-300">ማሳሰቢያ:</span> እባክዎ በ<strong>24 ሰዓት</strong> ውስጥ መለያዎ ውስጥ ገብተው መረጃዎን ያሟሉ። አለበለዚያ አካውንቶ ይሰረዛል።
+                                        </p>
+                                        <p className="text-xs opacity-80 pt-2 border-t border-white/20">
+                                            Please login and complete your profile within <strong>1 day</strong>.
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

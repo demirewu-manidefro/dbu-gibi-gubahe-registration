@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/auth';
-import { UserPlus, User, Lock, AlertCircle, ArrowLeft, Eye, EyeOff, UserCircle, Briefcase } from 'lucide-react';
+import { UserPlus, Lock, AlertCircle, ArrowLeft, Eye, EyeOff, UserCircle, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -103,7 +104,12 @@ const Register = () => {
             console.log("Submitting registration...");
             await signup(formData.username, formData.password);
             console.log("Registration successful");
-            navigate('/login');
+            navigate('/login', {
+                state: {
+                    registrationSuccess: true,
+                    username: formData.username
+                }
+            });
         } catch (err) {
             console.error("Registration error:", err);
             setError(err.message || "An unexpected error occurred");
@@ -114,6 +120,7 @@ const Register = () => {
 
     return (
         <div className="min-h-screen w-full flex bg-white dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
+            <SEO title="ምዝገባ" description="ለደብረ ብርሀን ዩኒቨርስቲ ጊቢ ጉባኤ አባልነት ይመዝገቡ።" />
             {/* Left Side - Image & Branding */}
             <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 dark:bg-gray-800 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
@@ -295,6 +302,9 @@ const Register = () => {
                             </Link>
                         </div>
                     </form>
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
+                        © {new Date().getFullYear() - 8 + ((new Date().getMonth() > 8 || (new Date().getMonth() === 8 && new Date().getDate() >= 11)) ? 1 : 0)} ዓ.ም. ደብረ ብርሀን ጊቢ ጉባኤ
+                    </p>
                 </motion.div>
             </div>
         </div>
