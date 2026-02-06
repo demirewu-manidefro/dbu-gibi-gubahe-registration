@@ -654,7 +654,7 @@ const StudentList = ({ mode = 'Student' }) => {
             {/* View Modal - Quick View */}
             {isViewing && selectedStudent && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-700">
                             <div>
                                 <div className="text-lg font-bold text-gray-900 dark:text-white">የተማሪ መረጃ</div>
@@ -680,6 +680,11 @@ const StudentList = ({ mode = 'Student' }) => {
                                 <div className="space-y-1">
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedStudent.name}</h2>
                                     <div className="text-base text-gray-500 dark:text-gray-400 font-medium">{selectedStudent.id}</div>
+                                    {selectedStudent.username && ['admin', 'manager'].includes(user?.role) && (
+                                        <div className="text-sm text-blue-600 dark:text-blue-400 font-mono bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded w-fit my-1">
+                                            @{selectedStudent.username}
+                                        </div>
+                                    )}
                                     <div className="flex gap-2 mt-2">
                                         <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold uppercase tracking-wider">
                                             {selectedStudent.sex}
@@ -691,7 +696,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {/* Personal Information */}
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
@@ -803,7 +808,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                 </div>
 
                                 {/* Education */}
-                                <div className="space-y-4 col-span-1 md:col-span-2">
+                                <div className="space-y-4 col-span-1 md:col-span-2 lg:col-span-3">
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
                                         <span className="text-blue-600">🎓</span> ትምህርት
                                     </h3>
@@ -832,7 +837,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                 </div>
 
                                 {/* Yearly Matrix */}
-                                <div className="space-y-4 col-span-1 md:col-span-2">
+                                <div className="space-y-4 col-span-1 md:col-span-2 lg:col-span-3">
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
                                         <span className="text-indigo-500">📊</span> ዓመታዊ መዛግብት
                                     </h3>
@@ -863,50 +868,68 @@ const StudentList = ({ mode = 'Student' }) => {
                                 </div>
 
                                 {/* Trainings */}
-                                <div className="space-y-4 col-span-1 md:col-span-2">
+                                <div className="space-y-4 col-span-1 md:col-span-2 lg:col-span-3">
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
                                         <span className="text-rose-500">🎖</span> ስልጠናዎች እና ሌሎች
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                         <div className="bg-gray-50 dark:bg-slate-700/50 p-4 rounded-xl space-y-2">
-                                            <div className="text-xs text-gray-400 font-bold uppercase">የመምህር ስልጠና</div>
-                                            <div className="flex gap-2 flex-wrap">
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.teacherTraining?.level1 ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'}`}>L1</span>
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.teacherTraining?.level2 ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'}`}>L2</span>
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.teacherTraining?.level3 ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'}`}>L3</span>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">የመምህር ስልጠና</div>
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 1</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level1 || '-'}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 2</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level2 || '-'}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 3</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level3 || '-'}</span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="bg-gray-50 dark:bg-slate-700/50 p-4 rounded-xl space-y-2">
-                                            <div className="text-xs text-gray-400 font-bold uppercase">የአመራር ስልጠና</div>
-                                            <div className="flex gap-2 flex-wrap">
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.leadershipTraining?.level1 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500'}`}>L1</span>
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.leadershipTraining?.level2 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500'}`}>L2</span>
-                                                <span className={`px-2 py-1 rounded text-xs ${selectedStudent.leadershipTraining?.level3 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-slate-600 text-gray-400 dark:text-gray-500'}`}>L3</span>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">የአመራር ስልጠና</div>
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 1</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level1 || '-'}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 2</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level2 || '-'}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 3</span>
+                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level3 || '-'}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-sm mt-4">
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">Other Trainings</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Other Trainings</div>
                                             <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.otherTrainings || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">Abinet Education</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Abinet Education</div>
                                             <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.abinetEducation || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">Special Need</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Special Need</div>
                                             <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.specialNeed || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">Additional Info</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Additional Info</div>
                                             <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.additionalInfo || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Metadata */}
-                                <div className="col-span-1 md:col-span-2 border-t border-gray-100 pt-4 flex flex-wrap gap-8 text-xs text-gray-400">
+                                <div className="col-span-1 md:col-span-2 lg:col-span-3 border-t border-gray-100 pt-4 flex flex-wrap gap-8 text-xs text-gray-400">
                                     <div>
                                         <span className="font-bold uppercase mr-2">Filled By:</span>
                                         {selectedStudent.filledBy || '-'}
