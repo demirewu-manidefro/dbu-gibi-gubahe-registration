@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const { query } = require('./config/db');
 const initDb = require('./utils/initDb');
+require('./utils/cronJobs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
