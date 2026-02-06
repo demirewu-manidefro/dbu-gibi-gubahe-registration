@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /analytics
+Disallow: /students
+Disallow: /graduates
+Disallow: /admins
+Disallow: /reports
+Disallow: /approvals
+Disallow: /gallery
+
+Sitemap: https://dbu-gibi-gubae.org/sitemap.xml
