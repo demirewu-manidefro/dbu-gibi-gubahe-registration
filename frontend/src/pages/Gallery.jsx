@@ -5,7 +5,6 @@ import {
     Upload,
     Plus,
     X,
-    Calendar,
     Trash2,
     Search,
     Filter,
@@ -154,8 +153,8 @@ const Gallery = () => {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black text-blue-900 tracking-tight mb-1">የምስል ማህደር</h1>
-                    <p className="text-blue-600/60 font-medium text-sm">ታሪካዊ የሆኑ የጉባኤው ትውስታዎች</p>
+                    <h1 className="text-4xl font-black text-blue-900 dark:text-white tracking-tight mb-1">የምስል ማህደር</h1>
+                    <p className="text-blue-600/60 dark:text-blue-400 font-medium text-sm">ታሪካዊ የሆኑ የጉባኤው ትውስታዎች</p>
                 </div>
                 {isManager && (
                     <motion.button
@@ -171,27 +170,27 @@ const Gallery = () => {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white p-4 rounded-[2rem] shadow-sm border border-blue-50 flex flex-wrap items-center gap-4">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-[2rem] shadow-sm border border-blue-50 dark:border-slate-700 flex flex-wrap items-center gap-4">
                 <div className="relative flex-1 min-w-[280px]">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-200" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-200 dark:text-slate-500" size={20} />
                     <input
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="ትውስታዎችን ይፈልጉ..."
-                        className="pl-12 h-14 bg-blue-50/20 border-transparent focus:border-blue-100 rounded-2xl w-full text-blue-900 font-medium transition-all"
+                        className="pl-12 h-14 bg-blue-50/20 dark:bg-slate-900/50 border-transparent focus:border-blue-100 dark:focus:border-slate-600 rounded-2xl w-full text-blue-900 dark:text-white font-medium transition-all"
                     />
                 </div>
-                <div className="flex items-center gap-3 bg-blue-50/20 rounded-2xl px-5 h-14">
-                    <Filter size={18} className="text-blue-400" />
-                    <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">ዓመት</span>
+                <div className="flex items-center gap-3 bg-blue-50/20 dark:bg-slate-900/50 rounded-2xl px-5 h-14">
+                    <Filter size={18} className="text-blue-400 dark:text-slate-400" />
+                    <span className="text-[10px] font-black text-blue-300 dark:text-slate-400 uppercase tracking-widest">ዓመት</span>
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(e.target.value)}
-                        className="bg-transparent border-none text-sm font-bold text-blue-900 focus:ring-0 p-0 pr-8 cursor-pointer"
+                        className="bg-transparent border-none text-sm font-bold text-blue-900 dark:text-white focus:ring-0 p-0 pr-8 cursor-pointer"
                     >
                         {availableYears.map(year => (
-                            <option key={year} value={year}>{year === 'All' ? 'ሁሉም ማህደር' : `${year} ዓ.ም`}</option>
+                            <option key={year} value={year} className="dark:bg-slate-800">{year === 'All' ? 'ሁሉም ማህደር' : `${year} ዓ.ም`}</option>
                         ))}
                     </select>
                 </div>
@@ -199,9 +198,9 @@ const Gallery = () => {
 
             {/* Gallery Content */}
             {sortedYears.length === 0 ? (
-                <div className="bg-white rounded-[3rem] p-24 text-center border-2 border-dashed border-blue-50">
-                    <History size={48} className="mx-auto text-blue-100 mb-6" />
-                    <h3 className="text-xl font-bold text-blue-900/30">ምንም ምስሎች አልተገኙም</h3>
+                <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-24 text-center border-2 border-dashed border-blue-50 dark:border-slate-700">
+                    <History size={48} className="mx-auto text-blue-100 dark:text-slate-700 mb-6" />
+                    <h3 className="text-xl font-bold text-blue-900/30 dark:text-slate-600">ምንም ምስሎች አልተገኙም</h3>
                 </div>
             ) : (
                 <div className="space-y-16">
@@ -223,7 +222,7 @@ const Gallery = () => {
                                         whileHover={{ y: -12, scale: 1.02 }}
                                         onClick={() => setSelectedImage(item)}
                                         transition={{ delay: idx * 0.05, type: 'spring', stiffness: 200 }}
-                                        className="group relative flex flex-col bg-white rounded-3xl overflow-hidden shadow-[0_10px_30px_-15px_rgba(30,58,138,0.2)] hover:shadow-[0_20px_50px_-10px_rgba(30,58,138,0.3)] transition-all cursor-zoom-in"
+                                        className="group relative flex flex-col bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-[0_10px_30px_-15px_rgba(30,58,138,0.2)] dark:shadow-none hover:shadow-[0_20px_50px_-10px_rgba(30,58,138,0.3)] dark:hover:shadow-none transition-all cursor-zoom-in"
                                     >
                                         <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16/9' }}>
                                             <img
@@ -298,7 +297,7 @@ const Gallery = () => {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full relative overflow-hidden"
+                            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 max-w-lg w-full relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 p-4">
                                 <button
@@ -313,25 +312,25 @@ const Gallery = () => {
                             </div>
 
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                                     <Upload size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-900">ምስል ይሙሉ</h2>
-                                    <p className="text-sm text-gray-500">ፎቶ ወደ ማህደር ጨምር (ያለፈውን እና አሁን)</p>
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">ምስል ይሙሉ</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">ፎቶ ወደ ማህደር ጨምር </p>
                                 </div>
                             </div>
 
                             <form onSubmit={handleUpload} className="space-y-6">
                                 {/* Image Upload Area */}
                                 <div className="flex flex-col items-center">
-                                    <div className="w-full aspect-video rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-blue-400 transition-all">
+                                    <div className="w-full aspect-video rounded-2xl bg-gray-50 dark:bg-slate-900/50 border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-all">
                                         {imagePreview ? (
                                             <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
                                         ) : (
                                             <div className="text-center">
-                                                <ImageIcon size={48} className="mx-auto text-gray-300 mb-2" />
-                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">ምስል ይምረጡ</p>
+                                                <ImageIcon size={48} className="mx-auto text-gray-300 dark:text-slate-600 mb-2" />
+                                                <p className="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">ምስል ይምረጡ</p>
                                             </div>
                                         )}
                                         <input
@@ -346,36 +345,36 @@ const Gallery = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-2">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">የምስሉ ርዕስ</label>
+                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">የምስሉ ርዕስ</label>
                                         <input
                                             type="text"
                                             required
                                             value={newImageData.title}
                                             onChange={(e) => setNewImageData({ ...newImageData, title: e.target.value })}
-                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 h-12"
+                                            className="w-full bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-400 focus:border-blue-400 h-12"
                                             placeholder="ምሳሌ፡ የፋሲካ በአል አከባበር"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">ዓመት (ዓ.ም)</label>
+                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዓመት (ዓ.ም)</label>
                                         <input
                                             type="number"
                                             required
                                             max={CURRENT_ETHIOPIAN_YEAR}
                                             value={newImageData.year}
                                             onChange={(e) => setNewImageData({ ...newImageData, year: e.target.value })}
-                                            className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 h-12"
-                                            placeholder="2017"
+                                            className="w-full bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-400 focus:border-blue-400 h-12"
+                                            placeholder={CURRENT_ETHIOPIAN_YEAR.toString()}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">ዝርዝር መግለጫ</label>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዝርዝር መግለጫ</label>
                                     <textarea
                                         value={newImageData.description}
                                         onChange={(e) => setNewImageData({ ...newImageData, description: e.target.value })}
-                                        className="w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-blue-400 focus:border-blue-400 p-3 h-24 resize-none"
+                                        className="w-full bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-400 focus:border-blue-400 p-3 h-24 resize-none"
                                         placeholder="ስለዚህ ምስል ተጨማሪ ዝርዝሮችን ያክሉ..."
                                     />
                                 </div>
