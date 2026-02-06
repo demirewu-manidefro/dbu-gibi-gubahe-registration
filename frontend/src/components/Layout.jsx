@@ -61,7 +61,7 @@ const Layout = ({ children }) => {
                 { title: 'ክትትል', icon: <ClipboardCheck size={20} />, path: '/attendance' },
                 { title: 'የተማሪዎች ዝርዝር', icon: <Users size={20} />, path: '/students' },
                 { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
-                { title: 'ሪፖርቶች', icon: <FileText size={20} />, path: '/reports' },
+                { title: 'የግል መረጃ ማስተካከያ', icon: <UserPlus size={20} />, path: '/profile' },
                 // Add Gallery for 'እቅድ' admins
                 ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : [])
             ];

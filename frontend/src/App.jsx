@@ -19,7 +19,7 @@ import NotFound from './pages/NotFound';
 import ChangePassword from './pages/ChangePassword';
 import PendingApprovals from './pages/PendingApprovals';
 import GraduationList from './pages/GraduationList';
-import Reports from './pages/Reports';
+import EditProfile from './pages/EditProfile';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -59,7 +59,7 @@ const AppContent = () => {
         <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
         <Route path="/graduates" element={<PrivateRoute><GraduationList /></PrivateRoute>} />
         <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
-        <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
         <Route path="/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
