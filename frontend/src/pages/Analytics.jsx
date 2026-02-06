@@ -15,14 +15,13 @@ import {
     Pie,
     Cell
 } from 'recharts';
-import { TrendingUp, PieChart as PieChartIcon, Activity, Filter, Info, Clock } from 'lucide-react';
+import { TrendingUp, Activity, Clock, Filter } from 'lucide-react';
 import EthiopianDatePicker from '../components/EthiopianDatePicker';
 
 const Analytics = () => {
     const { attendanceHistory, user } = useAuth();
     const isManager = user?.role === 'manager';
 
-    // Default range: Start of month to now
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -108,17 +107,17 @@ const Analytics = () => {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Analytics & Reports</h1>
+                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Analytics & Reports</h1>
                     <div className="flex items-center gap-2">
                         <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1" minYear={2018} maxYear={2030} />
-                        <span className="text-gray-400 font-bold">እስከ</span>
+                        <span className="text-gray-400 dark:text-gray-500 font-bold">እስከ</span>
                         <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
-                <div className="bg-white p-20 rounded-3xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
-                    <Activity className="text-gray-200 mb-4" size={64} />
-                    <h3 className="text-xl font-bold text-gray-900">ምንም መረጃ የለም</h3>
-                    <p className="text-gray-500">በተመረጠው ጊዜ ውስጥ የተመዘገበ የክትትል መረጃ የለም።</p>
+                <div className="bg-white dark:bg-slate-800 p-20 rounded-3xl border border-dashed border-gray-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+                    <Activity className="text-gray-200 dark:text-slate-700 mb-4" size={64} />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">ምንም መረጃ የለም</h3>
+                    <p className="text-gray-500 dark:text-gray-400">በተመረጠው ጊዜ ውስጥ የተመዘገበ የክትትል መረጃ የለም።</p>
                 </div>
             </div>
         );
@@ -128,8 +127,8 @@ const Analytics = () => {
         <div className="space-y-8 animate-in fade-in duration-500 pb-20">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">ትንታኔ ዳሽቦርድ</h1>
-                    <p className="text-gray-500 font-medium">በሁሉም ክፍሎች ላይ አፈጻጸምን መከታተል</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">ትንታኔ ዳሽቦርድ</h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">በሁሉም ክፍሎች ላይ አፈጻጸምን መከታተል</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                     {isManager && (
@@ -137,17 +136,17 @@ const Analytics = () => {
                             <select
                                 value={selectedSection}
                                 onChange={(e) => setSelectedSection(e.target.value)}
-                                className="pl-10 pr-8 py-2 border border-blue-100 rounded-xl bg-white text-gray-700 font-semibold shadow-sm focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                                className="pl-10 pr-8 py-2 border border-blue-100 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-700 text-gray-700 dark:text-white font-semibold shadow-sm focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
                             >
-                                <option value="All">ጠቅላላ እይታ</option>
-                                {sections.map(s => <option key={s} value={s}>{s}</option>)}
+                                <option value="All" className="dark:bg-slate-800">ጠቅላላ እይታ</option>
+                                {sections.map(s => <option key={s} value={s} className="dark:bg-slate-800">{s}</option>)}
                             </select>
-                            <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400" />
+                            <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400 dark:text-blue-300" />
                         </div>
                     )}
                     <div className="flex items-center gap-2">
                         <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
-                        <span className="text-gray-400 font-bold text-sm">እስከ</span>
+                        <span className="text-gray-400 dark:text-gray-500 font-bold text-sm">እስከ</span>
                         <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
@@ -155,67 +154,67 @@ const Analytics = () => {
 
             {/* Top Summaries */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-3xl shadow-premium border border-gray-100 flex items-center gap-4">
-                    <div className="bg-emerald-50 p-4 rounded-2xl text-emerald-600">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-premium dark:shadow-none border border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-2xl text-emerald-600 dark:text-emerald-400">
                         <TrendingUp size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">የክትትል መጠን</div>
-                        <div className="text-3xl font-black text-gray-900">{overallAverage}%</div>
+                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">የክትትል መጠን</div>
+                        <div className="text-3xl font-black text-gray-900 dark:text-white">{overallAverage}%</div>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-3xl shadow-premium border border-gray-100 flex items-center gap-4">
-                    <div className="bg-blue-50 p-4 rounded-2xl text-blue-600">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-premium dark:shadow-none border border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                    <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-2xl text-blue-600 dark:text-blue-400">
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">መሪ ክፍል</div>
-                        <div className="text-2xl font-black text-gray-900">
+                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">መሪ ክፍል</div>
+                        <div className="text-2xl font-black text-gray-900 dark:text-white">
                             {sectionAverages[0]?.average > 0 ? sectionAverages[0]?.section : '-'}
                         </div>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-3xl shadow-premium border border-gray-100 flex items-center gap-4">
-                    <div className="bg-purple-50 p-4 rounded-2xl text-purple-600">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-premium dark:shadow-none border border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                    <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-2xl text-purple-600 dark:text-purple-400">
                         <Clock size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">የተመዘገቡ ጉባኤዎች</div>
-                        <div className="text-2xl font-black text-gray-900">{totalSessions} <span className="text-sm text-gray-400">ጉባኤዎች</span></div>
+                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">የተመዘገቡ ጉባኤዎች</div>
+                        <div className="text-2xl font-black text-gray-900 dark:text-white">{totalSessions} <span className="text-sm text-gray-400 dark:text-gray-500">ጉባኤዎች</span></div>
                     </div>
                 </div>
             </div>
 
             {/* Performance Ranking and Trend */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white p-8 rounded-[40px] shadow-premium border border-gray-50">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-premium dark:shadow-none border border-gray-50 dark:border-slate-700">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                         <Activity size={20} className="text-blue-500" /> የክፍል ንጽጽር (Presence Rate)
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={sectionAverages} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.3} />
                                 <XAxis dataKey="section" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} unit="%" />
-                                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.1)' }} contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'rgba(30, 41, 59, 0.95)', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                                 <Bar dataKey="average" fill="#3b82f6" radius={[10, 10, 0, 0]} barSize={40} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="bg-white p-8 rounded-[40px] shadow-premium border border-gray-50">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-premium dark:shadow-none border border-gray-50 dark:border-slate-700">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                         <TrendingUp size={20} className="text-emerald-500" /> የክትትል አዝማሚያ (በጊዜ ሂደት)
                     </h3>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={trendData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.3} />
                                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} unit="%" domain={[0, 100]} />
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'rgba(30, 41, 59, 0.95)', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                                 <Line type="monotone" dataKey="average" stroke="#10b981" strokeWidth={4} dot={{ r: 6, fill: '#10b981', strokeWidth: 3, stroke: '#fff' }} activeDot={{ r: 8 }} />
                             </LineChart>
                         </ResponsiveContainer>
@@ -224,10 +223,10 @@ const Analytics = () => {
             </div>
 
             {/* New Distribution Pie Chart */}
-            <div className="bg-white p-10 rounded-[50px] shadow-mega border border-gray-50">
+            <div className="bg-white dark:bg-slate-800 p-10 rounded-[50px] shadow-mega dark:shadow-none border border-gray-50 dark:border-slate-700">
                 <div className="text-center mb-10">
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">የክትትል ስርጭት</h2>
-                    <p className="text-gray-500 font-medium">የሁሉም ክፍሎች ጠቅላላ ክትትል ክፍፍል</p>
+                    <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">የክትትል ስርጭት</h2>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">የሁሉም ክፍሎች ጠቅላላ ክትትል ክፍፍል</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-10">
@@ -250,7 +249,8 @@ const Analytics = () => {
                                     </Pie>
                                     <Tooltip
                                         formatter={(value, name, props) => [`${value} ተገኝቷል`, props.payload.name]}
-                                        contentStyle={{ borderRadius: '20px' }}
+                                        contentStyle={{ borderRadius: '20px', border: 'none', backgroundColor: 'rgba(30, 41, 59, 0.95)', color: '#fff' }}
+                                        itemStyle={{ color: '#fff' }}
                                     />
                                     <Legend iconType="circle" />
                                 </PieChart>
@@ -262,21 +262,21 @@ const Analytics = () => {
                         )}
                     </div>
 
-                    <div className="bg-gray-50/50 p-8 rounded-[40px] border border-gray-100 space-y-4">
-                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">የክፍል ንጽጽር</div>
+                    <div className="bg-gray-50/50 dark:bg-slate-900/50 p-8 rounded-[40px] border border-gray-100 dark:border-slate-700 space-y-4">
+                        <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">የክፍል ንጽጽር</div>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar">
                             {pieChartData.map((item, idx) => (
                                 <div key={idx} className="flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                                        <span className="text-sm font-bold text-gray-700">{item.name}</span>
+                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{item.name}</span>
                                     </div>
-                                    <span className="text-sm font-black text-blue-600">{item.share}%</span>
+                                    <span className="text-sm font-black text-blue-600 dark:text-blue-400">{item.share}%</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="pt-6 border-t border-gray-200">
-                            <p className="text-sm text-gray-600 leading-relaxed italic">
+                        <div className="pt-6 border-t border-gray-200 dark:border-slate-700">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
                                 ይህ ቻርት በዚህ ጊዜ ውስጥ ለጠቅላላ ክትትል መጠን የትኞቹ ክፍሎች የበለጠ አስተዋጽኦ እንዳበርከቱ ያሳያል።
                             </p>
                         </div>
