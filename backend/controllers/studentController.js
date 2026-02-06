@@ -1,6 +1,5 @@
 const { query } = require('../config/db');
 const bcrypt = require('bcryptjs');
-const { createNotification } = require('./notificationController');
 
 exports.getStudents = async (req, res) => {
     try {
@@ -48,26 +47,26 @@ exports.registerStudent = async (req, res) => {
             const myRow = userMatch[0];
 
             if (myRow) {
-                // Scenario: User has a profile (possibly a placeholder with id=username)
+
                 if (targetRow && targetRow.id !== myRow.id) {
-                    // User wants to use an ID that already exists in another row
+
                     if (targetRow.user_id && targetRow.user_id !== req.user.id) {
                         return res.status(400).json({
-                            message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ ተጠቃሚ ተመዝግቧል። እባክዎ ትክክለኛ መለያ ቁጥርዎን ያስገቡ ወይም አስተዳዳሪውን ያነጋግሩ።`
+                            message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ አባል ተመዝግቧል። እባክዎ ትክክለኛ መለያ ቁጥርዎን ያስገቡ ወይም አስተዳዳሪውን ያነጋግሩ።`
                         });
                     }
-                    // Target row is unassigned (e.g. from bulk import) - we delete placeholder and take over this row
+
                     shouldDeleteOldId = myRow.id;
                     existingProfile = [targetRow];
                 } else {
-                    // No conflict with another row, update existing row (might be changing ID)
+
                     existingProfile = [myRow];
                 }
             } else if (targetRow) {
-                // User has no row attached to user_id, but the ID they entered exists
+
                 if (targetRow.user_id && targetRow.user_id !== req.user.id) {
                     return res.status(400).json({
-                        message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ ተጠቃሚ ተመዝግቧል።`
+                        message: `ሰህተት: የተማሪ መለያ '${studentId}' ቀድሞውኑ በሌላ አባል ተመዝግቧል። እባክዎ ትክክለኛ መለያ ቁጥርዎን ያስገቡ ወይም አስተዳዳሪውን ያነጋግሩ።`
                     });
                 }
                 existingProfile = [targetRow];
@@ -85,15 +84,22 @@ exports.registerStudent = async (req, res) => {
 
         let targetOwnerId = null;
 
-        const { rows: existingUserRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [studentId.trim()]);
+
+        const targetUsername = (studentData.username || studentId).trim();
+        const targetPassword = studentData.password || 'password123';
+
+        const { rows: existingUserRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [targetUsername]);
 
         if (existingUserRows.length > 0) {
             targetOwnerId = existingUserRows[0].id;
+            if (studentData.username && studentData.password) {
+
+            }
         } else {
-            const defaultPassword = await bcrypt.hash('password123', 10);
+            const hashedPassword = await bcrypt.hash(targetPassword, 10);
             const { rows: newUser } = await query(
                 'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-                [studentId.trim(), defaultPassword, fullName, 'student', 'active']
+                [targetUsername, hashedPassword, fullName, 'student', 'active']
             );
             targetOwnerId = newUser[0].id;
         }
@@ -192,8 +198,6 @@ exports.registerStudent = async (req, res) => {
             const { rows } = await query(sql, values);
 
             // Notification logic removed as per user request
-
-            // Sync photo to users table (Using targetOwnerId)
             if (studentData.photo_url || studentData.photoUrl) {
                 await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, targetOwnerId]);
             }
@@ -205,7 +209,6 @@ exports.registerStudent = async (req, res) => {
             const setClause = columns.map((col, i) => `${col} = $${i + 1}`).join(', ');
             const sql = `UPDATE students SET ${setClause} WHERE id = $${columns.length + 1} RETURNING *`;
             const { rows } = await query(sql, [...values, anchorId]);
-            // Sync photo to users table (Using targetOwnerId)
             if (studentData.photo_url || studentData.photoUrl) {
                 await query('UPDATE users SET photo_url = $1 WHERE id = $2', [studentData.photo_url || studentData.photoUrl, targetOwnerId]);
             }
