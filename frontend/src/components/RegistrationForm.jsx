@@ -9,12 +9,15 @@ import {
     ChevronLeft,
     Save,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/auth';
 import { useNavigate } from 'react-router-dom';
 import { toEthiopian } from '../utils/ethiopianDateUtils';
+import collegesAndDepartments from '../utils/collegesData';
 
 const ethiopianRegions = {
     "Afar Region": ["Awsiresu", "Kilberesu", "Gabi Rasu", "Fanti Rasu", "Hari Rasu"],
@@ -35,7 +38,7 @@ const ethiopianRegions = {
 
 
 
-const RegistrationForm = ({ initialData = null, onComplete = null }) => {
+const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = null, title = null, headerAction = null }) => {
     const { registerStudent, user } = useAuth(); // Add user
     const navigate = useNavigate();
     const currentEthYear = toEthiopian(new Date()).year;
@@ -43,6 +46,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const [formData, setFormData] = useState(initialData || {
         // Tab 1: Basic Info
@@ -63,13 +67,16 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         // Tab 2: Address
         phone: '',
         region: '',
+        customRegion: '',
         zone: '',
+        customZone: '',
         woreda: '',
         kebele: '',
 
 
         // Updated Address Fields
         gibiName: '',
+        customGibiName: '',
         centerAndWoredaCenter: '',
         parishChurch: '',
 
@@ -77,7 +84,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         emergencyPhone: '',
 
         // Tab 3: Academic
+        college: '',
+        customCollege: '',
         department: '',
+        customDepartment: '',
         batch: '',
         gpa: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         cumulativeGPA: '',
@@ -121,6 +131,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                     sex: user.gender || user.sex || '',
                     phone: user.phone || '',
                     birthYear: user.birth_date ? (String(user.birth_date).includes('-') ? user.birth_date.split('-')[0] : String(user.birth_date)) : (user.birthYear || ''),
+                    college: user.college || '',
                     department: user.department || user.dept || '',
                     batch: user.batch || user.year || '',
                     serviceSection: user.service_section || user.section || '',
@@ -231,11 +242,13 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         } else {
             // Reset dependent fields when parent changes
             if (name === 'region') {
-                setFormData(prev => ({ ...prev, region: value, zone: '', woreda: '', kebele: '' }));
+                setFormData(prev => ({ ...prev, region: value, zone: '', customZone: '', woreda: '', kebele: '' }));
             } else if (name === 'zone') {
                 setFormData(prev => ({ ...prev, zone: value, woreda: '', kebele: '' }));
             } else if (name === 'woreda') {
                 setFormData(prev => ({ ...prev, woreda: value, kebele: '' }));
+            } else if (name === 'college') {
+                setFormData(prev => ({ ...prev, college: value, department: '', customDepartment: '' }));
             } else {
                 setFormData(prev => ({ ...prev, [name]: value }));
             }
@@ -258,7 +271,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
 
         // Tab 0 Validation
         if (!formData.studentId) return validationError("የተማሪ መታወቂያ ያስፈልጋል", 0);
-        if (!/^DBU\d{7}$/.test(formData.studentId)) return validationError("Invalid Student ID! DBU + 7 digits required", 0);
+        if (!/^DBU\d{7}$/.test(formData.studentId)) return validationError("የተማሪ መታወቂያ ትክክል አይደለም! DBU + 7 ቁጥሮች ያስፈልጋል", 0);
         if (!formData.fullName) return validationError("የተማሪው ሙሉ ስም ያስፈልጋል", 0);
         if (!formData.sex) return validationError("ፆታ መመረጥ አለበት", 0);
         if (!formData.birthYear) return validationError("የትውልድ ዘመን ያስፈልጋል", 0);
@@ -266,25 +279,31 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         if (!formData.priesthoodRank) return validationError("ሥልጣነ ክህነት መመረጥ አለበት", 0);
         if (!formData.motherTongue) return validationError("የአፍ መፍቻ ቋንቋ ያስፈልጋል", 0);
         if (['admin', 'manager'].includes(user?.role) && !isEditingMode) {
-            if (!formData.username) return validationError("Username is required", 0);
-            if (!formData.password) return validationError("Password is required", 0);
+            if (!formData.username) return validationError("የተጠቃሚ ስም ያስፈልጋል", 0);
+            if (!formData.password) return validationError("የይለፍ ቃል ያስፈልጋል", 0);
         }
 
         // Tab 1 Validation
         if (!formData.phone) return validationError("ስልክ ቁጥር ያስፈልጋል", 1);
         if (!/^[79]\d{8}$/.test(formData.phone)) return validationError("ስልክ ቁጥር ትክክል አይደለም", 1);
         if (!formData.region) return validationError("ክልል መመረጥ አለበት", 1);
+        if (formData.region === 'Other' && !formData.customRegion) return validationError("የክልል ስም ያስገቡ", 1);
         if (!formData.zone) return validationError("ዞን መመረጥ አለበት", 1);
+        if (formData.zone === 'Other' && !formData.customZone) return validationError("የዞን ስም ያስገቡ", 1);
         if (!formData.woreda) return validationError("ወረዳ ያስፈልጋል", 1);
         if (!formData.kebele) return validationError("ቀበሌ ያስፈልጋል", 1);
         if (!formData.gibiName) return validationError("የግቢ ጉባኤው ሥም መመረጥ አለበት", 1);
+        if (formData.gibiName === 'Other' && !formData.customGibiName) return validationError("የግቢ ጉባኤው ሥም ያስገቡ", 1);
         if (!formData.parishChurch) return validationError("አጥቢያ ቤ/ክ መመረጥ አለበት", 1);
         if (!formData.emergencyName) return validationError("የተጠሪ ስም ያስፈልጋል", 1);
         if (!formData.emergencyPhone) return validationError("የተጠሪ ስልክ ያስፈልጋል", 1);
         if (!/^[79]\d{8}$/.test(formData.emergencyPhone)) return validationError("የተጠሪ ስልክ ቁጥር ትክክል አይደለም", 1);
 
         // Tab 2 Validation
+        if (!formData.college) return validationError("ኮሌጅ መመረጥ አለበት", 2);
+        if (formData.college === 'Other' && !formData.customCollege) return validationError("የኮሌጅ ስም ያስገቡ", 2);
         if (!formData.department) return validationError("የትምህርት ክፍል መመረጥ አለበት", 2);
+        if (formData.department === 'Other' && !formData.customDepartment) return validationError("የትምህርት ክፍል ስም ያስገቡ", 2);
         if (!formData.batch) return validationError("ባች/ዓመት መመረጥ አለበት", 2);
 
         // Tab 3 Validation
@@ -321,6 +340,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                 gender: formData.sex,
                 birth_date: formData.birthYear,
                 student_id: formData.studentId,
+                region: formData.region === 'Other' ? formData.customRegion : formData.region,
+                zone: formData.zone === 'Other' ? formData.customZone : formData.zone,
+                gibi_name: formData.gibiName === 'Other' ? formData.customGibiName : formData.gibiName,
+                college: formData.college === 'Other' ? formData.customCollege : formData.college,
+                department: formData.department === 'Other' ? formData.customDepartment : formData.department,
                 photoUrl: finalPhotoUrl
             };
 
@@ -328,7 +352,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
             delete finalData.traineeType;
 
             console.log('Submitting registration data:', finalData);
-            await registerStudent(finalData);
+
+            if (onSubmit) {
+                await onSubmit(finalData);
+            } else {
+                await registerStudent(finalData);
+            }
 
             setIsSubmitting(false);
             setShowSuccess(true);
@@ -353,9 +382,12 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
         <div className="max-w-5xl mx-auto pb-20">
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        {isEditingMode ? 'የተማሪ መረጃ ማስተካከያ' : (user?.role === 'student' ? 'የግል መረጃ ማስተካከያ' : 'የተማሪዎች ምዝገባ')}
-                    </h1>
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight dark:text-white">
+                            {title || (isEditingMode ? 'የተማሪ መረጃ ማስተካከያ' : (user?.role === 'student' ? 'የግል መረጃ ማስተካከያ' : 'የተማሪዎች ምዝገባ'))}
+                        </h1>
+                        {headerAction}
+                    </div>
                     <p className="text-gray-500 font-medium">
                         {isEditingMode ? 'መረጃውን በትክክል ያሻሽሉ' : (user?.role === 'student' ? 'እባክዎ መረጃዎን በትክክል ይሙሉ' : 'የተማሪ ምዝገባ ማውጫ')}
                     </p>
@@ -450,25 +482,36 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                             {['admin', 'manager'].includes(user?.role) && (
                                                 <>
                                                     <div>
-                                                        <label className="label-amharic">Username</label>
+                                                        <label className="label-amharic">Username <span className="text-red-500">*</span></label>
                                                         <input
                                                             name="username"
                                                             value={formData.username}
                                                             onChange={handleInputChange}
-                                                            placeholder="Username"
+                                                            placeholder="የተጠቃሚ ስም"
+                                                            required
                                                             className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="label-amharic">Password</label>
-                                                        <input
-                                                            name="password"
-                                                            type="password"
-                                                            value={formData.password}
-                                                            onChange={handleInputChange}
-                                                            placeholder="Password"
-                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
-                                                        />
+                                                        <label className="label-amharic">Password <span className="text-red-500">*</span></label>
+                                                        <div className="relative">
+                                                            <input
+                                                                name="password"
+                                                                type={showPassword ? "text" : "password"}
+                                                                value={formData.password}
+                                                                onChange={handleInputChange}
+                                                                placeholder="የይለፍ ቃል"
+                                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                                                required
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowPassword(!showPassword)}
+                                                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                            >
+                                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </>
                                             )}
@@ -633,10 +676,9 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                             const val = e.target.value.replace(/\D/g, '');
                                                             if (val.length <= 9) handleInputChange({ target: { name: 'phone', value: val } });
                                                         }}
-                                                        placeholder="911234567"
+                                                        placeholder="የሳፋሪኮም ወይም የቴሌ ስልክ ቁጥሮን ያስገቡ"
                                                         maxLength={9}
                                                         pattern="9[0-9]{8}"
-                                                        title="Phone number must start with 9 and be 9 digits long"
                                                         className="w-full pl-28 pr-4 py-2 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                                                         required
                                                     />
@@ -650,7 +692,19 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         {Object.keys(ethiopianRegions).map(region => (
                                                             <option key={region} value={region}>{region}</option>
                                                         ))}
+                                                        <option value="Other">ሌላ</option>
                                                     </select>
+                                                    {formData.region === 'Other' && (
+                                                        <input
+                                                            type="text"
+                                                            name="customRegion"
+                                                            value={formData.customRegion}
+                                                            onChange={handleInputChange}
+                                                            placeholder="የክልል ስም ያስገቡ"
+                                                            required
+                                                            className="mt-2 w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        />
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">ዞን <span className="text-red-500">*</span></label>
@@ -663,11 +717,22 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                         className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
                                                         <option value="">{formData.region ? 'ዞን ይምረጡ...' : 'መጀመሪያ ክልል ይምረጡ'}</option>
-                                                        {formData.region && ethiopianRegions[formData.region]?.map(zone => (
+                                                        {formData.region && formData.region !== 'Other' && ethiopianRegions[formData.region]?.map(zone => (
                                                             <option key={zone} value={zone}>{zone}</option>
                                                         ))}
-                                                        <option value="Other">ሌላ (Other)</option>
+                                                        {formData.region && <option value="Other">ሌላ</option>}
                                                     </select>
+                                                    {formData.zone === 'Other' && (
+                                                        <input
+                                                            type="text"
+                                                            name="customZone"
+                                                            value={formData.customZone}
+                                                            onChange={handleInputChange}
+                                                            placeholder="የዞን ስም ያስገቡ"
+                                                            required
+                                                            className="mt-2 w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        />
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
@@ -734,7 +799,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                                     <option value="">ምረጥ...</option>
                                                     <option value="ቅዱስ ገብርኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
                                                     <option value="ቅዱስ መዳኔአለም ቤተ ክርስቲያን">ቅዱስ መዳኔአለም ቤተ ክርስቲያን</option>
-                                                    <option value="Other">ሌላ (Other)</option>
+                                                    <option value="Other">ሌላ</option>
                                                 </select>
                                                 {formData.parishChurch === 'Other' && (
                                                     <input
@@ -804,15 +869,59 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                 <div className="space-y-10">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="label-amharic">የትምህርት ክፍል <span className="text-red-500">*</span></label>
-                                            <select name="department" value={formData.department} onChange={handleInputChange} required>
-                                                <option value="">Select Department</option>
-                                                <option value="Mechanical">Mechanical Engineering</option>
-                                                <option value="Architecture">Architecture</option>
-                                                <option value="Economics">Economics</option>
-                                                <option value="Journalism">Journalism</option>
-                                                <option value="Medicine">Medicine</option>
+                                            <label className="label-amharic">ኮሌጅ <span className="text-red-500">*</span></label>
+                                            <select
+                                                name="college"
+                                                value={formData.college}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="">ኮሌጅ ይምረጡ</option>
+                                                {Object.keys(collegesAndDepartments).map(college => (
+                                                    <option key={college} value={college}>{college}</option>
+                                                ))}
+                                                <option value="Other">ሌላ</option>
                                             </select>
+                                            {formData.college === 'Other' && (
+                                                <input
+                                                    type="text"
+                                                    name="customCollege"
+                                                    value={formData.customCollege}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter college name"
+                                                    required
+                                                    className="mt-2 w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="label-amharic">የትምህርት ክፍል <span className="text-red-500">*</span></label>
+                                            <select
+                                                name="department"
+                                                value={formData.department}
+                                                onChange={handleInputChange}
+                                                required
+                                                disabled={!formData.college}
+                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-slate-600 disabled:cursor-not-allowed"
+                                            >
+                                                <option value="">{formData.college ? 'ዲፓርትመንት ይምረጡ' : 'መጀመሪያ ኮሌጅ ይምረጡ'}</option>
+                                                {formData.college && formData.college !== 'Other' && collegesAndDepartments[formData.college]?.map(dept => (
+                                                    <option key={dept} value={dept}>{dept}</option>
+                                                ))}
+                                                {formData.college && <option value="Other">ሌላ</option>}
+                                            </select>
+                                            {formData.department === 'Other' && (
+                                                <input
+                                                    type="text"
+                                                    name="customDepartment"
+                                                    value={formData.customDepartment}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter department name"
+                                                    required
+                                                    className="mt-2 w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            )}
                                         </div>
                                         <div>
                                             <label className="label-amharic">ባች/ዓመት <span className="text-red-500">*</span></label>
