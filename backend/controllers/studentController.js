@@ -238,8 +238,35 @@ exports.updateStudent = async (req, res) => {
     const updates = req.body;
 
     try {
+        // Handle Username/Password updates for linked User account
+        if (updates.username || updates.password) {
+            const { rows: studentRows } = await query('SELECT user_id FROM students WHERE id = $1', [id]);
+            if (studentRows.length > 0 && studentRows[0].user_id) {
+                const userId = studentRows[0].user_id;
+                const userUpdates = [];
+                const userValues = [];
+                let paramIndex = 1;
 
+                if (updates.username) {
+                    userUpdates.push(`username = $${paramIndex++}`);
+                    userValues.push(updates.username);
+                }
 
+                if (updates.password) {
+                    const hashedPassword = await bcrypt.hash(updates.password, 10);
+                    userUpdates.push(`password = $${paramIndex++}`);
+                    userValues.push(hashedPassword);
+                }
+
+                if (userUpdates.length > 0) {
+                    userValues.push(userId);
+                    await query(
+                        `UPDATE users SET ${userUpdates.join(', ')} WHERE id = $${paramIndex}`,
+                        userValues
+                    );
+                }
+            }
+        }
         const validColumns = [
             'id', 'full_name', 'gender', 'age', 'birth_date', 'baptismal_name', 'priesthood_rank',
             'mother_tongue', 'other_languages', 'region', 'zone', 'woreda', 'kebele', 'phone',
