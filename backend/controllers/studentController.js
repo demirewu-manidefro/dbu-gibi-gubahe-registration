@@ -1,6 +1,18 @@
 const { query } = require('../config/db');
 const bcrypt = require('bcryptjs');
 
+// Helper function to create notifications
+const createNotification = async (type, message, target = 'all') => {
+    try {
+        await query(
+            `INSERT INTO notifications (type, message, target) VALUES ($1, $2, $3)`,
+            [type, message, target]
+        );
+    } catch (err) {
+        console.error('Error creating notification:', err);
+    }
+};
+
 exports.getStudents = async (req, res) => {
     try {
         let sql = `
@@ -234,7 +246,7 @@ exports.updateStudent = async (req, res) => {
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
-            'filled_by', 'verified_by', 'status', 'photo_url'
+            'filled_by', 'verified_by', 'status', 'photo_url', 'gpa', 'attendance', 'education_yearly', 'responsibility'
         ];
 
         const processedUpdates = {};

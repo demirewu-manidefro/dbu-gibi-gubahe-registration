@@ -1,6 +1,18 @@
 const bcrypt = require('bcryptjs');
 const { query } = require('../config/db');
 
+// Helper function to create notifications
+const createNotification = async (type, message, target = 'all') => {
+    try {
+        await query(
+            `INSERT INTO notifications (type, message, target) VALUES ($1, $2, $3)`,
+            [type, message, target]
+        );
+    } catch (err) {
+        console.error('Error creating notification:', err);
+    }
+};
+
 exports.resetPassword = async (req, res) => {
     const { studentId } = req.params;
 
@@ -72,7 +84,18 @@ exports.changePassword = async (req, res) => {
 exports.getAdmins = async (req, res) => {
     try {
         const { rows } = await query(
-            "SELECT id, username, name, role, section, status, photo_url, last_activity as \"lastActivity\" FROM users WHERE role IN ('admin', 'manager') ORDER BY id ASC"
+            `SELECT 
+                u.id, u.username, u.name, u.role, u.section, u.status, u.photo_url, u.last_activity as "lastActivity",
+                s.full_name, s.gender, s.age, s.birth_date, s.baptismal_name, s.priesthood_rank,
+                s.mother_tongue, s.other_languages, s.region, s.zone, s.woreda, s.kebele, s.phone,
+                s.gibi_name, s.center_and_woreda, s.parish_church, s.emergency_name, s.emergency_phone,
+                s.department, s.batch, s.school_info, s.is_graduated, s.graduation_year, s.service_section,
+                s.gpa, s.attendance, s.education_yearly, s.teacher_training, s.leadership_training,
+                s.other_trainings, s.additional_info, s.filled_by, s.verified_by, s.responsibility
+             FROM users u
+             LEFT JOIN students s ON u.id = s.user_id
+             WHERE u.role IN ('admin', 'manager') 
+             ORDER BY u.id ASC`
         );
         res.json(rows);
     } catch (err) {
@@ -82,7 +105,8 @@ exports.getAdmins = async (req, res) => {
 };
 
 exports.registerAdmin = async (req, res) => {
-    const { username, password, name, section, photo_url, role } = req.body;
+    const adminData = req.body;
+    const { username, password, name, section, photo_url, role } = adminData;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const { rows } = await query(
@@ -90,9 +114,59 @@ exports.registerAdmin = async (req, res) => {
             [username, hashedPassword, name, role || 'admin', section, photo_url]
         );
 
+        const newUser = rows[0];
 
+        // Create student-specific data record
+        const studentFields = {
+            full_name: name || adminData.fullName,
+            gender: adminData.gender || adminData.sex,
+            age: adminData.age ? parseInt(adminData.age) : null,
+            birth_date: adminData.birthYear || adminData.birth_date,
+            baptismal_name: adminData.baptismalName || adminData.baptismal_name,
+            priesthood_rank: adminData.priesthoodRank || adminData.priesthood_rank,
+            mother_tongue: adminData.motherTongue || adminData.mother_tongue,
+            other_languages: typeof adminData.otherLanguages === 'object' ? JSON.stringify(adminData.otherLanguages) : adminData.otherLanguages,
+            region: adminData.region,
+            zone: adminData.zone,
+            woreda: adminData.woreda,
+            kebele: adminData.kebele,
+            phone: adminData.phone,
+            gibi_name: adminData.gibiName || adminData.gibi_name,
+            center_and_woreda: adminData.centerAndWoredaCenter || adminData.center_and_woreda,
+            parish_church: adminData.parishChurch || adminData.parish_church,
+            emergency_name: adminData.emergencyName || adminData.emergency_name,
+            emergency_phone: adminData.emergencyPhone || adminData.emergency_phone,
+            department: adminData.department,
+            batch: adminData.batch,
+            service_section: section || adminData.serviceSection,
+            graduation_year: adminData.graduationYear ? parseInt(adminData.graduationYear) : null,
+            teacher_training: typeof adminData.teacherTraining === 'object' ? JSON.stringify(adminData.teacherTraining) : adminData.teacherTraining,
+            leadership_training: typeof adminData.leadershipTraining === 'object' ? JSON.stringify(adminData.leadershipTraining) : adminData.leadershipTraining,
+            other_trainings: adminData.otherTrainings || adminData.other_trainings,
+            additional_info: adminData.additionalInfo || adminData.additional_info,
+            filled_by: adminData.filledBy || adminData.filled_by,
+            verified_by: adminData.verifiedBy || adminData.verified_by,
+            photo_url: photo_url || adminData.photoUrl,
+            gpa: typeof adminData.gpa === 'object' ? JSON.stringify(adminData.gpa) : adminData.gpa,
+            attendance: typeof adminData.attendance === 'object' ? JSON.stringify(adminData.attendance) : adminData.attendance,
+            education_yearly: typeof adminData.educationYearly === 'object' ? JSON.stringify(adminData.educationYearly) : adminData.education_yearly,
+            responsibility: typeof adminData.responsibility === 'object' ? JSON.stringify(adminData.responsibility) : adminData.responsibility,
+            school_info: typeof adminData.school_info === 'object' ? JSON.stringify(adminData.school_info) : adminData.school_info
+        };
 
-        res.status(201).json(rows[0]);
+        const studentId = adminData.studentId || `ADMIN-${newUser.id}`;
+        const cols = ['id', 'user_id'];
+        const vals = [studentId, newUser.id];
+        Object.entries(studentFields).forEach(([key, val]) => {
+            if (val !== undefined) {
+                cols.push(key);
+                vals.push(val);
+            }
+        });
+        const placeholders = vals.map((_, i) => `$${i + 1}`).join(', ');
+        await query(`INSERT INTO students (${cols.join(', ')}) VALUES (${placeholders})`, vals);
+
+        res.status(201).json(newUser);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -139,27 +213,100 @@ exports.updateProfile = async (req, res) => {
 
 exports.updateAdmin = async (req, res) => {
     const { id } = req.params;
-    const { name, section, photo_url, password, role } = req.body;
-    try {
-        let updateQuery = "UPDATE users SET name = COALESCE($1, name), section = COALESCE($2, section), photo_url = COALESCE($3, photo_url), role = COALESCE($4, role)";
-        let queryParams = [name, section, photo_url, role];
+    const adminData = req.body;
+    const { name, section, photo_url, password, role } = adminData;
 
-        if (password) {
+    try {
+        // 1. Update basic user data
+        let userUpdateQuery = "UPDATE users SET name = COALESCE($1, name), section = COALESCE($2, section), photo_url = COALESCE($3, photo_url), role = COALESCE($4, role)";
+        let userParams = [name, section, photo_url, role];
+
+        if (password && password.trim() !== '') {
             const hashedPassword = await bcrypt.hash(password, 10);
-            updateQuery += ", password = $" + (queryParams.length + 1);
-            queryParams.push(hashedPassword);
+            userUpdateQuery += ", password = $" + (userParams.length + 1);
+            userParams.push(hashedPassword);
         }
 
-        updateQuery += " WHERE id = $" + (queryParams.length + 1) + " RETURNING id, username, name, role, section, status, photo_url";
-        queryParams.push(id);
+        userUpdateQuery += " WHERE id = $" + (userParams.length + 1) + " RETURNING id, username, name, role, section, status, photo_url";
+        userParams.push(id);
 
-        const { rows } = await query(updateQuery, queryParams);
+        const { rows: userRows } = await query(userUpdateQuery, userParams);
+        if (userRows.length === 0) return res.status(404).json({ message: 'Admin not found' });
 
-        if (rows.length === 0) return res.status(404).json({ message: 'Admin not found' });
-        res.json(rows[0]);
+        // 2. Update/Upsert student-specific data
+        // Map frontend fields to DB columns
+        const studentFields = {
+            full_name: name || adminData.fullName,
+            gender: adminData.gender || adminData.sex,
+            age: adminData.age ? parseInt(adminData.age) : null,
+            birth_date: adminData.birthYear || adminData.birth_date,
+            baptismal_name: adminData.baptismalName || adminData.baptismal_name,
+            priesthood_rank: adminData.priesthoodRank || adminData.priesthood_rank,
+            mother_tongue: adminData.motherTongue || adminData.mother_tongue,
+            other_languages: typeof adminData.otherLanguages === 'object' ? JSON.stringify(adminData.otherLanguages) : adminData.otherLanguages,
+            region: adminData.region,
+            zone: adminData.zone,
+            woreda: adminData.woreda,
+            kebele: adminData.kebele,
+            phone: adminData.phone,
+            gibi_name: adminData.gibiName || adminData.gibi_name,
+            center_and_woreda: adminData.centerAndWoredaCenter || adminData.center_and_woreda,
+            parish_church: adminData.parishChurch || adminData.parish_church,
+            emergency_name: adminData.emergencyName || adminData.emergency_name,
+            emergency_phone: adminData.emergencyPhone || adminData.emergency_phone,
+            department: adminData.department,
+            batch: adminData.batch,
+            service_section: section || adminData.serviceSection,
+            graduation_year: adminData.graduationYear ? parseInt(adminData.graduationYear) : null,
+            teacher_training: typeof adminData.teacherTraining === 'object' ? JSON.stringify(adminData.teacherTraining) : adminData.teacherTraining,
+            leadership_training: typeof adminData.leadershipTraining === 'object' ? JSON.stringify(adminData.leadershipTraining) : adminData.leadershipTraining,
+            other_trainings: adminData.otherTrainings || adminData.other_trainings,
+            additional_info: adminData.additionalInfo || adminData.additional_info,
+            filled_by: adminData.filledBy || adminData.filled_by,
+            verified_by: adminData.verifiedBy || adminData.verified_by,
+            photo_url: photo_url || adminData.photoUrl,
+            gpa: typeof adminData.gpa === 'object' ? JSON.stringify(adminData.gpa) : adminData.gpa,
+            attendance: typeof adminData.attendance === 'object' ? JSON.stringify(adminData.attendance) : adminData.attendance,
+            education_yearly: typeof adminData.educationYearly === 'object' ? JSON.stringify(adminData.educationYearly) : adminData.education_yearly,
+            responsibility: typeof adminData.responsibility === 'object' ? JSON.stringify(adminData.responsibility) : adminData.responsibility,
+            school_info: typeof adminData.school_info === 'object' ? JSON.stringify(adminData.school_info) : adminData.school_info
+        };
+
+        // Check if student record exists
+        const { rows: existingStudent } = await query("SELECT id FROM students WHERE user_id = $1", [id]);
+
+        if (existingStudent.length > 0) {
+            // Update
+            const sets = [];
+            const vals = [id];
+            Object.entries(studentFields).forEach(([key, val], idx) => {
+                if (val !== undefined) {
+                    sets.push(`${key} = $${vals.length + 1}`);
+                    vals.push(val);
+                }
+            });
+            if (sets.length > 0) {
+                await query(`UPDATE students SET ${sets.join(', ')} WHERE user_id = $1`, vals);
+            }
+        } else {
+            // Insert
+            const studentId = adminData.studentId || `ADMIN-${id}`;
+            const cols = ['id', 'user_id'];
+            const vals = [studentId, id];
+            Object.entries(studentFields).forEach(([key, val]) => {
+                if (val !== undefined) {
+                    cols.push(key);
+                    vals.push(val);
+                }
+            });
+            const placeholders = vals.map((_, i) => `$${i + 1}`).join(', ');
+            await query(`INSERT INTO students (${cols.join(', ')}) VALUES (${placeholders})`, vals);
+        }
+
+        res.json(userRows[0]);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server Error" });
+        console.error('Update admin error:', err);
+        res.status(500).json({ message: "Server Error: " + err.message });
     }
 };
 
@@ -206,10 +353,10 @@ exports.makeStudentAdmin = async (req, res) => {
             'manager'
         );
 
-        // Delete the student record now that they are an admin
-        await query('DELETE FROM students WHERE id = $1', [studentId]);
+        // Update student list status to 'Admin' or just keep it as 'Student'
+        // For now let's just keep it so the data is preserved.
 
-        res.json({ message: `Student ${displayName} promoted to Admin successfully and removed from student list`, username: userUpdate[0].username });
+        res.json({ message: `Student ${displayName} promoted to Admin successfully`, username: userUpdate[0].username });
 
     } catch (err) {
         console.error('Make admin error:', err);

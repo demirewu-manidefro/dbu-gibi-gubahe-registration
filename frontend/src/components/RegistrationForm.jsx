@@ -431,7 +431,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                                     <div className="flex-1 space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="col-span-2">
-                                                <label className="label-amharic">የተማሪው መታወቂያ <span className="text-red-500">*</span></label>
+                                                <label className="label-amharic">የተማሪው መታወቂያ ቁጥር <span className="text-red-500">*</span></label>
                                                 <input
                                                     name="studentId"
                                                     placeholder="የተማሪው መታወቂያ ቁጥር ያስገቡ"
@@ -1128,7 +1128,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null }) => {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed bottom-10 right-10 bg-green-600 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-50 border-2 border-white/20"
+                        className="fixed bottom-10 right-10 bg-blue-600 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-50 border-2 border-white/20"
                     >
                         <div className="bg-white/20 p-2 rounded-full">
                             <CheckCircle2 size={24} />

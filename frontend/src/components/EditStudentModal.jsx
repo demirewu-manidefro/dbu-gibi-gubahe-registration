@@ -355,7 +355,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all ${activeTab === tab.id
                                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-none'
-                                : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 border border-gray-100 dark:border-gray-600 hover:border-blue-300 hover:text-blue-600'
+                                : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 border border-gray-100 dark:border-gray-600 hover:border-white-600 hover:text-blue-300 dark:border-white-600'
                                 }`}
                         >
                             {tab.icon}
@@ -384,10 +384,10 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="col-span-2">
-                                                <label className="label-amharic">የተማሪው መታወቂያ <span className="text-red-500">*</span></label>
+                                                <label className="label-amharic">የተማሪው መታወቂያ ቁጥር<span className="text-red-500">*</span></label>
                                                 <input
                                                     name="studentId"
-                                                    placeholder="DBU1234567"
+                                                    placeholder="የተማሪው መታወቂያ ቁጥር ያስገቡ"
                                                     value={formData.studentId}
                                                     onChange={(e) => {
                                                         let val = e.target.value.toUpperCase();
@@ -404,7 +404,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                 <label className="label-amharic">የተማሪው ሙሉ ሥም <span className="text-red-500">*</span></label>
                                                 <input
                                                     name="fullName"
-                                                    placeholder="አበበ ባልቻ..."
+                                                    placeholder="የተማሪው ሙሉ ሥም ያስገቡ በአማርኛ"
                                                     value={formData.fullName}
                                                     onChange={handleInputChange}
                                                     required
@@ -1108,7 +1108,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-100 dark:shadow-none disabled:opacity-50"
+                                    className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 dark:shadow-none disabled:opacity-50"
                                 >
                                     <Save size={20} />
                                     {isSubmitting ? 'በማስቀመጥ ላይ...' : 'ለውጦችን ያስቀምጡ'}
