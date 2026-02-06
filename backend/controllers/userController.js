@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const { query } = require('../config/db');
-const { createNotification } = require('./notificationController');
 
 exports.resetPassword = async (req, res) => {
     const { studentId } = req.params;
@@ -91,11 +90,7 @@ exports.registerAdmin = async (req, res) => {
             [username, hashedPassword, name, role || 'admin', section, photo_url]
         );
 
-        await createNotification(
-            'admin_created',
-            `New Admin Created: ${name} (${section})`,
-            'manager'
-        );
+
 
         res.status(201).json(rows[0]);
     } catch (err) {
