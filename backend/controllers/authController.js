@@ -21,8 +21,7 @@ exports.signup = async (req, res) => {
             [username.trim(), hashedPassword, 'New Student', 'student', 'active']
         );
 
-        // Create placeholder in 'students' table
-        // We use username as ID temporarily, it will be updated when they fill the registration form
+
         await query(
             'INSERT INTO students (id, user_id, full_name, status) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING',
             [username.trim(), newUser[0].id, 'N/A', 'Pending']
@@ -57,7 +56,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        
+
         let profileData = {};
         if (user.role === 'student') {
             const { rows: studentRows } = await query('SELECT *, full_name as name, service_section as section, id as student_id FROM students WHERE user_id = $1', [user.id]);
@@ -66,7 +65,7 @@ exports.login = async (req, res) => {
             }
         }
 
-        
+
         const payload = {
             user: {
                 id: user.id,
@@ -94,8 +93,9 @@ exports.login = async (req, res) => {
                         section: user.section || profileData.section,
                         student_id: profileData.student_id,
                         photo_url: user.photo_url || profileData.photo_url,
+                        mustChangePassword: user.must_change_password,
                         ...profileData,
-                        id: user.id 
+                        id: user.id
                     }
                 });
             }
