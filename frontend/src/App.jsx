@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -18,6 +19,7 @@ import NotFound from './pages/NotFound';
 import ChangePassword from './pages/ChangePassword';
 import PendingApprovals from './pages/PendingApprovals';
 import GraduationList from './pages/GraduationList';
+import Reports from './pages/Reports';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -57,6 +59,7 @@ const AppContent = () => {
         <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
         <Route path="/graduates" element={<PrivateRoute><GraduationList /></PrivateRoute>} />
         <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
+        <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/approvals" element={<PrivateRoute><PendingApprovals /></PrivateRoute>} />
         <Route path="/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
@@ -68,13 +71,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <ThemeProvider>
-          <AppContent />
-        </ThemeProvider>
-      </AuthProvider>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <AuthProvider>
+          <ThemeProvider>
+            <AppContent />
+          </ThemeProvider>
+        </AuthProvider>
+      </Router>
+    </HelmetProvider>
   );
 }
 
