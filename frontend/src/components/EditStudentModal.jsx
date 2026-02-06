@@ -86,7 +86,6 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         serviceSection: getVal(['section', 'service_section']),
         graduationYear: getVal(['graduationYear', 'graduation_year']),
         membershipYear: getVal(['membershipYear', 'school_info.membershipYear']),
-        membershipYear: getVal(['membershipYear', 'school_info.membershipYear']),
         responsibility: getVal(['responsibility', 'participation', 'school_info.responsibility', 'school_info.participation'], { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
         teacherTraining: getVal(['teacherTraining', 'teacher_training'], { level1: '', level2: '', level3: '' }),
         leadershipTraining: getVal(['leadershipTraining', 'leadership_training'], { level1: '', level2: '', level3: '' }),
