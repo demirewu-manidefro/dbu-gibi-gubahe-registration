@@ -59,38 +59,38 @@ const ChangePassword = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800 p-4 transition-colors duration-300">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md p-8 transition-colors duration-300">
                 <div className="text-center mb-8">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                         <Lock size={32} className="text-white" />
                     </div>
-                    <h1 className="text-2xl font-extrabold text-gray-900">Change Password</h1>
+                    <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Change Password</h1>
                     {user?.mustChangePassword && (
-                        <p className="text-sm text-orange-600 mt-2 font-semibold">
+                        <p className="text-sm text-orange-600 dark:text-orange-400 mt-2 font-semibold">
                             You must change your password before continuing
                         </p>
                     )}
-                    <p className="text-sm text-gray-500 mt-1">Enter your current and new password</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter your current and new password</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-                        <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-red-800">{error}</p>
+                    <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900 rounded-xl flex items-start gap-3">
+                        <AlertCircle size={20} className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
                     </div>
                 )}
 
                 {success && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
-                        <CheckCircle2 size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-green-800">Password changed successfully! Redirecting...</p>
+                    <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-900 rounded-xl flex items-start gap-3">
+                        <CheckCircle2 size={20} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-green-800 dark:text-green-200">Password changed successfully! Redirecting...</p>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Current Password</label>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.current ? 'text' : 'password'}
@@ -98,7 +98,7 @@ const ChangePassword = () => {
                                 value={formData.currentPassword}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12 transition-colors duration-300"
                                 placeholder="Enter current password"
                             />
                             <button
@@ -112,7 +112,7 @@ const ChangePassword = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">New Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.new ? 'text' : 'password'}
@@ -120,7 +120,7 @@ const ChangePassword = () => {
                                 value={formData.newPassword}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12 transition-colors duration-300"
                                 placeholder="Enter new password"
                             />
                             <button
@@ -134,7 +134,7 @@ const ChangePassword = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Confirm New Password</label>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Confirm New Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.confirm ? 'text' : 'password'}
@@ -142,7 +142,7 @@ const ChangePassword = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12 transition-colors duration-300"
                                 placeholder="Confirm new password"
                             />
                             <button
@@ -167,7 +167,7 @@ const ChangePassword = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/dashboard')}
-                            className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                            className="w-full py-3 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                         >
                             Cancel
                         </button>
