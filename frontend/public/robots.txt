@@ -9,4 +9,4 @@ Disallow: /reports
 Disallow: /approvals
 Disallow: /gallery
 
-Sitemap: https://dbu-gibi-gubae.org/sitemap.xml
+Sitemap: https://dbu-gibi-gubae.vercel.app/sitemap.xml

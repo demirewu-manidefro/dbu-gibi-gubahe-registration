@@ -11,7 +11,7 @@ const SEO = ({
 }) => {
     const siteName = 'የደብረ ብርሀን ዩኒቨርስቲ የቀን ጊቢ ጉባኤ';
     const fullTitle = title ? `${title} | ${siteName}` : siteName;
-    const siteUrl = 'https://dbu-gibi-gubae.org';
+    const siteUrl = 'https://dbu-gibi-gubae.vercel.app';
     const fullUrl = `${siteUrl}${canonical || window.location.pathname}`;
 
     // Default description if none provided
@@ -77,7 +77,7 @@ const SEO = ({
             <meta property="og:site_name" content="DBU Gibi Gubae" />
 
             {/* Twitter */}
-            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:card" content="" />
             <meta name="twitter:url" content={fullUrl} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={finalDesc} />

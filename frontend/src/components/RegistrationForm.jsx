@@ -335,21 +335,53 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
 
             // Construct final data payload
             const finalData = {
-                ...formData,
+                student_id: formData.studentId,
                 full_name: formData.fullName,
                 gender: formData.sex,
                 birth_date: formData.birthYear,
-                student_id: formData.studentId,
+                age: formData.age,
+                baptismal_name: formData.baptismalName,
+                priesthood_rank: formData.priesthoodRank,
+                mother_tongue: formData.motherTongue,
+                other_languages: formData.otherLanguages,
+                phone: formData.phone,
                 region: formData.region === 'Other' ? formData.customRegion : formData.region,
                 zone: formData.zone === 'Other' ? formData.customZone : formData.zone,
+                woreda: formData.woreda,
+                kebele: formData.kebele,
                 gibi_name: formData.gibiName === 'Other' ? formData.customGibiName : formData.gibiName,
+                center_and_woreda: formData.centerAndWoredaCenter,
+                parish_church: formData.parishChurch,
+                emergency_name: formData.emergencyName,
+                emergency_phone: formData.emergencyPhone,
+                username: formData.username,
+                password: formData.password,
                 college: formData.college === 'Other' ? formData.customCollege : formData.college,
                 department: formData.department === 'Other' ? formData.customDepartment : formData.department,
-                photoUrl: finalPhotoUrl
-            };
+                batch: formData.batch,
+                service_section: formData.serviceSection,
+                graduation_year: formData.graduationYear,
 
-            // Remove redundant/deleted fields
-            delete finalData.traineeType;
+                // Yearly data fields - properly mapped to snake_case
+                gpa: formData.gpa,
+                cumulative_gpa: formData.cumulativeGPA,
+                membership_year: formData.membershipYear,
+                education_yearly: formData.educationYearly,
+                responsibility: formData.responsibility,
+                attendance: formData.attendance,
+                teacher_training: formData.teacherTraining,
+                leadership_training: formData.leadershipTraining,
+                other_trainings: formData.otherTrainings,
+
+                // Additional fields
+                abinet_education: formData.abinetEducation,
+                special_need: formData.specialNeed,
+                additional_info: formData.additionalInfo,
+                filled_by: formData.filledBy,
+                verified_by: formData.verifiedBy,
+                submission_date: formData.submissionDate,
+                photo_url: finalPhotoUrl
+            };
 
             console.log('Submitting registration data:', finalData);
 

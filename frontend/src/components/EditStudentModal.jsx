@@ -287,17 +287,6 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
         setIsSubmitting(true);
 
-        const schoolInfo = {
-            gpa: formData.gpa,
-            responsibility: formData.responsibility,
-            attendance: formData.attendance,
-            educationYearly: formData.educationYearly,
-            abinetEducation: formData.abinetEducation,
-            specialNeed: formData.specialNeed,
-            cumulativeGPA: formData.cumulativeGPA,
-            membershipYear: formData.membershipYear
-        };
-
         const updatedData = {
             id: formData.studentId,
             full_name: formData.fullName,
@@ -323,15 +312,23 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
             college: formData.college === 'Other' ? formData.customCollege : formData.college,
             department: formData.department === 'Other' ? formData.customDepartment : formData.department,
             batch: formData.batch,
-            school_info: schoolInfo,
             service_section: formData.serviceSection,
-            responsibility: formData.responsibility,
             graduation_year: formData.graduationYear,
 
+            // Yearly data fields - send directly to database columns
+            gpa: formData.gpa,
+            cumulative_gpa: formData.cumulativeGPA,
+            membership_year: formData.membershipYear,
+            education_yearly: formData.educationYearly,
+            responsibility: formData.responsibility,
+            attendance: formData.attendance,
             teacher_training: formData.teacherTraining,
             leadership_training: formData.leadershipTraining,
             other_trainings: formData.otherTrainings,
 
+            // Additional fields
+            abinet_education: formData.abinetEducation,
+            special_need: formData.specialNeed,
             additional_info: formData.additionalInfo,
             filled_by: formData.filledBy,
             verified_by: formData.verifiedBy,
