@@ -48,9 +48,9 @@ const StudentList = ({ mode = 'Student' }) => {
         let otherLanguages = parse(s.other_languages || s.otherLanguages);
         let teacherTraining = parse(s.teacher_training || s.teacherTraining);
         let leadershipTraining = parse(s.leadership_training || s.leadershipTraining);
-        let participation = parse(s.participation || schoolInfo.participation);
-        let attendance = parse(s.attendance || schoolInfo.attendance);
-        let educationYearly = parse(s.educationYearly || schoolInfo.educationYearly);
+        let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
+        let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
+        let educationYearly = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly);
         let gpa = s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
         let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
         let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
@@ -98,6 +98,7 @@ const StudentList = ({ mode = 'Student' }) => {
             traineeType: s.trainee_type || s.traineeType,
             gpa: gpa,
             participation: participation,
+            responsibility: participation,
             teacherTraining: teacherTraining,
             leadershipTraining: leadershipTraining,
             otherTrainings: s.other_trainings || s.otherTrainings,

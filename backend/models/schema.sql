@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS students (
     department VARCHAR(100),
     batch VARCHAR(20),
     school_info JSONB, -- { university, campus, faculty, department, batch, studentId }
+    cumulative_gpa VARCHAR(20),
+    membership_year INT,
     is_graduated BOOLEAN DEFAULT FALSE,
     graduation_year INT,
     service_section VARCHAR(50),

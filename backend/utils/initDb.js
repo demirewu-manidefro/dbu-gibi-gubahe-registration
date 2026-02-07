@@ -20,12 +20,16 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS attendance JSONB;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS education_yearly JSONB;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS gpa JSONB;
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS cumulative_gpa VARCHAR(20);
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS membership_year INT;
             
             -- Migrate data from school_info to new columns if new columns are empty
             UPDATE students SET responsibility = school_info->'participation' WHERE responsibility IS NULL AND school_info->'participation' IS NOT NULL;
             UPDATE students SET gpa = school_info->'gpa' WHERE gpa IS NULL AND school_info->'gpa' IS NOT NULL;
             UPDATE students SET attendance = school_info->'attendance' WHERE attendance IS NULL AND school_info->'attendance' IS NOT NULL;
             UPDATE students SET education_yearly = school_info->'educationYearly' WHERE education_yearly IS NULL AND school_info->'educationYearly' IS NOT NULL;
+            UPDATE students SET cumulative_gpa = CAST(school_info->>'cumulativeGPA' AS VARCHAR) WHERE cumulative_gpa IS NULL AND school_info->>'cumulativeGPA' IS NOT NULL;
+            UPDATE students SET membership_year = CAST(school_info->>'membershipYear' AS INTEGER) WHERE membership_year IS NULL AND school_info->>'membershipYear' IS NOT NULL;
 
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);

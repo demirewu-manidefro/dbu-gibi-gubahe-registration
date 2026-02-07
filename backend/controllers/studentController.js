@@ -281,7 +281,8 @@ exports.updateStudent = async (req, res) => {
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
-            'filled_by', 'verified_by', 'status', 'photo_url', 'gpa', 'attendance', 'education_yearly', 'responsibility'
+            'filled_by', 'verified_by', 'status', 'photo_url', 'gpa', 'attendance', 'education_yearly', 'responsibility',
+            'cumulative_gpa', 'membership_year'
         ];
 
         const processedUpdates = {};
@@ -296,6 +297,24 @@ exports.updateStudent = async (req, res) => {
             if (k === 'schoolInfo') k = 'school_info';
             if (k === 'serviceSection' || k === 'section') k = 'service_section';
             if (k === 'centerAndWoreda') k = 'center_and_woreda';
+            if (k === 'educationYearly') k = 'education_yearly';
+            if (k === 'participation') k = 'responsibility';
+            if (k === 'teacherTraining') k = 'teacher_training';
+            if (k === 'leadershipTraining') k = 'leadership_training';
+            if (k === 'otherLanguages') k = 'other_languages';
+            if (k === 'baptismalName') k = 'baptismal_name';
+            if (k === 'priesthoodRank') k = 'priesthood_rank';
+            if (k === 'motherTongue') k = 'mother_tongue';
+            if (k === 'emergencyName') k = 'emergency_name';
+            if (k === 'emergencyPhone') k = 'emergency_phone';
+            if (k === 'parishChurch') k = 'parish_church';
+            if (k === 'graduationYear') k = 'graduation_year';
+            if (k === 'cumulativeGPA') k = 'cumulative_gpa';
+            if (k === 'membershipYear') k = 'membership_year';
+            if (k === 'otherTrainings') k = 'other_trainings';
+            if (k === 'additionalInfo') k = 'additional_info';
+            if (k === 'filledBy') k = 'filled_by';
+            if (k === 'verifiedBy') k = 'verified_by';
 
             if (!validColumns.includes(k)) continue;
 

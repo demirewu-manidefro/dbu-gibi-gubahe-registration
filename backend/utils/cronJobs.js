@@ -28,22 +28,7 @@ cron.schedule('0 0 * * *', async () => {
             RETURNING id, username;
         `;
 
-        // Note: users table needs created_at. If it doesn't exist, we must add it or use another field (e.g. id if sequential/uuid with timestamp, but timestamp is safer)
-        // Let's check schema.sql... users table does NOT have created_at in the previous view! 
-        // It has 'last_activity'. We could use that if it defaults to creation time?
-        // Schema shows: last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        // So yes, initially last_activity = creation time.
-        // BUT if they login, last_activity updates. 
-        // If they login but DON'T register, last_activity updates, so they survive another 24 hours.
-        // This might be acceptable? "Delete if inactive AND incomplete for 24 hours".
-        // Actually the user asked: "if he didn't fill in one day". implying time from creation.
-        // If I use last_activity, logging in resets the timer.
-        // It's safer to add created_at to users table for this specific purpose.
-
-        // However, user said "update the db also" earlier for something else.
-        // I should probably add created_at to users table first to be precise.
-        // For now, I'll use last_activity as a proxy for "Inactive" which is also a valid cleanup metric.
-        // "Inactive for 24 hours AND has no profile" -> Delete.
+        
 
         const { rows } = await query(`
             DELETE FROM users 
