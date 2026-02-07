@@ -107,6 +107,8 @@ exports.registerStudent = async (req, res) => {
 
         if (existingUserRows.length > 0) {
             targetOwnerId = existingUserRows[0].id;
+            // Always sync student_id to users table during registration
+            await query('UPDATE users SET student_id = $1 WHERE id = $2', [studentId, targetOwnerId]);
         } else {
             const hashedPassword = await bcrypt.hash(targetPassword, 10);
             const { rows: newUser } = await query(
@@ -238,8 +240,9 @@ exports.updateStudent = async (req, res) => {
     const updates = req.body;
 
     try {
-        // Handle Username/Password updates for linked User account
-        if (updates.username || updates.password) {
+        // Handle Username/Password/StudentID updates for linked User account
+        const syncStudentId = updates.id || updates.studentId;
+        if (updates.username || updates.password || syncStudentId) {
             const { rows: studentRows } = await query('SELECT user_id FROM students WHERE id = $1', [id]);
             if (studentRows.length > 0 && studentRows[0].user_id) {
                 const userId = studentRows[0].user_id;
@@ -256,6 +259,11 @@ exports.updateStudent = async (req, res) => {
                     const hashedPassword = await bcrypt.hash(updates.password, 10);
                     userUpdates.push(`password = $${paramIndex++}`);
                     userValues.push(hashedPassword);
+                }
+
+                if (syncStudentId) {
+                    userUpdates.push(`student_id = $${paramIndex++}`);
+                    userValues.push(syncStudentId);
                 }
 
                 if (userUpdates.length > 0) {
