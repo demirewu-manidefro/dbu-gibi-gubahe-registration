@@ -221,6 +221,9 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                 setFormData(prev => ({ ...prev, woreda: value, kebele: '' }));
             } else if (name === 'college') {
                 setFormData(prev => ({ ...prev, college: value, department: '', customDepartment: '' }));
+            } else if (name === 'serviceSection') {
+                // Optimization: Direct update without complex branching
+                setFormData(prev => ({ ...prev, serviceSection: value }));
             } else {
                 setFormData(prev => ({ ...prev, [name]: value }));
             }
@@ -1069,11 +1072,11 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     </h3>
                                                     <div className="space-y-3">
                                                         {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
-                                                            <div key={`part-${year}`} className="flex items-center gap-3">
+                                                            <div key={`resp-${year}`} className="flex items-center gap-3">
                                                                 <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{idx + 1}ኛ ዓመት</div>
                                                                 <input
                                                                     name={`responsibility-${year}`}
-                                                                    value={formData.responsibility[year]}
+                                                                    value={formData.responsibility[year] || ''}
                                                                     onChange={handleInputChange}
                                                                     className="flex-1 bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
