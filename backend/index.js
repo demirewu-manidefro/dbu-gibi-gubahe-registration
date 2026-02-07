@@ -47,14 +47,19 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     app.listen(PORT, async () => {
         console.log(`Server is running on port ${PORT}`);
-        await initDb();
         try {
-            await query('SELECT NOW()');
-            console.log('Database connected');
+            await initDb();
+            const { rows } = await query('SELECT NOW()');
+            console.log('Database connected successfully at:', rows[0].now);
         } catch (err) {
-            console.error('DB failed:', err.message);
+            console.error('Database connection failed:', err.message);
         }
     });
+} else {
+    // On Vercel, log connection info once during cold start
+    const dbUrl = process.env.DATABASE_URL || '';
+    const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':****@');
+    console.log(`Backend initialized on Vercel. Database Target: ${maskedUrl}`);
 }
 
 module.exports = app;
