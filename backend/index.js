@@ -27,6 +27,16 @@ app.use('/api/users', require('./routes/users'));
 
 app.use('/api/gallery', require('./routes/gallery'));
 
+// Maintenance Route (for migrations)
+app.get('/api/init-db', async (req, res) => {
+    try {
+        await initDb();
+        res.json({ message: 'Database initialized/updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Basic Route
 app.get('/', (req, res) => {
     res.json({ message: 'DBU Gibi Gubae API is running' });
