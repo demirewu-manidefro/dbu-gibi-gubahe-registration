@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     status VARCHAR(20) DEFAULT 'active',
     must_change_password BOOLEAN DEFAULT FALSE,
     photo_url TEXT,
+    student_id VARCHAR(50) UNIQUE,
     last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

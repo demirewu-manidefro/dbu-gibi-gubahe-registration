@@ -7,8 +7,11 @@ exports.signup = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Check if user already exists
-        const { rows: existing } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [username.trim()]);
+        // Check if user already exists (by username or student_id)
+        const { rows: existing } = await query(
+            'SELECT id FROM users WHERE LOWER(username) = LOWER($1) OR student_id = $2',
+            [username.trim(), username.trim()]
+        );
         if (existing.length > 0) {
             return res.status(400).json({ message: 'User already exists' });
         }
@@ -17,8 +20,8 @@ exports.signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const { rows: newUser } = await query(
-            'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, role',
-            [username.trim(), hashedPassword, 'New Student', 'student', 'active']
+            'INSERT INTO users (username, password, name, role, status, student_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, role, student_id',
+            [username.trim(), hashedPassword, 'New Student', 'student', 'active', username.trim()]
         );
 
 

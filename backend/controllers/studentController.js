@@ -100,18 +100,18 @@ exports.registerStudent = async (req, res) => {
         const targetUsername = (studentData.username || studentId).trim();
         const targetPassword = studentData.password || 'password123';
 
-        const { rows: existingUserRows } = await query('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [targetUsername]);
+        const { rows: existingUserRows } = await query(
+            'SELECT id FROM users WHERE LOWER(username) = LOWER($1) OR (student_id = $2 AND role = \'student\')',
+            [targetUsername, studentId]
+        );
 
         if (existingUserRows.length > 0) {
             targetOwnerId = existingUserRows[0].id;
-            if (studentData.username && studentData.password) {
-
-            }
         } else {
             const hashedPassword = await bcrypt.hash(targetPassword, 10);
             const { rows: newUser } = await query(
-                'INSERT INTO users (username, password, name, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-                [targetUsername, hashedPassword, fullName, 'student', 'active']
+                'INSERT INTO users (username, password, name, role, status, student_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+                [targetUsername, hashedPassword, fullName, 'student', 'active', studentId]
             );
             targetOwnerId = newUser[0].id;
         }
