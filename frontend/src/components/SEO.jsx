@@ -7,6 +7,7 @@ const SEO = ({
     canonical,
     ogType = 'website',
     ogImage = '/logo-mk.jpg',
+    twitterCard = 'summary_large_image', // 'summary', 'summary_large_image', 'app', or 'player'
     lang = 'am'
 }) => {
     const siteName = 'የደብረ ብርሀን ዩኒቨርስቲ የቀን ጊቢ ጉባኤ';
@@ -74,14 +75,20 @@ const SEO = ({
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={finalDesc} />
             <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <meta property="og:site_name" content="DBU Gibi Gubae" />
+            <meta property="og:locale" content={lang === 'am' ? 'am_ET' : 'en_US'} />
 
-            {/* Twitter */}
-            <meta name="twitter:card" content="" />
+            {/* Twitter / X Card */}
+            <meta name="twitter:card" content={twitterCard} />
             <meta name="twitter:url" content={fullUrl} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={finalDesc} />
             <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+            <meta name="twitter:image:alt" content="DBU Gibi Gubae - የደብረ ብርሀን ዩኒቨርስቲ የቀን ጊቢ ጉባኤ" />
+            <meta name="twitter:site" content="@DBUGibiGubae" />
+            <meta name="twitter:creator" content="@DBUGibiGubae" />
 
             {/* Structured Data */}
             <script type="application/ld+json">
