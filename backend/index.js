@@ -37,6 +37,32 @@ app.get('/api/init-db', async (req, res) => {
     }
 });
 
+app.get('/api/cleanup', async (req, res) => {
+    try {
+        const { rows } = await query(`
+            DELETE FROM users 
+            WHERE role = 'student' 
+            AND created_at < NOW() - INTERVAL '24 hours'
+            AND id IN (
+                SELECT u.id 
+                FROM users u
+                LEFT JOIN students s ON u.id = s.user_id
+                WHERE (s.id IS NULL OR s.full_name = 'N/A' OR s.full_name = 'New Student')
+                AND s.filled_by IS NULL
+            )
+            RETURNING id, username;
+        `);
+        res.json({
+            message: 'Cleanup successful',
+            deletedCount: rows.length,
+            deletedUsers: rows.map(r => r.username)
+        });
+    } catch (err) {
+        console.error('Cleanup Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Basic Route
 app.get('/', (req, res) => {
     res.json({ message: 'DBU Gibi Gubae API is running' });

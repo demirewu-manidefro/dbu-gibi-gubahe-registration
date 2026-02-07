@@ -48,7 +48,7 @@ cron.schedule('0 0 * * *', async () => {
         const { rows } = await query(`
             DELETE FROM users 
             WHERE role = 'student' 
-            AND last_activity < NOW() - INTERVAL '24 hours'
+            AND created_at < NOW() - INTERVAL '24 hours'
             AND id IN (
                 SELECT u.id 
                 FROM users u

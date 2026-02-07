@@ -29,5 +29,11 @@
             "destination": "/$1",
             "permanent": true
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/cleanup",
+            "schedule": "0 1 * * *"
+        }
     ]
 }

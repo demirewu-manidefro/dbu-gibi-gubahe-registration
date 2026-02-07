@@ -31,6 +31,7 @@ const initDb = async () => {
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);
             ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_url TEXT;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS student_id VARCHAR(50) UNIQUE;
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
             ALTER TABLE gallery ADD COLUMN IF NOT EXISTS description TEXT;
             
             -- Backfill student_id in users table from students table
