@@ -286,71 +286,69 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         if (!formData.verifiedBy) return validationError("መረጃውን ያረጋገጠው አካል ሥም ያስፈልጋል", 3);
 
         setIsSubmitting(true);
-        setTimeout(() => {
 
-            const schoolInfo = {
-                gpa: formData.gpa,
-                responsibility: formData.responsibility,
-                attendance: formData.attendance,
-                educationYearly: formData.educationYearly,
-                abinetEducation: formData.abinetEducation,
-                specialNeed: formData.specialNeed,
-                cumulativeGPA: formData.cumulativeGPA,
-                membershipYear: formData.membershipYear
-            };
+        const schoolInfo = {
+            gpa: formData.gpa,
+            responsibility: formData.responsibility,
+            attendance: formData.attendance,
+            educationYearly: formData.educationYearly,
+            abinetEducation: formData.abinetEducation,
+            specialNeed: formData.specialNeed,
+            cumulativeGPA: formData.cumulativeGPA,
+            membershipYear: formData.membershipYear
+        };
 
-            const updatedData = {
-                id: formData.studentId,
-                full_name: formData.fullName,
-                gender: formData.sex,
-                birth_date: formData.birthYear,
-                age: formData.age,
-                baptismal_name: formData.baptismalName,
-                priesthood_rank: formData.priesthoodRank,
-                mother_tongue: formData.motherTongue,
-                other_languages: formData.otherLanguages,
-                phone: formData.phone,
-                region: formData.region === 'Other' ? formData.customRegion : formData.region,
-                zone: formData.zone === 'Other' ? formData.customZone : formData.zone,
-                woreda: formData.woreda,
-                kebele: formData.kebele,
-                gibi_name: formData.gibiName === 'Other' ? formData.customGibiName : formData.gibiName,
-                center_and_woreda: formData.centerAndWoredaCenter,
-                parish_church: formData.parishChurch,
-                emergency_name: formData.emergencyName,
-                emergency_phone: formData.emergencyPhone,
-                username: formData.username,
-                password: formData.password,
-                college: formData.college === 'Other' ? formData.customCollege : formData.college,
-                department: formData.department === 'Other' ? formData.customDepartment : formData.department,
-                batch: formData.batch,
-                school_info: schoolInfo,
-                service_section: formData.serviceSection,
-                responsibility: formData.responsibility,
-                graduation_year: formData.graduationYear,
+        const updatedData = {
+            id: formData.studentId,
+            full_name: formData.fullName,
+            gender: formData.sex,
+            birth_date: formData.birthYear,
+            age: formData.age,
+            baptismal_name: formData.baptismalName,
+            priesthood_rank: formData.priesthoodRank,
+            mother_tongue: formData.motherTongue,
+            other_languages: formData.otherLanguages,
+            phone: formData.phone,
+            region: formData.region === 'Other' ? formData.customRegion : formData.region,
+            zone: formData.zone === 'Other' ? formData.customZone : formData.zone,
+            woreda: formData.woreda,
+            kebele: formData.kebele,
+            gibi_name: formData.gibiName === 'Other' ? formData.customGibiName : formData.gibiName,
+            center_and_woreda: formData.centerAndWoredaCenter,
+            parish_church: formData.parishChurch,
+            emergency_name: formData.emergencyName,
+            emergency_phone: formData.emergencyPhone,
+            username: formData.username,
+            password: formData.password,
+            college: formData.college === 'Other' ? formData.customCollege : formData.college,
+            department: formData.department === 'Other' ? formData.customDepartment : formData.department,
+            batch: formData.batch,
+            school_info: schoolInfo,
+            service_section: formData.serviceSection,
+            responsibility: formData.responsibility,
+            graduation_year: formData.graduationYear,
 
-                teacher_training: formData.teacherTraining,
-                leadership_training: formData.leadershipTraining,
-                other_trainings: formData.otherTrainings,
+            teacher_training: formData.teacherTraining,
+            leadership_training: formData.leadershipTraining,
+            other_trainings: formData.otherTrainings,
 
-                additional_info: formData.additionalInfo,
-                filled_by: formData.filledBy,
-                verified_by: formData.verifiedBy,
-                status: 'Student',
-                photo_url: formData.photoUrl
-            };
+            additional_info: formData.additionalInfo,
+            filled_by: formData.filledBy,
+            verified_by: formData.verifiedBy,
+            status: 'Student',
+            photo_url: formData.photoUrl
+        };
 
-            updateStudent(student.id, updatedData)
-                .then(() => {
-                    if (onSave) onSave(updatedData);
-                    onClose();
-                })
-                .catch(err => {
-                    console.error("ውሂቡን ማስቀመጥ አልተቻለም", err);
-                    setError(err.message || "ውሂቡን ማስቀመጥ አልተቻለም። እባክዎን እንደገና ይሞክሩ");
-                })
-                .finally(() => setIsSubmitting(false));
-        }, 500);
+        updateStudent(student.id, updatedData)
+            .then(() => {
+                if (onSave) onSave(updatedData);
+                onClose();
+            })
+            .catch(err => {
+                console.error("ውሂቡን ማስቀመጥ አልተቻለም", err);
+                setError(err.message || "ውሂቡን ማስቀመጥ አልተቻለም። እባክዎን እንደገና ይሞክሩ");
+            })
+            .finally(() => setIsSubmitting(false));
     };
 
     return (
@@ -414,7 +412,15 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                     </div>
 
                     {/* Form Content */}
-                    <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 bg-gray-50/30 dark:bg-gray-900/50">
+                    <form
+                        onSubmit={handleSubmit}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                                e.preventDefault();
+                            }
+                        }}
+                        className="flex-1 flex flex-col min-h-0 bg-gray-50/30 dark:bg-gray-900/50"
+                    >
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                             <AnimatePresence mode="wait">
                                 <motion.div
