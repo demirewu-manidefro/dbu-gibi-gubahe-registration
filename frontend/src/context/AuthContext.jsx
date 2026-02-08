@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AuthContext } from './auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api');
 
 const getToken = () => localStorage.getItem('token') || sessionStorage.getItem('token');
 const setToken = (token, remember) => {
@@ -420,7 +420,7 @@ export const AuthProvider = ({ children }) => {
             } catch (parseError) {
                 // Response is not valid JSON (likely HTML error page)
                 console.error('Server returned non-JSON response:', responseText.substring(0, 200));
-                throw new Error('Server error - please ensure the backend server is running on port 5000');
+                throw new Error('Server error - unexpected response from backend. Check server logs.');
             }
 
             if (res.ok) {
