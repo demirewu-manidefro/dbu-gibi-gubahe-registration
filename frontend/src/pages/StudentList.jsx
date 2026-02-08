@@ -961,13 +961,13 @@ const StudentList = ({ mode = 'Student' }) => {
 
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-premium border border-gray-100 dark:border-slate-700 overflow-hidden">
                 {!isStudent && (
-                    <div className="p-6 border-b border-gray-50 dark:border-slate-700 space-y-4">
+                    <div className="p-4 sm:p-6 border-b border-gray-50 dark:border-slate-700 space-y-3 sm:space-y-4">
                         <div className="relative w-full">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                            <Search className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                             <input
                                 type="text"
                                 placeholder="Search by ID, Name..."
-                                className="w-full pl-14 pr-6 h-12 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-full shadow-sm text-gray-700 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
+                                className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 h-11 sm:h-12 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-full shadow-sm text-sm sm:text-base text-gray-700 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium"
                                 value={globalSearch}
                                 onChange={(e) => setGlobalSearch(e.target.value)}
                             />
@@ -976,7 +976,7 @@ const StudentList = ({ mode = 'Student' }) => {
                         {isManager && (
                             <div className="flex flex-wrap gap-2">
                                 <select
-                                    className="bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
+                                    className="flex-1 min-w-[200px] bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
                                     value={filterSection}
                                     onChange={(e) => setFilterSection(e.target.value)}
                                 >

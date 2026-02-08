@@ -91,63 +91,58 @@ const Login = () => {
     return (
         <div className="min-h-screen w-full flex bg-white dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
             <SEO title="መግቢያ" description="ወደ ደብረ ብርሀን ዩኒቨርስቲ ጊቢ ጉባኤ ሲስተም ይግቡ።" />
-            <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 dark:bg-gray-800 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548625361-987dc79d6e50?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-blue-900/90 mix-blend-multiply"></div>
-
-                <div className="relative z-10 w-full h-full flex flex-col justify-between p-16 text-white">
-                    <div>
-                        <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-12 group">
-                            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                            ወደ ዋናው ገጽ
-                        </Link>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
-                            <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሃን ጊቢ ጉባኤ</h1>
-                            <p className="text-xl text-blue-400 font-medium tracking-wide">መግቢያ (Login)</p>
-                        </motion.div>
-                    </div>
-
+            <div className="hidden lg:flex w-full lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white flex-col justify-center p-8 lg:p-16 relative overflow-hidden">
+                <div className="relative z-10 space-y-8">
+                    <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors group">
+                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                        ወደ ዋናው ገጽ
+                    </Link>
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="max-w-md"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
                     >
-                        <blockquote className="text-2xl font-serif leading-relaxed mb-6 italic text-white/90">
-                            "ትምህርትህ እምነትህን ያጠናክረው።"
-                        </blockquote>
-                        <div className="flex items-center gap-4">
-                            <div className="h-px bg-white/30 flex-1"></div>
-                            <span className="text-sm font-medium text-white/60">ቅዱስ ያሬድ</span>
-                        </div>
+                        <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
+                        <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሃን ጊቢ ጉባኤ</h1>
+                        <p className="text-xl text-blue-400 font-medium tracking-wide">መግቢያ (Login)</p>
                     </motion.div>
                 </div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="max-w-md"
+                >
+                    <blockquote className="text-2xl font-serif leading-relaxed mb-6 italic text-white/90">
+                        "ትምህርትህ እምነትህን ያጠናክረው።"
+                    </blockquote>
+                    <div className="flex items-center gap-4">
+                        <div className="h-px bg-white/30 flex-1"></div>
+                        <span className="text-sm font-medium text-white/60">ቅዱስ ያሬድ</span>
+                    </div>
+                </motion.div>
 
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="w-full max-w-md space-y-8"
+                    className="w-full max-w-md space-y-6 sm:space-y-8"
                 >
                     <div className="text-center lg:text-left">
                         <div className="lg:hidden flex justify-between items-center mb-6">
                             <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                <ArrowLeft size={24} className="text-gray-700 dark:text-gray-200" />
+                                <ArrowLeft size={20} className="text-gray-700 dark:text-gray-200" />
                             </Link>
-                            <img src="/logo-mk.jpg" alt="Logo" className="w-16 h-16 rounded-full border-2 border-blue-600 shadow-lg" />
-                            <div className="w-10"></div> {/* Spacer for centering */}
+                            <img src="/logo-mk.jpg" alt="Logo" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-600 shadow-lg" />
+                            <div className="w-8"></div> {/* Spacer for centering */}
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">እንኳን በደህና መጡ</h2>
-                        <p className="mt-2 text-gray-600 dark:text-gray-400">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">እንኳን በደህና መጡ</h2>
+                        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
                             እባክዎ ወደ ስርዓቱ ለመግባት መረጃዎን ያስገቡ
                         </p>
                     </div>
