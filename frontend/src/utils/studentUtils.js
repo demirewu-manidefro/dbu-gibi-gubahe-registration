@@ -10,11 +10,32 @@ export const normalizeStudent = (s) => {
 
     let schoolInfo = parse(s.school_info || s.schoolInfo);
     let otherLanguages = parse(s.other_languages || s.otherLanguages);
-    let teacherTraining = parse(s.teacher_training || s.teacherTraining);
-    let leadershipTraining = parse(s.leadership_training || s.leadershipTraining);
+    let teacherTrainingRaw = parse(s.teacher_training || s.teacherTraining || schoolInfo.teacher_training || schoolInfo.teacherTraining);
+    let leadershipTrainingRaw = parse(s.leadership_training || s.leadershipTraining || schoolInfo.leadership_training || schoolInfo.leadershipTraining);
+
+    const normalizeTraining = (t) => ({
+        level1: t?.level1 || t?.['1'] || '',
+        level2: t?.level2 || t?.['2'] || '',
+        level3: t?.level3 || t?.['3'] || ''
+    });
+
+    let teacherTraining = normalizeTraining(teacherTrainingRaw);
+    let leadershipTraining = normalizeTraining(leadershipTrainingRaw);
+
     let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
     let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
-    let educationYearly = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly);
+    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly);
+
+    const normalizeYearly = (e) => ({
+        y1: e?.y1 || e?.['1'] || '',
+        y2: e?.y2 || e?.['2'] || '',
+        y3: e?.y3 || e?.['3'] || '',
+        y4: e?.y4 || e?.['4'] || '',
+        y5: e?.y5 || e?.['5'] || '',
+        y6: e?.y6 || e?.['6'] || ''
+    });
+
+    let educationYearly = normalizeYearly(educationYearlyRaw);
     let gpa = parse(s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' });
     let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
     let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
