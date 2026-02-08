@@ -22,6 +22,8 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS gpa JSONB;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS cumulative_gpa VARCHAR(20);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS membership_year INT;
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS abinet_education VARCHAR(255);
+            ALTER TABLE students ADD COLUMN IF NOT EXISTS special_need TEXT;
             -- Remove special talent from database
             ALTER TABLE students DROP COLUMN IF EXISTS special_place;
             UPDATE students SET school_info = school_info - 'specialPlace' WHERE school_info ? 'specialPlace';
@@ -33,9 +35,11 @@ const initDb = async () => {
             UPDATE students SET education_yearly = school_info->'educationYearly' WHERE education_yearly IS NULL AND school_info->'educationYearly' IS NOT NULL;
             UPDATE students SET cumulative_gpa = CAST(school_info->>'cumulativeGPA' AS VARCHAR) WHERE cumulative_gpa IS NULL AND school_info->>'cumulativeGPA' IS NOT NULL;
             UPDATE students SET membership_year = CAST(school_info->>'membershipYear' AS INTEGER) WHERE membership_year IS NULL AND school_info->>'membershipYear' IS NOT NULL;
+            UPDATE students SET abinet_education = CAST(school_info->>'abinetEducation' AS VARCHAR) WHERE abinet_education IS NULL AND school_info->>'abinetEducation' IS NOT NULL;
+            UPDATE students SET special_need = CAST(school_info->>'specialNeed' AS TEXT) WHERE special_need IS NULL AND school_info->>'specialNeed' IS NOT NULL;
 
             -- Remove redundant data from school_info after it has been migrated to top-level columns
-            UPDATE students SET school_info = school_info - 'participation' - 'gpa' - 'attendance' - 'educationYearly' - 'cumulativeGPA' - 'membershipYear' - 'graduationYear' - 'graduation_year' - 'batch' - 'department';
+            UPDATE students SET school_info = school_info - 'participation' - 'gpa' - 'attendance' - 'educationYearly' - 'cumulativeGPA' - 'membershipYear' - 'graduationYear' - 'graduation_year' - 'batch' - 'department' - 'abinetEducation' - 'specialNeed';
             
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);

@@ -146,12 +146,23 @@ exports.registerAdmin = async (req, res) => {
             additional_info: adminData.additionalInfo || adminData.additional_info,
             filled_by: adminData.filledBy || adminData.filled_by,
             verified_by: adminData.verifiedBy || adminData.verified_by,
+            abinet_education: adminData.abinetEducation || adminData.abinet_education,
+            special_need: adminData.specialNeed || adminData.special_need,
             photo_url: photo_url || adminData.photoUrl,
             gpa: typeof adminData.gpa === 'object' ? JSON.stringify(adminData.gpa) : adminData.gpa,
             attendance: typeof adminData.attendance === 'object' ? JSON.stringify(adminData.attendance) : adminData.attendance,
             education_yearly: typeof adminData.educationYearly === 'object' ? JSON.stringify(adminData.educationYearly) : adminData.education_yearly,
+            trainee_type: adminData.specialEducation || adminData.trainee_type || adminData.traineeType,
             responsibility: typeof adminData.responsibility === 'object' ? JSON.stringify(adminData.responsibility) : adminData.responsibility,
-            school_info: typeof adminData.school_info === 'object' ? JSON.stringify(adminData.school_info) : adminData.school_info
+            school_info: (() => {
+                const info = adminData.school_info || adminData.schoolInfo || {};
+                let schoolObj = typeof info === 'string' ? JSON.parse(info) : { ...info };
+                const extraFields = ['cumulativeGPA', 'membershipYear'];
+                extraFields.forEach(f => {
+                    if (adminData[f] !== undefined) schoolObj[f] = adminData[f];
+                });
+                return JSON.stringify(schoolObj);
+            })()
         };
 
         const studentId = adminData.studentId || `ADMIN-${newUser.id}`;
@@ -264,12 +275,23 @@ exports.updateAdmin = async (req, res) => {
             additional_info: adminData.additionalInfo || adminData.additional_info,
             filled_by: adminData.filledBy || adminData.filled_by,
             verified_by: adminData.verifiedBy || adminData.verified_by,
+            abinet_education: adminData.abinetEducation || adminData.abinet_education,
+            special_need: adminData.specialNeed || adminData.special_need,
             photo_url: photo_url || adminData.photoUrl,
             gpa: typeof adminData.gpa === 'object' ? JSON.stringify(adminData.gpa) : adminData.gpa,
             attendance: typeof adminData.attendance === 'object' ? JSON.stringify(adminData.attendance) : adminData.attendance,
             education_yearly: typeof adminData.educationYearly === 'object' ? JSON.stringify(adminData.educationYearly) : adminData.education_yearly,
+            trainee_type: adminData.specialEducation || adminData.trainee_type || adminData.traineeType,
             responsibility: typeof adminData.responsibility === 'object' ? JSON.stringify(adminData.responsibility) : adminData.responsibility,
-            school_info: typeof adminData.school_info === 'object' ? JSON.stringify(adminData.school_info) : adminData.school_info
+            school_info: (() => {
+                const info = adminData.school_info || adminData.schoolInfo || {};
+                let schoolObj = typeof info === 'string' ? JSON.parse(info) : { ...info };
+                const extraFields = ['cumulativeGPA', 'membershipYear'];
+                extraFields.forEach(f => {
+                    if (adminData[f] !== undefined) schoolObj[f] = adminData[f];
+                });
+                return JSON.stringify(schoolObj);
+            })()
         };
 
         // Check if student record exists

@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS students (
     attendance JSONB, -- { y1, y2, y3, y4, y5, y6 }
     education_yearly JSONB, -- { y1, y2, y3, y4, y5, y6 }
     trainee_type VARCHAR(50),
+    abinet_education VARCHAR(255),
+    special_need TEXT,
     teacher_training JSONB, -- { level1, level2, level3 }
     leadership_training JSONB, -- { level1, level2, level3 }
     other_trainings TEXT,

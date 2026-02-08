@@ -101,6 +101,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
         educationYearly: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         responsibility: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         attendance: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        specialEducation: '',
 
         // New Training Sections
         teacherTraining: { level1: '', level2: '', level3: '' },
@@ -152,13 +153,29 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                     abinetEducation: user.abinet_education || user.abinetEducation || schoolInfo.abinetEducation || '',
                     specialNeed: user.special_need || user.specialNeed || schoolInfo.specialNeed || '',
                     cumulativeGPA: user.cumulative_gpa || user.cumulativeGPA || schoolInfo.cumulativeGPA || '',
-                    attendance: schoolInfo.attendance || user.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    educationYearly: schoolInfo.educationYearly || user.education_yearly || user.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    responsibility: schoolInfo.responsibility || user.responsibility || schoolInfo.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    gpa: schoolInfo.gpa || user.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    attendance: (typeof schoolInfo.attendance === 'string' ? JSON.parse(schoolInfo.attendance) : schoolInfo.attendance) ||
+                        (typeof user.attendance === 'string' ? JSON.parse(user.attendance) : user.attendance) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    educationYearly: (typeof schoolInfo.educationYearly === 'string' ? JSON.parse(schoolInfo.educationYearly) : schoolInfo.educationYearly) ||
+                        (typeof user.education_yearly === 'string' ? JSON.parse(user.education_yearly) : user.education_yearly) ||
+                        (typeof user.educationYearly === 'string' ? JSON.parse(user.educationYearly) : user.educationYearly) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    responsibility: (typeof schoolInfo.responsibility === 'string' ? JSON.parse(schoolInfo.responsibility) : schoolInfo.responsibility) ||
+                        (typeof user.responsibility === 'string' ? JSON.parse(user.responsibility) : user.responsibility) ||
+                        (typeof schoolInfo.participation === 'string' ? JSON.parse(schoolInfo.participation) : schoolInfo.participation) ||
+                        (typeof user.participation === 'string' ? JSON.parse(user.participation) : user.participation) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    gpa: (typeof schoolInfo.gpa === 'string' ? JSON.parse(schoolInfo.gpa) : schoolInfo.gpa) ||
+                        (typeof user.gpa === 'string' ? JSON.parse(user.gpa) : user.gpa) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
                     otherTrainings: user.other_trainings || user.otherTrainings || '',
-                    teacherTraining: user.teacher_training || user.teacherTraining || { level1: '', level2: '', level3: '' },
-                    leadershipTraining: user.leadership_training || user.leadershipTraining || { level1: '', level2: '', level3: '' },
+                    teacherTraining: (typeof user.teacher_training === 'string' ? JSON.parse(user.teacher_training) : user.teacher_training) ||
+                        (typeof user.teacherTraining === 'string' ? JSON.parse(user.teacherTraining) : user.teacherTraining) ||
+                        { level1: '', level2: '', level3: '' },
+                    leadershipTraining: (typeof user.leadership_training === 'string' ? JSON.parse(user.leadership_training) : user.leadership_training) ||
+                        (typeof user.leadershipTraining === 'string' ? JSON.parse(user.leadershipTraining) : user.leadershipTraining) ||
+                        { level1: '', level2: '', level3: '' },
+                    specialEducation: user.special_education || user.specialEducation || schoolInfo.specialEducation || '',
                     additionalInfo: user.additional_info || user.additionalInfo || '',
                     photoUrl: user.photo_url || user.photoUrl || ''
                 };
@@ -370,7 +387,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                 membership_year: formData.membershipYear,
                 education_yearly: formData.educationYearly,
                 responsibility: formData.responsibility,
+                participation: formData.responsibility,
                 attendance: formData.attendance,
+                special_education: formData.specialEducation,
+                specialEducation: formData.specialEducation,
                 teacher_training: formData.teacherTraining,
                 leadership_training: formData.leadershipTraining,
                 other_trainings: formData.otherTrainings,
