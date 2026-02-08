@@ -84,6 +84,13 @@ const initDb = async () => {
             
             -- Ensure all managers have the 'ሁሉም' section
             UPDATE users SET section = 'ሁሉም' WHERE role = 'manager' AND (section IS NULL OR section <> 'ሁሉም');
+            
+            -- Create schedules table if missing
+            CREATE TABLE IF NOT EXISTS schedules (
+                id SERIAL PRIMARY KEY,
+                items JSONB NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
         `);
 
         console.log('Database schema initialized and updated');

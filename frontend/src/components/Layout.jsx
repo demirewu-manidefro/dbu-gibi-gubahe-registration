@@ -18,7 +18,8 @@ import {
     Bell,
     MessageCircle,
     ClipboardCheck,
-    GraduationCap
+    GraduationCap,
+    Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

@@ -1,96 +1,114 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
-const { auth, authorize } = require('../middleware/auth');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/authorize');
+const { query } = require('../config/db');
 
-const SCHEDULE_FILE = path.join(__dirname, '../data/schedule.json');
-
-// Helper to ensure data directory exists
-if (!fs.existsSync(path.join(__dirname, '../data'))) {
-    fs.mkdirSync(path.join(__dirname, '../data'));
-}
-
-const readSchedule = () => {
+// @route   GET api/schedules
+// @desc    Get weekly schedule
+// @access  Private
+router.get('/', auth, async (req, res) => {
     try {
-        if (!fs.existsSync(SCHEDULE_FILE)) return { items: [], createdAt: null };
-        const data = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
+        // Auto-delete schedules older than 1 week
+        await query("DELETE FROM schedules WHERE created_at < NOW() - INTERVAL '7 days'");
 
-        // Auto-delete if older than 1 week (7 days)
-        if (data.createdAt) {
-            const oneWeek = 7 * 24 * 60 * 60 * 1000;
-            if (Date.now() - new Date(data.createdAt).getTime() > oneWeek) {
-                fs.writeFileSync(SCHEDULE_FILE, JSON.stringify({ items: [], createdAt: null }));
-                return { items: [], createdAt: null };
-            }
+        const { rows } = await query('SELECT * FROM schedules ORDER BY created_at DESC LIMIT 1');
+
+        if (rows.length === 0) {
+            return res.json({ items: [], createdAt: null });
         }
-        return data;
+
+        res.json({
+            items: rows[0].items,
+            createdAt: rows[0].created_at
+        });
     } catch (err) {
-        console.error('Error reading schedule file:', err);
-        return { items: [], createdAt: null };
+        console.error('Fetch schedule error:', err);
+        res.status(500).json({ message: 'መርሐ ግብር ማግኘት አልተቻለም' });
     }
-};
-
-const writeSchedule = (data) => {
-    fs.writeFileSync(SCHEDULE_FILE, JSON.stringify(data, null, 2));
-};
-
-// @route   GET /api/schedules
-// @desc    Get current schedule
-router.get('/', async (req, res) => {
-    const data = readSchedule();
-    res.json(data.items || []);
 });
 
-// @route   POST /api/schedules
-// @desc    Update the entire schedule (replace)
+// @route   POST api/schedules
+// @desc    Add/Update schedule item
+// @access  Batch Admin & Manager
 router.post('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
-    // Only Batch Admins or Managers can post
-    if (req.user.role === 'admin' && req.user.section !== 'ባች') {
+    // Extra security: Only 'ባች' admin or manager
+    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
         return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር መለጠፍ ይችላሉ' });
     }
 
-    const { day, time_range, activity, description } = req.body;
-
-    const current = readSchedule();
-    const newItem = {
-        id: Date.now(),
-        day,
-        time_range,
-        activity,
-        description,
-        created_by: req.user.name
-    };
-
-    current.items = [...(current.items || []), newItem];
-    if (!current.createdAt) current.createdAt = new Date().toISOString();
-
-    writeSchedule(current);
-    res.json(newItem);
-});
-
-// @route   DELETE /api/schedules/:id
-router.delete('/:id', [auth, authorize(['admin', 'manager'])], async (req, res) => {
-    // Only Batch Admins or Managers can delete
-    if (req.user.role === 'admin' && req.user.section !== 'ባች') {
-        return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር መሰረዝ ይችላሉ' });
+    const { activity, day, time, description } = req.body;
+    if (!activity || !day || !time) {
+        return res.status(400).json({ message: 'እባክዎ ሁሉንም መስኮች ያሟሉ' });
     }
 
-    const current = readSchedule();
-    current.items = (current.items || []).filter(item => item.id.toString() !== req.params.id.toString());
-    writeSchedule(current);
-    res.json({ message: 'Schedule item removed' });
+    try {
+        // Get current schedule items
+        const { rows } = await query('SELECT * FROM schedules ORDER BY created_at DESC LIMIT 1');
+        let currentItems = rows.length > 0 ? rows[0].items : [];
+
+        const newItem = {
+            id: Date.now(),
+            activity,
+            day,
+            time,
+            description,
+            addedBy: req.user.name || req.user.username
+        };
+
+        currentItems.push(newItem);
+
+        // Delete old and insert new (or just update the latest)
+        // For simplicity and to match "session" feel, we keep one main row or append
+        await query('DELETE FROM schedules');
+        await query('INSERT INTO schedules (items) VALUES ($1)', [JSON.stringify(currentItems)]);
+
+        res.json(newItem);
+    } catch (err) {
+        console.error('Update schedule error:', err);
+        res.status(500).json({ message: 'መርሐ ግብር ማስቀመጥ አልተቻለም' });
+    }
 });
 
-// @route   DELETE /api/schedules (Clear all)
+// @route   DELETE api/schedules
+// @desc    Clear all schedules
+// @access  Batch Admin & Manager
 router.delete('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
-    // Only Batch Admins or Managers can clear all
-    if (req.user.role === 'admin' && req.user.section !== 'ባች') {
+    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
         return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
     }
 
-    writeSchedule({ items: [], createdAt: null });
-    res.json({ message: 'All schedules cleared' });
+    try {
+        await query('DELETE FROM schedules');
+        res.json({ message: 'መርሐ ግብር በተሳካ ሁኔታ ጸድቷል' });
+    } catch (err) {
+        console.error('Clear schedule error:', err);
+        res.status(500).json({ message: 'መርሐ ግብር ማጽዳት አልተቻለም' });
+    }
+});
+
+// @route   DELETE api/schedules/:id
+// @desc    Delete single schedule item
+// @access  Batch Admin & Manager
+router.delete('/:id', [auth, authorize(['admin', 'manager'])], async (req, res) => {
+    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
+        return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
+    }
+
+    try {
+        const { rows } = await query('SELECT * FROM schedules ORDER BY created_at DESC LIMIT 1');
+        if (rows.length === 0) return res.status(404).json({ message: 'መርሐ ግብር አልተገኘም' });
+
+        const updatedItems = rows[0].items.filter(item => item.id.toString() !== req.params.id);
+
+        await query('DELETE FROM schedules');
+        await query('INSERT INTO schedules (items) VALUES ($1)', [JSON.stringify(updatedItems)]);
+
+        res.json({ message: 'ተሰርዟል' });
+    } catch (err) {
+        console.error('Delete item error:', err);
+        res.status(500).json({ message: 'መሰረዝ አልተቻለም' });
+    }
 });
 
 module.exports = router;
