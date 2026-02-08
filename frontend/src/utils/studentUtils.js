@@ -24,16 +24,21 @@ export const normalizeStudent = (s) => {
 
     let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
     let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
-    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses);
+    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses || s.education || schoolInfo.education);
 
-    const normalizeYearly = (e) => ({
-        y1: e?.y1 || e?.['1'] || '',
-        y2: e?.y2 || e?.['2'] || '',
-        y3: e?.y3 || e?.['3'] || '',
-        y4: e?.y4 || e?.['4'] || '',
-        y5: e?.y5 || e?.['5'] || '',
-        y6: e?.y6 || e?.['6'] || ''
-    });
+    const normalizeYearly = (e) => {
+        if (typeof e === 'string' && e.trim().length > 0 && !e.startsWith('{')) {
+            return { y1: e, y2: '', y3: '', y4: '', y5: '', y6: '' };
+        }
+        return {
+            y1: e?.y1 || e?.['1'] || e?.[0] || '',
+            y2: e?.y2 || e?.['2'] || e?.[1] || '',
+            y3: e?.y3 || e?.['3'] || e?.[2] || '',
+            y4: e?.y4 || e?.['4'] || e?.[3] || '',
+            y5: e?.y5 || e?.['5'] || e?.[4] || '',
+            y6: e?.y6 || e?.['6'] || e?.[5] || ''
+        };
+    };
 
     let educationYearly = normalizeYearly(educationYearlyRaw);
     let gpa = parse(s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' });
