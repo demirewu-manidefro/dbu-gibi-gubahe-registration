@@ -34,6 +34,9 @@ const initDb = async () => {
             UPDATE students SET cumulative_gpa = CAST(school_info->>'cumulativeGPA' AS VARCHAR) WHERE cumulative_gpa IS NULL AND school_info->>'cumulativeGPA' IS NOT NULL;
             UPDATE students SET membership_year = CAST(school_info->>'membershipYear' AS INTEGER) WHERE membership_year IS NULL AND school_info->>'membershipYear' IS NOT NULL;
 
+            -- Remove redundant data from school_info after it has been migrated to top-level columns
+            UPDATE students SET school_info = school_info - 'participation' - 'gpa' - 'attendance' - 'educationYearly' - 'cumulativeGPA' - 'membershipYear' - 'graduationYear' - 'graduation_year' - 'batch' - 'department';
+            
             ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS section VARCHAR(50);
             ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_url TEXT;
