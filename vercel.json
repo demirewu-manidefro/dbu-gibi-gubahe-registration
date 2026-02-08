@@ -15,16 +15,15 @@
     ],
     "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "backend/index.js"
+            "src": "/api/(.*)",
+            "dest": "backend/index.js"
         },
         {
-            "source": "/(.*\\..*)",
-            "destination": "frontend/$1"
+            "handle": "filesystem"
         },
         {
-            "source": "/(.*)",
-            "destination": "frontend/index.html"
+            "src": "/(.*)",
+            "dest": "frontend/index.html"
         }
     ],
     "crons": [
