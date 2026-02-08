@@ -51,7 +51,7 @@ const StudentList = ({ mode = 'Student' }) => {
         let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
         let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
         let educationYearly = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly);
-        let gpa = s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
+        let gpa = parse(s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' });
         let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
         let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
 
@@ -88,7 +88,7 @@ const StudentList = ({ mode = 'Student' }) => {
             parishChurch: s.parish_church || s.parishChurch,
             section: s.service_section || s.section,
             specialEducation: s.special_education || s.specialEducation || schoolInfo.specialEducation,
-            specialPlace: s.special_place || s.specialPlace || schoolInfo.specialPlace,
+
             dept: s.department || s.dept,
             year: s.batch || s.year,
             graduationYear: s.graduation_year || s.graduationYear || schoolInfo.graduation_year || schoolInfo.graduationYear,

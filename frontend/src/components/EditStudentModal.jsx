@@ -464,7 +464,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
                                                             />
                                                         </div>
-                                                        <br />
+
                                                         <div>
                                                             <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                             <div className="relative">

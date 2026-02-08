@@ -22,7 +22,10 @@ const initDb = async () => {
             ALTER TABLE students ADD COLUMN IF NOT EXISTS gpa JSONB;
             ALTER TABLE students ADD COLUMN IF NOT EXISTS cumulative_gpa VARCHAR(20);
             ALTER TABLE students ADD COLUMN IF NOT EXISTS membership_year INT;
-            
+            -- Remove special talent from database
+            ALTER TABLE students DROP COLUMN IF EXISTS special_place;
+            UPDATE students SET school_info = school_info - 'specialPlace' WHERE school_info ? 'specialPlace';
+
             -- Migrate data from school_info to new columns if new columns are empty
             UPDATE students SET responsibility = school_info->'participation' WHERE responsibility IS NULL AND school_info->'participation' IS NOT NULL;
             UPDATE students SET gpa = school_info->'gpa' WHERE gpa IS NULL AND school_info->'gpa' IS NOT NULL;

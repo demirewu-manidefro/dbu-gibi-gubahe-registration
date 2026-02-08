@@ -517,7 +517,7 @@ exports.importStudents = async (req, res) => {
                     gpa: studentData.gpa,
                     participation: studentData.participation,
                     specialEducation: studentData.specialEducation,
-                    specialPlace: studentData.specialPlace,
+
                     attendance: studentData.attendance,
                     educationYearly: studentData.educationYearly,
                     abinetEducation: studentData.abinetEducation,
