@@ -22,21 +22,33 @@ export const normalizeStudent = (s) => {
     let teacherTraining = normalizeTraining(teacherTrainingRaw);
     let leadershipTraining = normalizeTraining(leadershipTrainingRaw);
 
-    let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
-    let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
-    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses);
+    const normalizeYearly = (e) => {
+        if (!e) return { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
+        if (typeof e === 'string' && e.trim().length > 0 && !e.startsWith('{')) {
+            return { y1: e, y2: '', y3: '', y4: '', y5: '', y6: '' };
+        }
+        // If it was a stringified JSON that failed to parse in parse() but starts with {
+        let obj = e;
+        if (typeof e === 'string' && e.startsWith('{')) {
+            try { obj = JSON.parse(e); } catch (err) { obj = {}; }
+        }
 
-    const normalizeYearly = (e) => ({
-        y1: e?.y1 || e?.['1'] || '',
-        y2: e?.y2 || e?.['2'] || '',
-        y3: e?.y3 || e?.['3'] || '',
-        y4: e?.y4 || e?.['4'] || '',
-        y5: e?.y5 || e?.['5'] || '',
-        y6: e?.y6 || e?.['6'] || ''
-    });
+        return {
+            y1: obj?.y1 || obj?.['1'] || obj?.[0] || obj?.['Year 1'] || obj?.['1st Year'] || '',
+            y2: obj?.y2 || obj?.['2'] || obj?.[1] || obj?.['Year 2'] || obj?.['2nd Year'] || '',
+            y3: obj?.y3 || obj?.['3'] || obj?.[2] || obj?.['Year 3'] || obj?.['3rd Year'] || '',
+            y4: obj?.y4 || obj?.['4'] || obj?.[3] || obj?.['Year 4'] || obj?.['4th Year'] || '',
+            y5: obj?.y5 || obj?.['5'] || obj?.[4] || obj?.['Year 5'] || obj?.['5th Year'] || '',
+            y6: obj?.y6 || obj?.['6'] || obj?.[5] || obj?.['Year 6'] || obj?.['6th Year'] || ''
+        };
+    };
+
+    let participation = normalizeYearly(parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation));
+    let attendance = normalizeYearly(parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly));
+    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses || s.education || schoolInfo.education);
 
     let educationYearly = normalizeYearly(educationYearlyRaw);
-    let gpa = parse(s.gpa || schoolInfo.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' });
+    let gpa = normalizeYearly(parse(s.gpa || schoolInfo.gpa));
     let abinetEducation = s.abinet_education || s.abinetEducation || schoolInfo.abinetEducation || '';
     let specialNeed = s.special_need || s.specialNeed || schoolInfo.specialNeed || '';
 
@@ -66,13 +78,13 @@ export const normalizeStudent = (s) => {
         woreda: s.woreda,
         kebele: s.kebele,
         phone: s.phone,
-        centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoredaCenter,
+        centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoreda || s.centerAndWoredaCenter,
         gibiName: s.gibi_name || s.gibiName,
         emergencyName: s.emergency_name || s.emergencyName,
         emergencyPhone: s.emergency_phone || s.emergencyPhone,
         parishChurch: s.parish_church || s.parishChurch,
         section: s.service_section || s.section,
-        specialEducation: s.special_education || s.specialEducation || schoolInfo.specialEducation,
+        specialEducation: s.special_education || s.specialEducation || s.trainee_type || s.traineeType || schoolInfo.specialEducation,
 
         dept: s.department || s.dept,
         year: s.batch || s.year,
@@ -83,7 +95,7 @@ export const normalizeStudent = (s) => {
         traineeType: s.trainee_type || s.traineeType,
         gpa: gpa,
         participation: participation,
-        responsibility: s.responsibility || participation,
+        responsibility: participation,
         teacherTraining: teacherTraining,
         leadershipTraining: leadershipTraining,
         otherTrainings: s.other_trainings || s.otherTrainings,

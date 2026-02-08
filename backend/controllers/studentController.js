@@ -129,6 +129,7 @@ exports.registerStudent = async (req, res) => {
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'responsibility', 'gpa', 'attendance', 'education_yearly',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info', 'trainee_type',
+            'cumulative_gpa', 'membership_year', 'abinet_education', 'special_need',
             'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
 
@@ -200,6 +201,10 @@ exports.registerStudent = async (req, res) => {
             studentData.other_trainings || studentData.otherTrainings,
             studentData.additional_info || studentData.additionalInfo,
             studentData.trainee_type || studentData.traineeType || studentData.specialEducation,
+            studentData.cumulativeGPA || studentData.cumulative_gpa,
+            studentData.membershipYear || studentData.membership_year,
+            studentData.abinetEducation || studentData.abinet_education,
+            studentData.specialNeed || studentData.special_need,
             studentData.filled_by || studentData.filledBy || fullName,
             studentData.verified_by || studentData.verifiedBy,
             studentData.status || 'Pending',
@@ -298,7 +303,7 @@ exports.updateStudent = async (req, res) => {
             if (k === 'photoUrl') k = 'photo_url';
             if (k === 'schoolInfo') k = 'school_info';
             if (k === 'serviceSection' || k === 'section') k = 'service_section';
-            if (k === 'centerAndWoreda') k = 'center_and_woreda';
+            if (k === 'centerAndWoreda' || k === 'centerAndWoredaCenter') k = 'center_and_woreda';
             if (k === 'educationYearly') k = 'education_yearly';
             if (k === 'participation') k = 'responsibility';
             if (k === 'teacherTraining') k = 'teacher_training';
@@ -623,6 +628,10 @@ exports.importStudents = async (req, res) => {
                     gpa = EXCLUDED.gpa,
                     attendance = EXCLUDED.attendance,
                     education_yearly = EXCLUDED.education_yearly,
+                    cumulative_gpa = EXCLUDED.cumulative_gpa,
+                    membership_year = EXCLUDED.membership_year,
+                    abinet_education = EXCLUDED.abinet_education,
+                    special_need = EXCLUDED.special_need,
                     other_languages = EXCLUDED.other_languages,
                     teacher_training = EXCLUDED.teacher_training,
                     leadership_training = EXCLUDED.leadership_training,

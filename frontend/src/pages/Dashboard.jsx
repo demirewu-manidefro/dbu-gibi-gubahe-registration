@@ -5,19 +5,24 @@ import {
 
     TrendingUp,
     Award,
-    Church
+    Church,
+    Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/auth';
 import SEO from '../components/SEO';
+import ScheduleDisplay from '../components/ScheduleDisplay';
+import ScheduleManager from '../components/ScheduleManager';
 
 const Dashboard = () => {
-    const { activityLog, students, user, attendanceHistory } = useAuth();
+    const { activityLog, students, user, attendanceHistory, schedules, addSchedule, deleteSchedule, clearSchedules } = useAuth();
 
     // Filter data based on role
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
     const mySection = user?.section;
+    const isBatchAdmin = user?.role === 'admin' && (user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach');
+    const canManageSchedule = isManager || isBatchAdmin;
 
     if (isStudent) {
         return (
@@ -53,7 +58,12 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* You can add specific student widgets here later if needed */}
+                <ScheduleDisplay
+                    schedules={schedules}
+                    isAdmin={false}
+                />
+
+
 
             </div>
         );
@@ -135,6 +145,18 @@ const Dashboard = () => {
                         </div>
                     </motion.div>
                 ))}
+            </div>
+
+            <div className="mt-12">
+                {canManageSchedule && (
+                    <ScheduleManager onAdd={addSchedule} onClearAll={clearSchedules} />
+                )}
+
+                <ScheduleDisplay
+                    schedules={schedules}
+                    isAdmin={canManageSchedule}
+                    onDelete={deleteSchedule}
+                />
             </div>
 
         </div>

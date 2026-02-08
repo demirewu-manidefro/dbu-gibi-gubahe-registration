@@ -35,7 +35,6 @@ const Layout = ({ children }) => {
     const [broadcastMessage, setBroadcastMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
-    const [previousNotificationCount, setPreviousNotificationCount] = useState(0);
 
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -50,9 +49,11 @@ const Layout = ({ children }) => {
             { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
             { title: 'አስተዳዳሪ', icon: <ShieldAlert size={20} />, path: '/admins' },
             { title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' },
+            { title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' },
         ]
         : isStudent
             ? [
+                { title: 'ዳሽቦርድ', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
                 { title: 'ምዝገባን አሻሽል', icon: <UserPlus size={20} />, path: '/add-student' },
                 { title: 'የግል መረጃ', icon: <Users size={20} />, path: '/students' },
             ]
@@ -65,7 +66,9 @@ const Layout = ({ children }) => {
                 { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
                 { title: 'የግል መረጃ ማስተካከያ', icon: <UserPlus size={20} />, path: '/profile' },
                 // Add Gallery for 'እቅድ' admins
-                ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : [])
+                ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : []),
+                // Add Schedule for 'ባች' admins
+                ...(user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach' ? [{ title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' }] : [])
             ];
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -130,11 +133,24 @@ const Layout = ({ children }) => {
         }
     };
 
+    // Use refs to track notification state without triggering re-renders
+    const previousNotificationCountRef = React.useRef(0);
+    const isFirstRun = React.useRef(true);
+
     // Monitor for new notifications
     React.useEffect(() => {
         const totalNotifications = userNotifications.length;
+        const prevCount = previousNotificationCountRef.current;
 
-        if (totalNotifications > previousNotificationCount && previousNotificationCount > 0) {
+        // Skip sound on initial load/mount to avoid noise
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            previousNotificationCountRef.current = totalNotifications;
+            return;
+        }
+
+        // If count increased, it means a NEW notification arrived
+        if (totalNotifications > prevCount) {
             const latestNotification = userNotifications[0];
 
             // Play sound
@@ -152,7 +168,8 @@ const Layout = ({ children }) => {
             );
         }
 
-        setPreviousNotificationCount(totalNotifications);
+        // Update ref for next run
+        previousNotificationCountRef.current = totalNotifications;
     }, [userNotifications.length]);
 
     const handleSendBroadcast = async () => {
