@@ -70,9 +70,18 @@ const Login = () => {
         }
 
         setLoading(true);
+        // Minimum loading time of 1.5 seconds for better UX
+        const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
+
         try {
-            await login(username, password, rememberMe);
+            await Promise.all([
+                login(username, password, rememberMe),
+                minLoadTime
+            ]);
         } catch (err) {
+            // Ensure minimum load time even on error
+            await minLoadTime;
+
             // Check if the error is about user not found
             if (err.message && (err.message.includes('not found') || err.message.includes('Invalid credentials') || err.message.includes('User does not exist'))) {
                 setError(

@@ -315,6 +315,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
         if (!formData.submissionDate) return validationError("ቀኑን መሙላት ያስፈልጋል", 3);
 
         setIsSubmitting(true);
+        // Minimum loading time of 1.5 seconds for better UX
+        const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
 
         try {
             // Convert profile photo to Base64 if present
@@ -385,11 +387,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
 
             console.log('Submitting registration data:', finalData);
 
-            if (onSubmit) {
-                await onSubmit(finalData);
-            } else {
-                await registerStudent(finalData);
-            }
+            await Promise.all([
+                (onSubmit ? onSubmit(finalData) : registerStudent(finalData)),
+                minLoadTime
+            ]);
 
             setIsSubmitting(false);
             setShowSuccess(true);
@@ -402,6 +403,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                 }
             }, 2000);
         } catch (err) {
+            await minLoadTime;
             console.error(err);
             setError(err.message || "Registration failed");
             setIsSubmitting(false);
@@ -525,6 +527,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         />
                                                     </div>
                                                     <div>
+                                                        <br />
                                                         <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                         <div className="relative">
                                                             <input
@@ -565,6 +568,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                     <option value="female">ሴት</option>
                                                 </select>
                                             </div>
+                                            <br />
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">የትውልድ ዘመን <span className="text-red-500">*</span></label>

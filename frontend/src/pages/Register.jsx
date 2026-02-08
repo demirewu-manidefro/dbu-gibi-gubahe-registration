@@ -100,9 +100,16 @@ const Register = () => {
         }
 
         setLoading(true);
+        // Minimum loading time of 1.5 seconds for better UX
+        const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
+
         try {
             console.log("Submitting registration...");
-            await signup(formData.username, formData.password);
+            const [result] = await Promise.all([
+                signup(formData.username, formData.password),
+                minLoadTime
+            ]);
+
             console.log("Registration successful");
             navigate('/login', {
                 state: {
@@ -111,6 +118,8 @@ const Register = () => {
                 }
             });
         } catch (err) {
+            // Ensure minimum load time even on error
+            await minLoadTime;
             console.error("Registration error:", err);
             setError(err.message || "An unexpected error occurred");
         } finally {

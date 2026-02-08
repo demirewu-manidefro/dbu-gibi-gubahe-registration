@@ -464,6 +464,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
                                                             />
                                                         </div>
+                                                        <br />
                                                         <div>
                                                             <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                             <div className="relative">
@@ -505,6 +506,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         <option value="female">ሴት</option>
                                                     </select>
                                                 </div>
+                                                <br />
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div>
                                                         <label className="label-amharic">የትውልድ ዘመን (በዓ.ም) <span className="text-red-500">*</span></label>
@@ -529,6 +531,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
                                                     <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
                                                 </div>
+                                                <br />
                                                 <div>
                                                     <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
                                                     <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
