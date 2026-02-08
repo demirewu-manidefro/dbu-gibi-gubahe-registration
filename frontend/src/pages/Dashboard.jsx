@@ -21,7 +21,7 @@ const Dashboard = () => {
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
     const mySection = user?.section;
-    const isBatchAdmin = user?.role === 'admin' && user?.section === 'ባች';
+    const isBatchAdmin = user?.role === 'admin' && (user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach');
     const canManageSchedule = isManager || isBatchAdmin;
 
     if (isStudent) {
@@ -63,7 +63,7 @@ const Dashboard = () => {
                     isAdmin={false}
                 />
 
-                {/* You can add specific student widgets here later if needed */}
+
 
             </div>
         );

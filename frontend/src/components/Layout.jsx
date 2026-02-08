@@ -49,9 +49,11 @@ const Layout = ({ children }) => {
             { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
             { title: 'አስተዳዳሪ', icon: <ShieldAlert size={20} />, path: '/admins' },
             { title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' },
+            { title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' },
         ]
         : isStudent
             ? [
+                { title: 'ዳሽቦርድ', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
                 { title: 'ምዝገባን አሻሽል', icon: <UserPlus size={20} />, path: '/add-student' },
                 { title: 'የግል መረጃ', icon: <Users size={20} />, path: '/students' },
             ]
@@ -64,7 +66,9 @@ const Layout = ({ children }) => {
                 { title: 'ተመርቀው የወጡ አባላት', icon: <GraduationCap size={20} />, path: '/graduates' },
                 { title: 'የግል መረጃ ማስተካከያ', icon: <UserPlus size={20} />, path: '/profile' },
                 // Add Gallery for 'እቅድ' admins
-                ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : [])
+                ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : []),
+                // Add Schedule for 'ባች' admins
+                ...(user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach' ? [{ title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' }] : [])
             ];
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
