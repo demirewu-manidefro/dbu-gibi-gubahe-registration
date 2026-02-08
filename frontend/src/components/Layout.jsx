@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/auth';
+import { useTheme } from '../context/ThemeContext';
 import { useNotifications } from '../context/NotificationContext';
 import {
     UserPlus,
@@ -19,13 +20,16 @@ import {
     MessageCircle,
     ClipboardCheck,
     GraduationCap,
-    Calendar
+    Calendar,
+    Sun,
+    Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const { user, logout, globalSearch, setGlobalSearch } = useAuth();
+    const { darkMode, toggleTheme } = useTheme();
     const { getNotificationsForUser, markAsRead, markAllAsRead, removeNotification, addNotification } = useNotifications();
     const location = useLocation();
 
@@ -68,8 +72,8 @@ const Layout = ({ children }) => {
                 { title: 'የግል መረጃ ማስተካከያ', icon: <UserPlus size={20} />, path: '/profile' },
                 // Add Gallery for 'እቅድ' admins
                 ...(user?.section === 'እቅድ' ? [{ title: 'ጋለሪ', icon: <Camera size={20} />, path: '/gallery' }] : []),
-                // Add Schedule for 'ባች' admins
-                ...(user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach' ? [{ title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' }] : [])
+                // Add Schedule for 'bach' admins
+                ...(user?.section === 'bach' || user?.username === 'bach' ? [{ title: 'መርሐ ግብር', icon: <Calendar size={20} />, path: '/dashboard' }] : [])
             ];
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -205,7 +209,7 @@ const Layout = ({ children }) => {
     );
 
     return (
-        <div className="flex h-screen w-screen bg-gray-50 dark:bg-gray-900 overflow-hidden text-gray-800 dark:text-gray-100 transition-colors duration-300">
+        <div className="flex h-screen w-screen bg-gray-50 dark:bg-slate-950 overflow-hidden text-gray-800 dark:text-gray-100 transition-colors duration-300">
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isMobile && sidebarOpen && <Overlay />}
@@ -219,9 +223,9 @@ const Layout = ({ children }) => {
                     x: isMobile ? (sidebarOpen ? 0 : -280) : 0
                 }}
                 transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-                className={`bg-blue-900 dark:bg-gray-800 text-white flex flex-col z-50 ${isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative'}`}
+                className={`bg-slate-900 text-white flex flex-col z-50 ${isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative'}`}
             >
-                <div className="p-6 flex items-center gap-3 border-b border-white/10 dark:border-gray-700">
+                <div className="p-6 flex items-center gap-3 border-b border-white/10 dark:border-slate-800">
                     <div className="bg-blue-600 p-2 rounded-lg flex-shrink-0">
                         <ShieldCheck size={24} className="text-blue-400" />
                     </div>
@@ -250,7 +254,7 @@ const Layout = ({ children }) => {
                             className={({ isActive }) =>
                                 `group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer ${isActive
                                     ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'text-white/70 hover:bg-white/10:bg-gray-700 hover:text-white'
+                                    : 'text-white/70 hover:bg-white/10 dark:hover:bg-slate-800 hover:text-white'
                                 }`
                             }
                         >
@@ -270,7 +274,7 @@ const Layout = ({ children }) => {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-white/10 dark:border-gray-700 space-y-4">
+                <div className="p-4 border-t border-white/10 dark:border-slate-800 space-y-4">
                     <div className={`flex items-center gap-3 p-2 ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}>
                         <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-blue-900 font-bold flex-shrink-0 overflow-hidden shadow-inner border-2 border-white/20">
                             {user?.photo_url || user?.photoUrl ? (
@@ -290,7 +294,7 @@ const Layout = ({ children }) => {
                     </div>
                     <button
                         onClick={logout}
-                        className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40:bg-gray-700 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
+                        className={`w-full flex items-center gap-4 p-3 rounded-xl hover:bg-blue-900/40 dark:hover:bg-slate-800 text-blue-400 transition-colors ${!isMobile && !sidebarOpen ? 'justify-center' : ''}`}
                     >
                         <LogOut size={20} className="flex-shrink-0" />
                         {(!isMobile && !sidebarOpen) ? null : <span className="font-medium whitespace-nowrap">ውጣ</span>}
@@ -301,11 +305,11 @@ const Layout = ({ children }) => {
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Header */}
-                <header className="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8 z-20 transition-colors duration-300">
+                <header className="h-20 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-8 z-20 transition-colors duration-300">
                     <div className="flex items-center gap-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-gray-600 dark:text-gray-300"
                         >
                             <Menu size={20} />
                         </button>
@@ -314,7 +318,15 @@ const Layout = ({ children }) => {
 
                     <div className="flex items-center gap-4 relative">
                         {/* Theme Toggle */}
-
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={toggleTheme}
+                            className="p-2.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-xl transition-all duration-200"
+                            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        >
+                            {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-slate-600" />}
+                        </motion.button>
                         {/* Notifications - Hidden for students */}
                         {!isStudent && (
                             <>
@@ -325,7 +337,7 @@ const Layout = ({ children }) => {
                                         setShowNotifications(prev => !prev);
                                         setShowMessages(false);
                                     }}
-                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
+                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
                                 >
                                     <motion.div
                                         animate={unreadAlerts > 0 ? {
@@ -343,7 +355,7 @@ const Layout = ({ children }) => {
                                         <motion.span
                                             initial={{ scale: 0 }}
                                             animate={{ scale: 1 }}
-                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-red-500 to-red-600 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
+                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-red-500 to-red-600 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
                                         >
                                             <motion.span
                                                 animate={{ scale: [1, 1.1, 1] }}
@@ -368,14 +380,14 @@ const Layout = ({ children }) => {
                                         setShowMessages(prev => !prev);
                                         setShowNotifications(false);
                                     }}
-                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
+                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
                                 >
                                     <MessageCircle size={20} className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                                     {unreadMessages > 0 && (
                                         <motion.span
                                             initial={{ scale: 0 }}
                                             animate={{ scale: 1 }}
-                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
+                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
                                         >
                                             <motion.span
                                                 animate={{ scale: [1, 1.1, 1] }}
@@ -403,8 +415,8 @@ const Layout = ({ children }) => {
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowNotifications(false)}
                                 />
-                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden z-50">
-                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800">
+                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-700 dark:to-slate-800">
                                         <div className="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-2">
                                             <Bell size={16} className="text-blue-600 dark:text-blue-400" />
                                             ማሳወቂያዎች
@@ -434,7 +446,7 @@ const Layout = ({ children }) => {
                                                     <div
                                                         key={n.id}
                                                         onClick={() => markAsRead(n.id, user?.username)}
-                                                        className={`px-4 py-3 border-b border-gray-50 dark:border-gray-700 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${isUnread ? 'bg-blue-50/50 dark:bg-gray-700/50' : ''}`}
+                                                        className={`px-4 py-3 border-b border-gray-50 dark:border-slate-700 cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors ${isUnread ? 'bg-blue-50/50 dark:bg-slate-700/50' : ''}`}
                                                     >
                                                         <div className="flex items-start justify-between gap-2">
                                                             <div className="flex-1">
@@ -508,8 +520,8 @@ const Layout = ({ children }) => {
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowMessages(false)}
                                 />
-                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden z-50">
-                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-gray-700 dark:to-gray-800">
+                                <div className="absolute right-0 top-12 w-96 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800">
                                         <div className="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-2">
                                             <MessageCircle size={16} className="text-indigo-600 dark:text-indigo-400" />
                                             መልዕክቶች
@@ -521,7 +533,7 @@ const Layout = ({ children }) => {
                                         </div>
                                         <button
                                             onClick={() => setShowBroadcast(true)}
-                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 bg-white/50 dark:bg-gray-700/50 px-2 py-1 rounded-lg"
+                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 bg-white/50 dark:bg-slate-700/50 px-2 py-1 rounded-lg"
                                         >
                                             + አዲስ መልዕክት
                                         </button>
@@ -545,7 +557,7 @@ const Layout = ({ children }) => {
                                                     <div
                                                         key={m.id}
                                                         onClick={() => removeNotification(m.id)}
-                                                        className={`px-4 py-4 border-b border-gray-50 dark:border-gray-700 cursor-pointer hover:bg-indigo-50/30 dark:hover:bg-gray-700/30 transition-colors ${isUnread ? 'bg-indigo-50/20 dark:bg-gray-700/20' : ''}`}
+                                                        className={`px-4 py-4 border-b border-gray-50 dark:border-slate-700 cursor-pointer hover:bg-indigo-50/30 dark:hover:bg-slate-700/30 transition-colors ${isUnread ? 'bg-indigo-50/20 dark:bg-slate-700/20' : ''}`}
                                                     >
                                                         <div className="flex items-start gap-3">
                                                             <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold text-xs flex-shrink-0">
@@ -570,7 +582,7 @@ const Layout = ({ children }) => {
                                         )}
                                     </div>
                                     {userMessages.length > 0 && (
-                                        <div className="p-3 bg-gray-50 dark:bg-gray-900 text-center border-t border-gray-100 dark:border-gray-700">
+                                        <div className="p-3 bg-gray-50 dark:bg-slate-900 text-center border-t border-gray-100 dark:border-slate-700">
                                             <button
                                                 onClick={() => markAllAsRead(user?.username)}
                                                 className="text-xs font-bold text-gray-500 hover:text-indigo-600 dark:text-indigo-400 transition-colors"
@@ -583,8 +595,8 @@ const Layout = ({ children }) => {
                             </>
                         )}
 
-                        <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
-                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full border border-gray-100 dark:border-gray-700 transition-colors">
+                        <div className="h-8 w-[1px] bg-gray-200 dark:bg-slate-700 mx-2"></div>
+                        <button className="flex items-center gap-2 p-1 pl-2 pr-3 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700 transition-colors">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
                                 {user?.photo_url || user?.photoUrl ? (
                                     <img src={user.photo_url || user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -629,7 +641,7 @@ const Layout = ({ children }) => {
 
                                 <div className="p-8 space-y-6">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">ተቀባይ ይምረጡ</label>
+                                        <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2 ml-1">ተቀባይ ይምረጡ</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {[
                                                 { id: 'all', label: 'ሁሉም', color: 'bg-indigo-50/30 text-indigo-700 border-indigo-100' },
@@ -652,7 +664,7 @@ const Layout = ({ children }) => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">የመልዕክት ይዘት</label>
+                                        <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2 ml-1">የመልዕክት ይዘት</label>
                                         <textarea
                                             rows={4}
                                             value={broadcastMessage}
@@ -685,7 +697,7 @@ const Layout = ({ children }) => {
                 </AnimatePresence>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-8 no-scrollbar bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+                <div className="flex-1 overflow-y-auto p-8 no-scrollbar bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
                     {children}
                 </div>
             </main>

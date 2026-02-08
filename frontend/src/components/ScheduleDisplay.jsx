@@ -43,16 +43,13 @@ const ScheduleDisplay = ({ schedules, isAdmin, onDelete }) => {
     const orderedDays = days.filter(day => groupedSchedules[day]);
 
     if (schedules.length === 0) {
-        if (isAdmin) {
-            return (
-                <div className="bg-white dark:bg-slate-800 rounded-3xl p-10 text-center shadow-premium border border-gray-100 dark:border-slate-700">
-                    <Calendar className="mx-auto text-gray-300 dark:text-slate-600 mb-4" size={64} />
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">ምንም መርሐ ግብር የለም</h3>
-                    <p className="text-gray-500 dark:text-gray-400">ለጊዜው የተመዘገበ ሳምንታዊ መርሐ ግብር የለም።</p>
-                </div>
-            );
-        }
-        return null; // Don't show empty schedule to students
+        return (
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-10 text-center shadow-premium border border-gray-100 dark:border-slate-700">
+                <Calendar className="mx-auto text-gray-300 dark:text-slate-600 mb-4" size={64} />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">ምንም መርሐ ግብር የለም</h3>
+                <p className="text-gray-500 dark:text-gray-400">ለጊዜው የተመዘገበ ሳምንታዊ መርሐ ግብር የለም።</p>
+            </div>
+        );
     }
 
     return (
@@ -88,34 +85,32 @@ const ScheduleDisplay = ({ schedules, isAdmin, onDelete }) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: dayIndex * 0.1 }}
-                            className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-premium border border-gray-100 dark:border-slate-700 overflow-hidden group hover:border-blue-200 dark:hover:border-blue-900 transition-all"
+                            className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden group hover:border-blue-200 dark:hover:border-blue-900 transition-all"
                         >
-                            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-5 flex justify-between items-center">
-                                <h3 className="text-2xl font-black text-white tracking-tighter">{day}</h3>
-                                <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white/90 text-xs font-bold uppercase tracking-widest">
+                            <div className="bg-slate-100 dark:bg-slate-700/50 px-6 py-4 flex justify-between items-center border-b border-gray-100 dark:border-slate-600">
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">{day}</h3>
+                                <div className="bg-white dark:bg-slate-600 px-3 py-1 rounded-full text-slate-600 dark:text-slate-200 text-xs font-bold uppercase tracking-widest shadow-sm">
                                     {groupedSchedules[day].length} መርሐ ግብሮች
                                 </div>
                             </div>
 
-                            <div className="p-6 space-y-4">
+                            <div className="p-5 space-y-4">
                                 {groupedSchedules[day].map((item, i) => (
                                     <div
                                         key={item.id}
-                                        className="relative pl-6 border-l-2 border-blue-100 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 transition-colors py-2 group/item"
+                                        className="relative pl-4 border-l-2 border-blue-500 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors py-2 group/item rounded-r-lg"
                                     >
-                                        <div className="absolute -left-[5px] top-4 w-2 h-2 rounded-full bg-blue-500 group-hover/item:scale-150 transition-transform shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-
                                         <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-tighter mb-1">
                                             <Clock size={12} />
                                             <span>{item.time_range}</span>
                                         </div>
 
-                                        <h4 className="text-gray-900 dark:text-white font-extrabold text-lg leading-snug group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
+                                        <h4 className="text-slate-900 dark:text-gray-100 font-bold text-lg leading-snug group-hover/item:text-blue-700 dark:group-hover/item:text-blue-300 transition-colors">
                                             {item.activity}
                                         </h4>
 
                                         {item.description && (
-                                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 leading-relaxed">
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 leading-relaxed">
                                                 {item.description}
                                             </p>
                                         )}
@@ -123,7 +118,7 @@ const ScheduleDisplay = ({ schedules, isAdmin, onDelete }) => {
                                         {isAdmin && (
                                             <button
                                                 onClick={() => onDelete(item.id)}
-                                                className="absolute right-0 top-2 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-all rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                className="absolute right-2 top-2 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                             >
                                                 <Trash2 size={16} />
                                             </button>

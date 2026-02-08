@@ -98,11 +98,11 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex bg-white dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen w-full flex bg-white dark:bg-slate-950 font-sans overflow-hidden transition-colors duration-300">
             <SEO title="መግቢያ" description="ወደ ደብረ ብርሀን ዩኒቨርስቲ ጊቢ ጉባኤ ሲስተም ይግቡ።" />
-            <div className="hidden lg:flex w-full lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white flex-col justify-center p-8 lg:p-16 relative overflow-hidden">
+            <div className="hidden lg:flex w-full lg:w-1/2 bg-slate-900 text-white flex-col justify-center p-8 lg:p-16 relative overflow-hidden">
                 <div className="relative z-10 space-y-8">
-                    <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors group">
+                    <Link to="/" className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors group">
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                         ወደ ዋናው ገጽ
                     </Link>
@@ -111,8 +111,8 @@ const Login = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/20 mb-6 shadow-2xl" />
-                        <h1 className="text-4xl font-extrabold mb-2">ደብረ ብርሃን ጊቢ ጉባኤ</h1>
+                        <img src="/logo-mk.jpg" alt="Logo" className="w-20 h-20 rounded-full border-4 border-white/10 mb-6 shadow-xl" />
+                        <h1 className="text-4xl font-bold mb-2 tracking-tight">ደብረ ብርሃን ጊቢ ጉባኤ</h1>
                         <p className="text-xl text-blue-400 font-medium tracking-wide">መግቢያ (Login)</p>
                     </motion.div>
                 </div>
@@ -123,20 +123,20 @@ const Login = () => {
                     transition={{ delay: 0.4 }}
                     className="max-w-md"
                 >
-                    <blockquote className="text-2xl font-serif leading-relaxed mb-6 italic text-white/90">
+                    <blockquote className="text-2xl font-serif leading-relaxed mb-6 italic text-slate-300">
                         "ትምህርትህ እምነትህን ያጠናክረው።"
                     </blockquote>
                     <div className="flex items-center gap-4">
-                        <div className="h-px bg-white/30 flex-1"></div>
-                        <span className="text-sm font-medium text-white/60">ቅዱስ ያሬድ</span>
+                        <div className="h-px bg-white/10 flex-1"></div>
+                        <span className="text-sm font-medium text-slate-400">ቅዱስ ያሬድ</span>
                     </div>
                 </motion.div>
 
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 -left-24 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16 bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -144,7 +144,7 @@ const Login = () => {
                 >
                     <div className="text-center lg:text-left">
                         <div className="lg:hidden flex justify-between items-center mb-6">
-                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            <Link to="/" className="p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-800 transition-colors">
                                 <ArrowLeft size={20} className="text-gray-700 dark:text-gray-200" />
                             </Link>
                             <img src="/logo-mk.jpg" alt="Logo" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-600 shadow-lg" />
@@ -156,7 +156,7 @@ const Login = () => {
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                    <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-800 transition-colors duration-300">
                         {error && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
@@ -170,7 +170,7 @@ const Login = () => {
 
                         <div className="space-y-5">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">ተጠቃሚ ስም</label>
+                                <label className="block text-sm font-semibold text-black dark:text-gray-300 mb-2">ተጠቃሚ ስም</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <User size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
@@ -183,9 +183,9 @@ const Login = () => {
                                             if (usernameError) validateUsername(e.target.value);
                                         }}
                                         onBlur={(e) => validateUsername(e.target.value)}
-                                        className={`block w-full pl-11 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${usernameError
+                                        className={`block w-full pl-11 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${usernameError
                                             ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
+                                            : 'border-gray-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/20'
                                             }`}
                                         placeholder="Username"
                                     />
@@ -199,7 +199,7 @@ const Login = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">የይለፍ ቃል</label>
+                                <label className="block text-sm font-semibold text-black dark:text-gray-300 mb-2">የይለፍ ቃል</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
@@ -212,9 +212,9 @@ const Login = () => {
                                             if (passwordError) validatePassword(e.target.value);
                                         }}
                                         onBlur={(e) => validatePassword(e.target.value)}
-                                        className={`block w-full pl-11 pr-12 py-3.5 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${passwordError
+                                        className={`block w-full pl-11 pr-12 py-3.5 rounded-xl bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 transition-all duration-200 ease-in-out text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 ${passwordError
                                             ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
+                                            : 'border-gray-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/20'
                                             }`}
                                         placeholder="••••••••"
                                     />
