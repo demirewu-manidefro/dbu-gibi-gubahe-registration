@@ -34,6 +34,8 @@ const Layout = ({ children }) => {
     const [broadcastTarget, setBroadcastTarget] = useState('all');
     const [broadcastMessage, setBroadcastMessage] = useState('');
     const [sending, setSending] = useState(false);
+    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+    const [previousNotificationCount, setPreviousNotificationCount] = useState(0);
 
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -79,6 +81,15 @@ const Layout = ({ children }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Request notification permission on mount
+    React.useEffect(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                setNotificationPermission(permission);
+            });
+        }
+    }, []);
+
     // Get user-specific notifications
     const userNotifications = getNotificationsForUser(user);
     const userAlerts = userNotifications.filter(n => n.type !== 'message');
@@ -86,6 +97,63 @@ const Layout = ({ children }) => {
 
     const unreadAlerts = userAlerts.filter(n => !n.readBy.includes(user?.username)).length;
     const unreadMessages = userMessages.filter(n => !n.readBy.includes(user?.username)).length;
+
+    // Play notification sound
+    const playNotificationSound = () => {
+        try {
+            const audio = new Audio('/notification.wav'); // Use the file from public folder
+            audio.volume = 0.5;
+            audio.play().catch(error => console.log('Audio autoplay blocked:', error));
+        } catch (error) {
+            console.log('Could not play notification sound', error);
+        }
+    };
+
+    // Show desktop notification
+    const showDesktopNotification = (title, body, type = 'info') => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: body,
+                icon: '/logo-mk.jpg',
+                badge: '/logo-mk.jpg',
+                tag: 'dbu-notification',
+                requireInteraction: false,
+                silent: false
+            });
+
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+
+            setTimeout(() => notification.close(), 5000);
+        }
+    };
+
+    // Monitor for new notifications
+    React.useEffect(() => {
+        const totalNotifications = userNotifications.length;
+
+        if (totalNotifications > previousNotificationCount && previousNotificationCount > 0) {
+            const latestNotification = userNotifications[0];
+
+            // Play sound
+            playNotificationSound();
+
+            // Show desktop notification
+            const notificationTitle = latestNotification.type === 'message'
+                ? `አዲስ መልዕክት ከ ${latestNotification.from}`
+                : 'አዲስ ማሳወቂያ';
+
+            showDesktopNotification(
+                notificationTitle,
+                latestNotification.message,
+                latestNotification.type
+            );
+        }
+
+        setPreviousNotificationCount(totalNotifications);
+    }, [userNotifications.length]);
 
     const handleSendBroadcast = async () => {
         if (!broadcastMessage.trim()) return;
@@ -232,34 +300,81 @@ const Layout = ({ children }) => {
                         {/* Notifications - Hidden for students */}
                         {!isStudent && (
                             <>
-                                <button
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={() => {
                                         setShowNotifications(prev => !prev);
                                         setShowMessages(false);
                                     }}
-                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full relative transition-colors"
+                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
                                 >
-                                    <Bell size={20} />
+                                    <motion.div
+                                        animate={unreadAlerts > 0 ? {
+                                            rotate: [0, -10, 10, -10, 0],
+                                        } : {}}
+                                        transition={{
+                                            duration: 0.5,
+                                            repeat: unreadAlerts > 0 ? Infinity : 0,
+                                            repeatDelay: 3
+                                        }}
+                                    >
+                                        <Bell size={20} className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                                    </motion.div>
                                     {unreadAlerts > 0 && (
-                                        <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                            {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                                        </span>
+                                        <motion.span
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-red-500 to-red-600 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
+                                        >
+                                            <motion.span
+                                                animate={{ scale: [1, 1.1, 1] }}
+                                                transition={{ duration: 1, repeat: Infinity }}
+                                            >
+                                                {unreadAlerts > 9 ? '9+' : unreadAlerts}
+                                            </motion.span>
+                                        </motion.span>
                                     )}
-                                </button>
-                                <button
+                                    {unreadAlerts > 0 && (
+                                        <motion.div
+                                            className="absolute inset-0 bg-red-400 rounded-xl opacity-20"
+                                            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0, 0.2] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                        />
+                                    )}
+                                </motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={() => {
                                         setShowMessages(prev => !prev);
                                         setShowNotifications(false);
                                     }}
-                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full relative transition-colors"
+                                    className="p-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl relative transition-all duration-200 group"
                                 >
-                                    <MessageCircle size={20} />
+                                    <MessageCircle size={20} className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                                     {unreadMessages > 0 && (
-                                        <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                                            {unreadMessages > 9 ? '9+' : unreadMessages}
-                                        </span>
+                                        <motion.span
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold text-white shadow-lg"
+                                        >
+                                            <motion.span
+                                                animate={{ scale: [1, 1.1, 1] }}
+                                                transition={{ duration: 1, repeat: Infinity }}
+                                            >
+                                                {unreadMessages > 9 ? '9+' : unreadMessages}
+                                            </motion.span>
+                                        </motion.span>
                                     )}
-                                </button>
+                                    {unreadMessages > 0 && (
+                                        <motion.div
+                                            className="absolute inset-0 bg-blue-400 rounded-xl opacity-20"
+                                            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0, 0.2] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                        />
+                                    )}
+                                </motion.button>
                             </>
                         )}
 
