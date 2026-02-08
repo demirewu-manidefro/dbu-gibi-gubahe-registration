@@ -454,7 +454,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                 {['admin', 'manager'].includes(user?.role) && (
                                                     <>
                                                         <div>
-                                                            <label className="label-amharic">Username <span className="text-red-500">*</span></label>
+                                                            <label className="label-amharic">የተጠቃሚ ስም <span className="text-red-500">*</span></label>
                                                             <input
                                                                 name="username"
                                                                 value={formData.username}
@@ -465,7 +465,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             />
                                                         </div>
                                                         <div>
-                                                            <label className="label-amharic">Password <span className="text-red-500">*</span></label>
+                                                            <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                             <div className="relative">
                                                                 <input
                                                                     name="password"

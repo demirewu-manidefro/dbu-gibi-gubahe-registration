@@ -104,19 +104,19 @@ const AttendanceSheet = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">የክትትል ቅጽ</h1>
                     <p className="text-gray-500 dark:text-gray-400 font-medium">የተማሪዎችን የክስተቶች እና የአገልግሎት ክትትል ይከታተሉ</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <EthiopianDatePicker
                         value={selectedDate}
                         onChange={setSelectedDate}
                     />
                     <button
                         onClick={handleSaveAttendance}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95"
                     >
                         <Save size={18} />
                         ቅጹን አስቀምጥ
@@ -124,11 +124,11 @@ const AttendanceSheet = () => {
                 </div>
             </div>
 
-            <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-2xl p-4 border border-gray-100 dark:border-slate-700 flex items-center gap-6 shadow-sm">
-                <div className="flex-1">
+            <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-2xl p-4 border border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center gap-6 shadow-sm">
+                <div className="flex-1 w-full">
                     <div className="flex justify-between mb-2">
                         <span className="text-sm font-bold text-gray-700 dark:text-white">የተጠናቀቀበት ሁኔታ</span>
-                        <span className="text-sm font-black text-blue-600 dark:text-blue-400">
+                        <span className="text-sm font-black text-blue-600 dark:text-blue-400 whitespace-nowrap">
                             {studentsInSheet.filter(s => attendanceData[s.id]).length} / {studentsInSheet.length} ተሞልቷል
                         </span>
                     </div>
@@ -141,20 +141,20 @@ const AttendanceSheet = () => {
                 </div>
                 <button
                     onClick={handleMarkAllPresent}
-                    className="px-4 py-2 border-2 border-green-100 dark:border-green-900/50 text-green-600 dark:text-green-400 rounded-xl text-xs font-black uppercase tracking-tight hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                    className="w-full sm:w-auto px-4 py-3 sm:py-2 border-2 border-green-100 dark:border-green-900/50 text-green-600 dark:text-green-400 rounded-xl text-xs font-black uppercase tracking-tight hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors active:scale-95"
                 >
                     ሁሉንም እንደተገኙ ምልክት አድርግ
                 </button>
             </div>
 
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-premium dark:shadow-none border border-gray-100 dark:border-slate-700 overflow-hidden">
-                <div className="p-6 border-b border-gray-50 dark:border-slate-700 flex flex-wrap gap-4 items-center justify-between">
-                    <div className="relative flex-1 min-w-[300px]">
+                <div className="p-6 border-b border-gray-50 dark:border-slate-700 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+                    <div className="relative flex-1 min-w-0">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                         <input
                             type="text"
                             placeholder="ተማሪ ይፈልጉ..."
-                            className="pl-10 h-12 bg-gray-50/50 dark:bg-slate-900/50 border-gray-200 dark:border-slate-700 rounded-2xl w-full text-gray-900 dark:text-white"
+                            className="pl-10 h-12 bg-gray-50/50 dark:bg-slate-900/50 border-gray-200 dark:border-slate-700 rounded-2xl w-full text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />

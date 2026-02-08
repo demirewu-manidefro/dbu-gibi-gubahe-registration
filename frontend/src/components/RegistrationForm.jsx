@@ -514,7 +514,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                             {['admin', 'manager'].includes(user?.role) && (
                                                 <>
                                                     <div>
-                                                        <label className="label-amharic">Username <span className="text-red-500">*</span></label>
+                                                        <label className="label-amharic">የተጠቃሚ ስም <span className="text-red-500">*</span></label>
                                                         <input
                                                             name="username"
                                                             value={formData.username}
@@ -525,7 +525,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="label-amharic">Password <span className="text-red-500">*</span></label>
+                                                        <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                         <div className="relative">
                                                             <input
                                                                 name="password"
