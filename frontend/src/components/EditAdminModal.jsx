@@ -343,8 +343,10 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                                 onChange={(e) => {
                                                                     const file = e.target.files[0];
                                                                     if (file) {
-                                                                        if (file.size > 5 * 1024 * 1024) {
-                                                                            setError("ምስሉ ከ 5MB መብለጥ የለበትም");
+                                                                        const maxSize = 500 * 1024; // 500KB limit
+                                                                        if (file.size > maxSize) {
+                                                                            alert(`የፎቶው መጠን በጣም ትልቅ ነው! እባክዎ ከ500KB በታች ያለ ፎቶ ይምረጡ። \n\nየተመረጠው ፎቶ መጠን: ${(file.size / 1024).toFixed(0)}KB`);
+                                                                            e.target.value = '';
                                                                             return;
                                                                         }
                                                                         const reader = new FileReader();
@@ -358,7 +360,7 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                         </label>
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className="text-sm text-gray-500 mb-2">ፎቶ ይምረጡ (Max 5MB)</p>
+                                                        <p className="text-sm text-gray-500 mb-2">ፎቶ ይምረጡ (<span className="font-bold text-red-600">ከ500KB በታች</span>)</p>
                                                         <div className="flex gap-2">
                                                             <input
                                                                 name="photoUrl"

@@ -652,8 +652,20 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                             )}
                                             <input
                                                 type="file"
+                                                accept="image/*"
                                                 className="absolute inset-0 opacity-0 cursor-pointer"
-                                                onChange={(e) => setFormData({ ...formData, profilePhoto: e.target.files[0] })}
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const maxSize = 500 * 1024; // 500KB in bytes
+                                                        if (file.size > maxSize) {
+                                                            alert(`የፎቶው መጠን በጣም ትልቅ ነው! እባክዎ ከ500KB በታች ያለ ፎቶ ይምረጡ። \n\nየተመረጠው ፎቶ መጠን: ${(file.size / 1024).toFixed(0)}KB`);
+                                                            e.target.value = ''; // Clear the input
+                                                            return;
+                                                        }
+                                                        setFormData({ ...formData, profilePhoto: file });
+                                                    }
+                                                }}
                                             />
                                         </div>
                                         <div className="mt-4 w-full">
@@ -667,7 +679,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                             />
                                         </div>
                                         <p className="mt-4 text-xs text-center text-gray-500 leading-relaxed italic">
-                                            ለማንነት መታወቂያ የሚሆን ግልጽ ፎቶ ይስቀሉ ወይም ሊንክ ያስገቡ።
+                                            ለማንነት መታወቂያ የሚሆን ግልጽ ፎቶ ይስቀሉ ወይም ሊንክ ያስገቡ። <span className="font-bold text-red-600">ከ500KB በታች</span> ብቻ።
                                         </p>
                                     </div>
                                 </div>
