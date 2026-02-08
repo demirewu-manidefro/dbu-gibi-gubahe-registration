@@ -59,6 +59,18 @@ html {
   button {
     @apply cursor-pointer;
   }
+
+  /* Hide number input spinners */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
 .glass-card {
@@ -74,7 +86,7 @@ html {
 }
 
 .label-amharic {
-  @apply block text-sm font-bold text-gray-700 dark:text-gray-700 mb-2;
+  @apply block text-sm font-bold text-gray-900 dark:text-gray-200 mb-2 whitespace-nowrap;
 }
 
 .no-scrollbar::-webkit-scrollbar {
