@@ -3,7 +3,12 @@
     "builds": [
         {
             "src": "backend/index.js",
-            "use": "@vercel/node"
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": [
+                    "backend/models/**"
+                ]
+            }
         },
         {
             "src": "frontend/package.json",
