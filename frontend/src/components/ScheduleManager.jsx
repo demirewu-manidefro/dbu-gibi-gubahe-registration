@@ -85,7 +85,7 @@ const ScheduleManager = ({ onAdd, onClearAll }) => {
 
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                            <label className="flex items-center gap-2 text-sm font-bold text-black dark:text-gray-400 uppercase tracking-widest pl-1">
                                 <Calendar size={14} className="text-blue-500" />
                                 ቀን
                             </label>
@@ -100,7 +100,7 @@ const ScheduleManager = ({ onAdd, onClearAll }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                            <label className="flex items-center gap-2 text-sm font-bold text-black dark:text-gray-400 uppercase tracking-widest pl-1">
                                 <Clock size={14} className="text-blue-500" />
                                 ሰዓት 
                             </label>
@@ -115,7 +115,7 @@ const ScheduleManager = ({ onAdd, onClearAll }) => {
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <label className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                            <label className="flex items-center gap-2 text-sm font-bold text-black dark:text-gray-400 uppercase tracking-widest pl-1">
                                 <Bookmark size={14} className="text-blue-500" />
                                 መርሐ ግብር / ተግባር
                             </label>
@@ -130,7 +130,7 @@ const ScheduleManager = ({ onAdd, onClearAll }) => {
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <label className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                            <label className="flex items-center gap-2 text-sm font-bold text-black dark:text-gray-400 uppercase tracking-widest pl-1">
                                 <FileText size={14} className="text-blue-500" />
                                 ዝርዝር መግለጫ (አማራጭ)
                             </label>

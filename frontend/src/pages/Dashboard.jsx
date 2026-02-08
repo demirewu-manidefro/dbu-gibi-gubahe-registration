@@ -21,7 +21,7 @@ const Dashboard = () => {
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
     const mySection = user?.section;
-    const isBatchAdmin = user?.role === 'admin' && (user?.section === 'ባች' || user?.section === 'bach' || user?.username === 'bach');
+    const isBatchAdmin = user?.role === 'admin' && (user?.section === 'bach' || user?.username === 'bach');
     const canManageSchedule = isManager || isBatchAdmin;
 
     if (isStudent) {
@@ -138,9 +138,9 @@ const Dashboard = () => {
                         <div className={`p-4 rounded-2xl ${stat.color} text-white w-fit mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-${stat.color.split('-')[1]}-200 dark:shadow-none`}>
                             {stat.icon}
                         </div>
-                        <div className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">{stat.label}</div>
+                        <div className="text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">{stat.label}</div>
                         <div className="text-3xl font-extrabold text-gray-900 dark:text-white mt-1">{stat.value}</div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                        <div className="text-xs font-medium text-gray-500 dark:text-slate-400 mt-2 flex items-center gap-1">
                             {stat.sub}
                         </div>
                     </motion.div>

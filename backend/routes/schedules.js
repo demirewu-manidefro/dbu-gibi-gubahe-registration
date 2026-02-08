@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
-const authorize = require('../middleware/authorize');
+const { auth, authorize } = require('../middleware/auth');
 const { query } = require('../config/db');
 
 // @route   GET api/schedules
@@ -33,12 +32,12 @@ router.get('/', auth, async (req, res) => {
 // @access  Batch Admin & Manager
 router.post('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
     // Extra security: Only 'ባች' admin or manager
-    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
-        return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር መለጠፍ ይችላሉ' });
+    if (req.user.role === 'admin' && !(req.user.section === 'bach' || req.user.username === 'bach')) {
+        return res.status(403).json({ message: 'ብቻ የbach አስተዳዳሪዎች መርሐ ግብር መለጠፍ ይችላሉ' });
     }
 
-    const { activity, day, time, description } = req.body;
-    if (!activity || !day || !time) {
+    const { activity, day, time_range, description } = req.body;
+    if (!activity || !day || !time_range) {
         return res.status(400).json({ message: 'እባክዎ ሁሉንም መስኮች ያሟሉ' });
     }
 
@@ -51,7 +50,7 @@ router.post('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
             id: Date.now(),
             activity,
             day,
-            time,
+            time_range,
             description,
             addedBy: req.user.name || req.user.username
         };
@@ -74,8 +73,8 @@ router.post('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
 // @desc    Clear all schedules
 // @access  Batch Admin & Manager
 router.delete('/', [auth, authorize(['admin', 'manager'])], async (req, res) => {
-    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
-        return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
+    if (req.user.role === 'admin' && !(req.user.section === 'bach' || req.user.username === 'bach')) {
+        return res.status(403).json({ message: 'ብቻ የbach አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
     }
 
     try {
@@ -91,8 +90,8 @@ router.delete('/', [auth, authorize(['admin', 'manager'])], async (req, res) => 
 // @desc    Delete single schedule item
 // @access  Batch Admin & Manager
 router.delete('/:id', [auth, authorize(['admin', 'manager'])], async (req, res) => {
-    if (req.user.role === 'admin' && !(req.user.section === 'ባች' || req.user.section === 'bach' || req.user.username === 'bach')) {
-        return res.status(403).json({ message: 'ብቻ የባች አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
+    if (req.user.role === 'admin' && !(req.user.section === 'bach' || req.user.username === 'bach')) {
+        return res.status(403).json({ message: 'ብቻ የbach አስተዳዳሪዎች መርሐ ግብር ማጽዳት ይችላሉ' });
     }
 
     try {

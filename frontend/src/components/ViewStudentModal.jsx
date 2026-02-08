@@ -198,7 +198,7 @@ const ViewStudentModal = ({ student, onClose, title = 'የተማሪ መረጃ' }
                                     <div className="font-medium text-gray-700 dark:text-gray-200">{student.dept || '-'}</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs text-gray-400 font-bold uppercase">የምረቃ ዓመት / ባች</div>
+                                    <div className="text-xs text-gray-400 font-bold uppercase">የምረቃ ዓመት / bach</div>
                                     <div className="font-medium text-gray-700 dark:text-gray-200">{student.year || '-'}</div>
                                 </div>
                                 <div>

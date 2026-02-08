@@ -279,7 +279,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         if (formData.college === 'Other' && !formData.customCollege) return validationError("የኮሌጅ ስም ያስገቡ", 2);
         if (!formData.department) return validationError("የትምህርት ክፍል መመረጥ አለበት", 2);
         if (formData.department === 'Other' && !formData.customDepartment) return validationError("የትምህርት ክፍል ስም ያስገቡ", 2);
-        if (!formData.batch) return validationError("ባች/ዓመት መመረጥ አለበት", 2);
+        if (!formData.batch) return validationError("bach/ዓመት መመረጥ አለበት", 2);
 
         // Tab 3: Spiritual
         if (!formData.serviceSection) return validationError("የአገልግሎት ክፍል መመረጥ አለበት", 3);
@@ -359,14 +359,14 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden"
+                    className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-900">
                         <div className="flex items-center gap-4">
                             <div>
                                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">የተማሪ መረጃ ማስተካከያ</h2>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">የተማሪው መረጃ ማስተካከያ ለ {student.name}</p>
+                                <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">የተማሪው መረጃ ማስተካከያ ለ {student.name}</p>
                             </div>
                             <button
                                 onClick={() => setShowView(true)}
@@ -393,14 +393,14 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                     )}
 
                     {/* Tab Navigation */}
-                    <div className="flex gap-2 px-8 pt-6 pb-2 border-b border-gray-50 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div className="flex gap-2 px-8 pt-6 pb-2 border-b border-gray-50 dark:border-slate-700 bg-white dark:bg-slate-800">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all ${activeTab === tab.id
                                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-none'
-                                    : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 border border-gray-100 dark:border-gray-600 hover:border-white-600 hover:text-blue-300 dark:border-white-600'
+                                    : 'bg-white dark:bg-slate-700 text-gray-500 dark:text-slate-300 border border-gray-100 dark:border-slate-600 hover:border-white-600 hover:text-blue-300 dark:border-white-600'
                                     }`}
                             >
                                 {tab.icon}
@@ -420,7 +420,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                 e.preventDefault();
                             }
                         }}
-                        className="flex-1 flex flex-col min-h-0 bg-gray-50/30 dark:bg-gray-900/50"
+                        className="flex-1 flex flex-col min-h-0 bg-gray-50/30 dark:bg-slate-900/50"
                     >
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                             <AnimatePresence mode="wait">
@@ -450,7 +450,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             }
                                                         }}
                                                         required
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-wide text-gray-900 dark:text-white"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-wide text-gray-900 dark:text-white"
                                                     />
                                                 </div>
 
@@ -465,7 +465,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 onChange={handleInputChange}
                                                                 placeholder="የተጠቃሚ ስም"
                                                                 required
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
                                                             />
                                                         </div>
 
@@ -478,12 +478,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                     value={formData.password}
                                                                     onChange={handleInputChange}
                                                                     placeholder="የይለፍ ቃል"
-                                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
+                                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
                                                                 />
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setShowPassword(!showPassword)}
-                                                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-gray-200"
                                                                 >
                                                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                                                 </button>
@@ -499,12 +499,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         value={formData.fullName}
                                                         onChange={handleInputChange}
                                                         required
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">ፆታ <span className="text-red-500">*</span></label>
-                                                    <select name="sex" value={formData.sex} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+                                                    <select name="sex" value={formData.sex} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
                                                         <option value="">ምረጥ...</option>
                                                         <option value="male">ወንድ</option>
                                                         <option value="female">ሴት</option>
@@ -522,21 +522,21 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             required
                                                             min="1990"
                                                             max={currentEthYear}
-                                                            className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                            className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                     <div>
                                                         <label className="label-amharic">ዕድሜ</label>
-                                                        <input name="age" value={formData.age} readOnly className="w-full bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white" />
+                                                        <input name="age" value={formData.age} readOnly className="w-full bg-gray-50 dark:bg-slate-600 border border-gray-300 dark:border-slate-500 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white" />
                                                     </div>
                                                 </div>
                                                 <div className="col-span-1 md:col-span-2">
                                                     <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
-                                                    <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
+                                                    <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
                                                 </div>
                                                 <div className="col-span-1 md:col-span-2">
                                                     <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
-                                                    <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+                                                    <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
                                                         <option value="">ምረጥ...</option>
                                                         <option value="lay">ምእመን</option>
                                                         <option value="diakon">ዲያቆን</option>
@@ -615,7 +615,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="ቋንቋ"
                                                         required
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     />
                                                 </div>
                                                 <div className="col-span-2">
@@ -626,21 +626,21 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             value={formData.otherLanguages?.l1 || ''}
                                                             onChange={handleInputChange}
                                                             placeholder="ቋንቋ 1"
-                                                            className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
+                                                            className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
                                                         />
                                                         <input
                                                             name="lang-l2"
                                                             value={formData.otherLanguages?.l2 || ''}
                                                             onChange={handleInputChange}
                                                             placeholder="ቋንቋ 2"
-                                                            className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
+                                                            className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
                                                         />
                                                         <input
                                                             name="lang-l3"
                                                             value={formData.otherLanguages?.l3 || ''}
                                                             onChange={handleInputChange}
                                                             placeholder="ቋንቋ 3"
-                                                            className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
+                                                            className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                 </div>
@@ -681,14 +681,14 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         placeholder="9... or 7..."
                                                         maxLength={9}
                                                         pattern="[79][0-9]{8}"
-                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                         required
                                                     />
                                                 </div>
                                             </div>
                                             <div>
                                                 <label className="label-amharic">ክልል <span className="text-red-500">*</span></label>
-                                                <select name="region" value={formData.region} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+                                                <select name="region" value={formData.region} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
                                                     <option value="">ክልል ይምረጡ...</option>
                                                     {Object.keys(ethiopianRegions).map(region => (
                                                         <option key={region} value={region}>{region}</option>
@@ -703,7 +703,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="የክልል ስም ያስገቡ"
                                                         required
-                                                        className="mt-2 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="mt-2 w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     />
                                                 )}
                                             </div>
@@ -715,7 +715,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     onChange={handleInputChange}
                                                     disabled={!formData.region}
                                                     required
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 >
                                                     <option value="">{formData.region ? 'ዞን ይምረጡ...' : 'መጀመሪያ ክልል ይምረጡ'}</option>
                                                     {formData.region && formData.region !== 'Other' && ethiopianRegions[formData.region]?.map(zone => (
@@ -731,7 +731,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="የዞን ስም ያስገቡ"
                                                         required
-                                                        className="mt-2 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="mt-2 w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     />
                                                 )}
                                             </div>
@@ -743,7 +743,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     onChange={handleInputChange}
                                                     placeholder="ወረዳ"
                                                     required
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 />
                                             </div>
                                             <div>
@@ -754,7 +754,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     onChange={handleInputChange}
                                                     placeholder="ቀበሌ"
                                                     required
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 />
                                             </div>
                                             <div>
@@ -764,7 +764,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     value={formData.gibiName}
                                                     onChange={handleInputChange}
                                                     required
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="ደ/ቀ/ግ/ጉባኤ">ደ/ቀ/ግ/ጉባኤ</option>
@@ -781,7 +781,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         placeholder="የግቢ ጉባኤው ሥም ያስገቡ"
                                                         required
-                                                        className="mt-2 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="mt-2 w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     />
                                                 )}
                                             </div>
@@ -792,7 +792,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     value={formData.centerAndWoredaCenter}
                                                     onChange={handleInputChange}
                                                     placeholder="ማእከል/ወረዳ"
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 />
                                             </div>
                                             <div className="col-span-2">
@@ -802,7 +802,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     value={formData.parishChurch}
                                                     onChange={handleInputChange}
                                                     required
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                    className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="ቅዱስ ገብራኤል ቤተ ክርስቲያን">ቅዱስ ገብራኤል ቤተ ክርስቲያን</option>
@@ -813,7 +813,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                             </div>
                                             <div className="col-span-2">
                                                 <label className="label-amharic">የተጠሪ ስም <span className="text-red-500">*</span></label>
-                                                <input name="emergencyName" value={formData.emergencyName} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
+                                                <input name="emergencyName" value={formData.emergencyName} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
                                             </div>
                                             <div className="col-span-2">
                                                 <label className="label-amharic">የተጠሪ ስልክ <span className="text-red-500">*</span></label>
@@ -845,7 +845,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         placeholder="9... or 7..."
                                                         maxLength={9}
                                                         pattern="[79][0-9]{8}"
-                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="w-full pl-28 pr-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                         required
                                                     />
                                                 </div>
@@ -864,7 +864,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         value={formData.college}
                                                         onChange={handleInputChange}
                                                         required
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                     >
                                                         <option value="">ኮሌጅ ይምረጡ</option>
                                                         {Object.keys(collegesAndDepartments).map(college => (
@@ -880,7 +880,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             onChange={handleInputChange}
                                                             placeholder="Enter college name"
                                                             required
-                                                            className="mt-2 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                            className="mt-2 w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                         />
                                                     )}
                                                 </div>
@@ -892,7 +892,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         required
                                                         disabled={!formData.college}
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
                                                     >
                                                         <option value="">{formData.college ? 'ክፍል ይምረጡ' : 'መጀመሪያ ኮሌጅ ይምረጡ'}</option>
                                                         {formData.college && formData.college !== 'Other' && collegesAndDepartments[formData.college]?.map(dept => (
@@ -908,13 +908,13 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             onChange={handleInputChange}
                                                             placeholder="Enter department name"
                                                             required
-                                                            className="mt-2 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                            className="mt-2 w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                         />
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <label className="label-amharic">ባች/ዓመት <span className="text-red-500">*</span></label>
-                                                    <select name="batch" value={formData.batch} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+                                                    <label className="label-amharic">bach/ዓመት <span className="text-red-500">*</span></label>
+                                                    <select name="batch" value={formData.batch} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
                                                         <option value="">ዓመት ምረጥ</option>
                                                         <option value="1">1ኛ ዓመት</option>
                                                         <option value="2">2ኛ ዓመት</option>
@@ -931,7 +931,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                     {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                         <div key={year}>
-                                                            <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 block">ዓመት {idx + 1}</label>
+                                                            <label className="text-xs font-bold text-black dark:text-slate-400 uppercase mb-1 block">ዓመት {idx + 1}</label>
                                                             <input
                                                                 type="number"
                                                                 step="0.01"
@@ -941,12 +941,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 placeholder="0.00"
                                                                 value={formData.gpa[year]}
                                                                 onChange={handleInputChange}
-                                                                className="w-full text-center font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                className="w-full text-center font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                             />
                                                         </div>
                                                     ))}
                                                     <div className="col-span-2 md:col-span-1">
-                                                        <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 block">አማካይ ውጤት</label>
+                                                        <label className="text-xs font-bold text-black dark:text-slate-400 uppercase mb-1 block">አማካይ ውጤት</label>
                                                         <input
                                                             type="number"
                                                             step="0.01"
@@ -976,13 +976,13 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={handleInputChange}
                                                         required
                                                         disabled={user?.role === 'admin'}
-                                                        className={`w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white ${user?.role === 'admin' ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed opacity-75' : ''}`}
+                                                        className={`w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white ${user?.role === 'admin' ? 'bg-gray-100 dark:bg-slate-600 cursor-not-allowed opacity-75' : ''}`}
                                                     >
                                                         <option value="">ምረጥ...</option>
                                                         <option value="እቅድ">እቅድ</option>
                                                         <option value="ትምህርት">ትምህርት</option>
                                                         <option value="ልማት">ልማት</option>
-                                                        <option value="ባች">ባች</option>
+                                                        <option value="bach">bach</option>
                                                         <option value="ሙያ">ሙያ</option>
                                                         <option value="ቋንቋ">ቋንቋ</option>
                                                         <option value="አባላት">አባላት</option>
@@ -1007,7 +1007,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 name="abinetEducation"
                                                                 value={formData.abinetEducation}
                                                                 onChange={handleInputChange}
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                 placeholder="የአብነት ትምህርት..."
                                                             />
                                                         </div>
@@ -1017,7 +1017,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 name="specialNeed"
                                                                 value={formData.specialNeed}
                                                                 onChange={handleInputChange}
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                 placeholder="ልዩ ፍላጎት..."
                                                             />
                                                         </div>
@@ -1028,7 +1028,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 value={formData.specialEducation}
                                                                 onChange={handleInputChange}
                                                                 required
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                             >
                                                                 <option value="">ምረጥ...</option>
                                                                 <option value="ደረጃ 1">ደረጃ 1</option>
@@ -1051,7 +1051,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 value={formData.membershipYear}
                                                                 onChange={handleInputChange}
                                                                 placeholder="20XX"
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                             />
                                                         </div>
                                                         <div>
@@ -1063,7 +1063,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 value={formData.graduationYear}
                                                                 onChange={handleInputChange}
                                                                 placeholder="20XX"
-                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                             />
                                                         </div>
                                                     </div>
@@ -1079,12 +1079,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     <div className="space-y-3">
                                                         {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                             <div key={`course-${year}`} className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{idx + 1}ኛ ዓመት</div>
+                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">{idx + 1}ኛ ዓመት</div>
                                                                 <input
                                                                     name={`educationYearly-${year}`}
                                                                     value={formData.educationYearly[year]}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="ኮርስ..."
                                                                 />
                                                             </div>
@@ -1100,12 +1100,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     <div className="space-y-3">
                                                         {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                             <div key={`resp-${year}`} className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{idx + 1}ኛ ዓመት</div>
+                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">{idx + 1}ኛ ዓመት</div>
                                                                 <input
                                                                     name={`responsibility-${year}`}
                                                                     value={formData.responsibility[year] || ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
                                                                 />
                                                             </div>
@@ -1121,12 +1121,12 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                     <div className="space-y-3">
                                                         {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                             <div key={`att-${year}`} className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{idx + 1}ኛ ዓመት</div>
+                                                                <div className="w-16 flex-shrink-0 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">{idx + 1}ኛ ዓመት</div>
                                                                 <input
                                                                     name={`attendance-${year}`}
                                                                     value={formData.attendance[year]}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="ክትትል..."
                                                                 />
                                                             </div>
@@ -1143,37 +1143,37 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                 <div className="space-y-8 ">
                                                     {/* Teacher Training Section */}
                                                     <div>
-                                                        <h4 className="label-amharic text-gray-800 dark:text-gray-200 mb-3 border-b border-yellow-200 dark:border-yellow-800 pb-2">
+                                                        <h4 className="label-amharic text-black dark:text-slate-200 mb-3 border-b border-yellow-200 dark:border-yellow-800 pb-2">
                                                             የተተኪ መምህር ሥልጠና ፤- ደረጃና የቀን ብዛት
                                                         </h4>
                                                         <div className="grid grid-cols-1 gap-3">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 1</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 1</div>
                                                                 <input
                                                                     name="teacherTraining-level1"
                                                                     value={typeof formData.teacherTraining?.level1 === 'string' ? formData.teacherTraining.level1 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 2</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 2</div>
                                                                 <input
                                                                     name="teacherTraining-level2"
                                                                     value={typeof formData.teacherTraining?.level2 === 'string' ? formData.teacherTraining.level2 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 3</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 3</div>
                                                                 <input
                                                                     name="teacherTraining-level3"
                                                                     value={typeof formData.teacherTraining?.level3 === 'string' ? formData.teacherTraining.level3 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
@@ -1182,37 +1182,37 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
                                                     {/* Leadership Training Section */}
                                                     <div>
-                                                        <h4 className="label-amharic text-gray-800 dark:text-gray-200 mb-3 border-b border-yellow-200 dark:border-yellow-800 pb-2">
+                                                        <h4 className="label-amharic text-black dark:text-slate-200 mb-3 border-b border-yellow-200 dark:border-yellow-800 pb-2">
                                                             የተተኪ አመራር ሥልጠና ፤- ደረጃና የቀን ብዛት
                                                         </h4>
                                                         <div className="grid grid-cols-1 gap-3">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 1</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 1</div>
                                                                 <input
                                                                     name="leadershipTraining-level1"
                                                                     value={typeof formData.leadershipTraining?.level1 === 'string' ? formData.leadershipTraining.level1 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 2</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 2</div>
                                                                 <input
                                                                     name="leadershipTraining-level2"
                                                                     value={typeof formData.leadershipTraining?.level2 === 'string' ? formData.leadershipTraining.level2 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-gray-300">ደረጃ 3</div>
+                                                                <div className="w-16 flex-shrink-0 text-sm font-bold text-gray-600 dark:text-slate-300">ደረጃ 3</div>
                                                                 <input
                                                                     name="leadershipTraining-level3"
                                                                     value={typeof formData.leadershipTraining?.level3 === 'string' ? formData.leadershipTraining.level3 : ''}
                                                                     onChange={handleInputChange}
-                                                                    className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
+                                                                    className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
                                                                     placeholder="የቀን ብዛት ይጻፉ..."
                                                                 />
                                                             </div>
@@ -1227,7 +1227,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                             value={formData.otherTrainings}
                                                             onChange={handleInputChange}
                                                             placeholder="ሌላ የወሰዱት ስልጠና ካለ ይጻፉ..."
-                                                            className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                            className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                             rows={2}
                                                         />
                                                     </div>
@@ -1239,15 +1239,15 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="col-span-2">
                                                     <label className="label-amharic">ተጨማሪ መረጃ</label>
-                                                    <textarea name="additionalInfo" value={formData.additionalInfo} onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={3} />
+                                                    <textarea name="additionalInfo" value={formData.additionalInfo} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={3} />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">መረጃውን የሞላው <span className="text-red-500">*</span></label>
-                                                    <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+                                                    <input name="filledBy" value={formData.filledBy} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
                                                 </div>
                                                 <div>
                                                     <label className="label-amharic">መረጃውን ያረጋገጠው <span className="text-red-500">*</span></label>
-                                                    <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} required className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+                                                    <input name="verifiedBy" value={formData.verifiedBy} onChange={handleInputChange} required className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
                                                 </div>
                                                 <div className="col-span-2">
                                                     <label className="label-amharic">ቀን <span className="text-red-500">*</span></label>
@@ -1256,7 +1256,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         onChange={(val) => handleInputChange({ target: { name: 'submissionDate', value: val } })}
                                                         minYear={2000}
                                                         maxYear={2050}
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+                                                        className="w-full bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
                                                     />
                                                 </div>
                                             </div>
@@ -1267,11 +1267,11 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                         </div >
 
                         {/* Footer Actions */}
-                        < div className="flex items-center justify-between px-8 py-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" >
+                        < div className="flex items-center justify-between px-8 py-6 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800" >
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-6 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
+                                className="px-6 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
                             >
                                 ሰርዝ
                             </button>
@@ -1280,7 +1280,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                     <button
                                         type="button"
                                         onClick={() => setActiveTab(prev => prev - 1)}
-                                        className="px-6 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
+                                        className="px-6 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
                                     >
                                         ወደኋላ
                                     </button>

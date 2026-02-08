@@ -89,7 +89,7 @@ const AttendanceSheet = () => {
             case 'present': return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
             case 'absent': return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
             case 'excused': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800';
-            default: return 'text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
+            default: return 'text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
         }
     };
 
@@ -107,7 +107,7 @@ const AttendanceSheet = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">የክትትል ቅጽ</h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">የተማሪዎችን የክስተቶች እና የአገልግሎት ክትትል ይከታተሉ</p>
+                    <p className="text-gray-500 dark:text-slate-400 font-medium">የተማሪዎችን የክስተቶች እና የአገልግሎት ክትትል ይከታተሉ</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                     <EthiopianDatePicker
@@ -150,7 +150,7 @@ const AttendanceSheet = () => {
             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-premium dark:shadow-none border border-gray-100 dark:border-slate-700 overflow-hidden">
                 <div className="p-6 border-b border-gray-50 dark:border-slate-700 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
                     <div className="relative flex-1 min-w-0">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={18} />
                         <input
                             type="text"
                             placeholder="ተማሪ ይፈልጉ..."
@@ -171,7 +171,7 @@ const AttendanceSheet = () => {
                                     <option value="እቅድ">እቅድ (Planning)</option>
                                     <option value="ትምህርት">ትምህርት (Education)</option>
                                     <option value="ልማት">ልማት (Development)</option>
-                                    <option value="ባች">ባች (Batch)</option>
+                                    <option value="bach">bach (Batch)</option>
                                     <option value="ሙያ">ሙያ (Profession)</option>
                                     <option value="ቋንቋ">ቋንቋ (Language)</option>
                                     <option value="አባላት">አባላት (Members)</option>
@@ -185,14 +185,14 @@ const AttendanceSheet = () => {
                                     {user?.section} Only
                                 </div>
                             )}
-                            {isManager && <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />}
+                            {isManager && <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />}
                         </div>
                     </div>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 dark:bg-slate-900/50 text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">
+                        <thead className="bg-gray-50/50 dark:bg-slate-900/50 text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">
                             <tr>
                                 <th className="px-8 py-4">ተማሪ</th>
                                 <th className="px-8 py-4">ክፍላት</th>
@@ -207,10 +207,10 @@ const AttendanceSheet = () => {
                                 <tr key={student.id} className="hover:bg-gray-50/30 dark:hover:bg-slate-700/30 transition-colors">
                                     <td className="px-8 py-4">
                                         <div className="font-bold text-gray-900 dark:text-white">{student.name}</div>
-                                        <div className="text-xs text-gray-400 dark:text-gray-500">{student.id}</div>
+                                        <div className="text-xs text-gray-400 dark:text-slate-500">{student.id}</div>
                                     </td>
                                     <td className="px-8 py-4">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{student.section}</span>
+                                        <span className="text-sm font-medium text-gray-600 dark:text-slate-400">{student.section}</span>
                                     </td>
                                     <td className="px-8 py-4 text-center">
                                         <label className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors">
@@ -258,7 +258,7 @@ const AttendanceSheet = () => {
                     </table>
                 </div>
                 <div className="p-6 bg-gray-50/50 dark:bg-slate-900/50 border-t border-gray-50 dark:border-slate-700 flex items-center justify-between">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    <div className="text-sm text-gray-500 dark:text-slate-400 font-medium">
                         <span className="text-gray-900 dark:text-white font-bold">{filteredStudents.length}</span> ተማሪዎችን በማሳየት ላይ
                     </div>
                 </div>

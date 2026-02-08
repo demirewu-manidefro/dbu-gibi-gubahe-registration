@@ -90,7 +90,7 @@ const ChangePassword = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
+                        <label className="block text-sm font-bold text-black dark:text-gray-300 mb-2">Current Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.current ? 'text' : 'password'}
@@ -112,7 +112,7 @@ const ChangePassword = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">New Password</label>
+                        <label className="block text-sm font-bold text-black dark:text-gray-300 mb-2">New Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.new ? 'text' : 'password'}
@@ -134,7 +134,7 @@ const ChangePassword = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Confirm New Password</label>
+                        <label className="block text-sm font-bold text-black dark:text-gray-300 mb-2">Confirm New Password</label>
                         <div className="relative">
                             <input
                                 type={showPasswords.confirm ? 'text' : 'password'}

@@ -345,7 +345,7 @@ const Gallery = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-2">
-                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">የምስሉ ርዕስ</label>
+                                        <label className="block text-xs font-bold text-black dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">የምስሉ ርዕስ</label>
                                         <input
                                             type="text"
                                             required
@@ -356,7 +356,7 @@ const Gallery = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዓመት (ዓ.ም)</label>
+                                        <label className="block text-xs font-bold text-black dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዓመት (ዓ.ም)</label>
                                         <input
                                             type="number"
                                             required
@@ -370,7 +370,7 @@ const Gallery = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዝርዝር መግለጫ</label>
+                                    <label className="block text-xs font-bold text-black dark:text-gray-400 uppercase tracking-widest mb-2 ml-1">ዝርዝር መግለጫ</label>
                                     <textarea
                                         value={newImageData.description}
                                         onChange={(e) => setNewImageData({ ...newImageData, description: e.target.value })}

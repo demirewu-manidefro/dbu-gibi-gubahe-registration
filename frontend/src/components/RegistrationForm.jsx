@@ -321,7 +321,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
         if (formData.college === 'Other' && !formData.customCollege) return validationError("የኮሌጅ ስም ያስገቡ", 2);
         if (!formData.department) return validationError("የትምህርት ክፍል መመረጥ አለበት", 2);
         if (formData.department === 'Other' && !formData.customDepartment) return validationError("የትምህርት ክፍል ስም ያስገቡ", 2);
-        if (!formData.batch) return validationError("ባች/ዓመት መመረጥ አለበት", 2);
+        if (!formData.batch) return validationError("bach/ዓመት መመረጥ አለበት", 2);
 
         // Tab 3 Validation
         if (!formData.serviceSection) return validationError("የአገልግሎት ክፍል መመረጥ አለበት", 3);
@@ -561,7 +561,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                             <button
                                                                 type="button"
                                                                 onClick={() => setShowPassword(!showPassword)}
-                                                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-gray-200"
                                                             >
                                                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                                             </button>
@@ -653,7 +653,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                 </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                                     <div>
-                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 1</label>
+                                                        <label className="text-xs font-bold text-black uppercase">ቋንቋ 1</label>
                                                         <input
                                                             name="lang-l1"
                                                             value={formData.otherLanguages.l1}
@@ -663,7 +663,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 2</label>
+                                                        <label className="text-xs font-bold text-black uppercase">ቋንቋ 2</label>
                                                         <input
                                                             name="lang-l2"
                                                             value={formData.otherLanguages.l2}
@@ -673,7 +673,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 3</label>
+                                                        <label className="text-xs font-bold text-black uppercase">ቋንቋ 3</label>
                                                         <input
                                                             name="lang-l3"
                                                             value={formData.otherLanguages.l3}
@@ -1026,7 +1026,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                             )}
                                         </div>
                                         <div>
-                                            <label className="label-amharic">ባች/ዓመት <span className="text-red-500">*</span></label>
+                                            <label className="label-amharic">bach/ዓመት <span className="text-red-500">*</span></label>
                                             <select name="batch" value={formData.batch} onChange={handleInputChange} required>
                                                 <option value="">ዓመት ምረጥ</option>
                                                 <option value="1">1ኛ ዓመት</option>
@@ -1040,13 +1040,13 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                     </div>
 
                                     <div className="space-y-6">
-                                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                                             የውጤት መረጃ
                                         </h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year}>
-                                                    <label className="text-xs font-bold text-gray-500 dark:text-white uppercase mb-1 block">ዓመት {idx + 1}</label>
+                                                    <label className="text-xs font-bold text-black dark:text-white uppercase mb-1 block">ዓመት {idx + 1}</label>
                                                     <input
                                                         type="number"
                                                         step="0.01"
@@ -1061,7 +1061,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                 </div>
                                             ))}
                                             <div className="col-span-2 md:col-span-1">
-                                                <label className="text-xs font-bold text-gray-500 dark:text-white uppercase mb-1 block">አማካይ ውጤት</label>
+                                                <label className="text-xs font-bold text-black dark:text-white uppercase mb-1 block">አማካይ ውጤት</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
@@ -1083,7 +1083,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                             {activeTab === 3 && (
                                 <div className="space-y-8">
                                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 border-b border-gray-200 dark:border-slate-700 pb-2 mb-4">የአገልግሎት ክፍል</h3>
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 border-b border-gray-200 dark:border-slate-700 pb-2 mb-4">የአገልግሎት ክፍል</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
                                                 <label className="label-amharic">የአገልግሎት ክፍል ይምረጡ <span className="text-red-500">*</span></label>
@@ -1093,13 +1093,13 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                     onChange={handleInputChange}
                                                     required
                                                     disabled={user?.role === 'admin'}
-                                                    className={`w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed opacity-75' : ''}`}
+                                                    className={`w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'admin' ? 'bg-gray-100 dark:bg-slate-600 cursor-not-allowed opacity-75' : ''}`}
                                                 >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="እቅድ">እቅድ</option>
                                                     <option value="ትምህርት">ትምህርት</option>
                                                     <option value="ልማት">ልማት</option>
-                                                    <option value="ባች">ባች</option>
+                                                    <option value="bach">bach</option>
                                                     <option value="ሙያ">ሙያ</option>
                                                     <option value="ቋንቋ">ቋንቋ</option>
                                                     <option value="አባላት">አባላት</option>
@@ -1149,7 +1149,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                         <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-slate-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`educationYearly-${year}`}
@@ -1168,7 +1168,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                         <div className="grid grid-cols-1 gap-y-3 mb-8">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-slate-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`responsibility-${year}`}
@@ -1187,7 +1187,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                         <div className="grid grid-cols-1 gap-y-3">
                                             {['y1', 'y2', 'y3', 'y4', 'y5', 'y6'].map((year, idx) => (
                                                 <div key={year} className="flex items-center gap-4">
-                                                    <span className="font-bold text-sm text-gray-600 dark:text-gray-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
+                                                    <span className="font-bold text-sm text-gray-600 dark:text-slate-400 w-20 italic">{idx + 1}ኛ ዓመት</span>
                                                     <input
                                                         type="text"
                                                         name={`attendance-${year}`}
@@ -1300,7 +1300,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                         disabled={activeTab === 0}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 0
                             ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                            : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-700 shadow-sm'
+                            : 'text-gray-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 shadow-sm'
                             }`}
                     >
                         <ChevronLeft size={20} /> ተመለስ

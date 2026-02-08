@@ -51,7 +51,7 @@ const Analytics = () => {
     const overallAverage = totalPotential > 0 ? Math.round((totalPresent / totalPotential) * 100) : 0;
 
     // 3. Section Ranking (Bar Chart)
-    const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
+    const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'bach', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
     const sectionAverages = useMemo(() => {
         return sections
             .filter(s => selectedSection === 'All' || s === selectedSection)
@@ -110,14 +110,14 @@ const Analytics = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Analytics & Reports</h1>
                     <div className="flex items-center gap-2">
                         <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1" minYear={2018} maxYear={2030} />
-                        <span className="text-gray-400 dark:text-gray-500 font-bold">እስከ</span>
+                        <span className="text-gray-400 dark:text-slate-500 font-bold">እስከ</span>
                         <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
                 <div className="bg-white dark:bg-slate-800 p-20 rounded-3xl border border-dashed border-gray-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
                     <Activity className="text-gray-200 dark:text-slate-700 mb-4" size={64} />
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">ምንም መረጃ የለም</h3>
-                    <p className="text-gray-500 dark:text-gray-400">በተመረጠው ጊዜ ውስጥ የተመዘገበ የክትትል መረጃ የለም።</p>
+                    <p className="text-gray-500 dark:text-slate-400">በተመረጠው ጊዜ ውስጥ የተመዘገበ የክትትል መረጃ የለም።</p>
                 </div>
             </div>
         );
@@ -128,7 +128,7 @@ const Analytics = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">ትንታኔ ዳሽቦርድ</h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">በሁሉም ክፍሎች ላይ አፈጻጸምን መከታተል</p>
+                    <p className="text-gray-500 dark:text-slate-400 font-medium">በሁሉም ክፍሎች ላይ አፈጻጸምን መከታተል</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                     {isManager && (
@@ -146,7 +146,7 @@ const Analytics = () => {
                     )}
                     <div className="flex items-center gap-2">
                         <EthiopianDatePicker value={startDate} onChange={setStartDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
-                        <span className="text-gray-400 dark:text-gray-500 font-bold text-sm">እስከ</span>
+                        <span className="text-gray-400 dark:text-slate-500 font-bold text-sm">እስከ</span>
                         <EthiopianDatePicker value={endDate} onChange={setEndDate} className="!py-1 text-sm" minYear={2018} maxYear={2030} />
                     </div>
                 </div>
@@ -159,7 +159,7 @@ const Analytics = () => {
                         <TrendingUp size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">የክትትል መጠን</div>
+                        <div className="text-gray-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest">የክትትል መጠን</div>
                         <div className="text-3xl font-black text-gray-900 dark:text-white">{overallAverage}%</div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@ const Analytics = () => {
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">መሪ ክፍል</div>
+                        <div className="text-gray-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest">መሪ ክፍል</div>
                         <div className="text-2xl font-black text-gray-900 dark:text-white">
                             {sectionAverages[0]?.average > 0 ? sectionAverages[0]?.section : '-'}
                         </div>
@@ -179,8 +179,8 @@ const Analytics = () => {
                         <Clock size={24} />
                     </div>
                     <div>
-                        <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">የተመዘገቡ ጉባኤዎች</div>
-                        <div className="text-2xl font-black text-gray-900 dark:text-white">{totalSessions} <span className="text-sm text-gray-400 dark:text-gray-500">ጉባኤዎች</span></div>
+                        <div className="text-gray-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest">የተመዘገቡ ጉባኤዎች</div>
+                        <div className="text-2xl font-black text-gray-900 dark:text-white">{totalSessions} <span className="text-sm text-gray-400 dark:text-slate-500">ጉባኤዎች</span></div>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@ const Analytics = () => {
             <div className="bg-white dark:bg-slate-800 p-10 rounded-[50px] shadow-mega dark:shadow-none border border-gray-50 dark:border-slate-700">
                 <div className="text-center mb-10">
                     <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">የክትትል ስርጭት</h2>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">የሁሉም ክፍሎች ጠቅላላ ክትትል ክፍፍል</p>
+                    <p className="text-gray-500 dark:text-slate-400 font-medium">የሁሉም ክፍሎች ጠቅላላ ክትትል ክፍፍል</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-10">
@@ -263,20 +263,20 @@ const Analytics = () => {
                     </div>
 
                     <div className="bg-gray-50/50 dark:bg-slate-900/50 p-8 rounded-[40px] border border-gray-100 dark:border-slate-700 space-y-4">
-                        <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">የክፍል ንጽጽር</div>
+                        <div className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2">የክፍል ንጽጽር</div>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar">
                             {pieChartData.map((item, idx) => (
                                 <div key={idx} className="flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{item.name}</span>
+                                        <span className="text-sm font-bold text-gray-700 dark:text-slate-200">{item.name}</span>
                                     </div>
                                     <span className="text-sm font-black text-blue-600 dark:text-blue-400">{item.share}%</span>
                                 </div>
                             ))}
                         </div>
                         <div className="pt-6 border-t border-gray-200 dark:border-slate-700">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                            <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed italic">
                                 ይህ ቻርት በዚህ ጊዜ ውስጥ ለጠቅላላ ክትትል መጠን የትኞቹ ክፍሎች የበለጠ አስተዋጽኦ እንዳበርከቱ ያሳያል።
                             </p>
                         </div>
