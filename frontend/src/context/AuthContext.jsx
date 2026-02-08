@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AuthContext } from './auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api');
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 const getToken = () => localStorage.getItem('token') || sessionStorage.getItem('token');
 const setToken = (token, remember) => {
@@ -123,7 +123,8 @@ export const AuthProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
-                setSchedules(Array.isArray(data) ? data : []);
+                // Backend returns { items: [], createdAt: ... }
+                setSchedules(Array.isArray(data.items) ? data.items : []);
             }
         } catch (err) {
             console.error('Error fetching schedules:', err);
@@ -209,7 +210,7 @@ export const AuthProvider = ({ children }) => {
 
     const saveAttendanceBatch = async (date, attendanceMap) => {
         const sectionStats = {};
-        const allSections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
+        const allSections = ['እቅድ', 'ትምህርት', 'ልማት', 'bach', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
         allSections.forEach(s => sectionStats[s] = { present: 0, absent: 0, excused: 0, total: 0 });
 
         Object.entries(attendanceMap).forEach(([studentId, status]) => {

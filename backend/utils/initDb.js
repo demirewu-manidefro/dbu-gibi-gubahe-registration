@@ -85,6 +85,17 @@ const initDb = async () => {
             -- Ensure all managers have the 'ሁሉም' section
             UPDATE users SET section = 'ሁሉም' WHERE role = 'manager' AND (section IS NULL OR section <> 'ሁሉም');
             
+            -- Create notifications table
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                type VARCHAR(50) NOT NULL,
+                message TEXT NOT NULL,
+                target VARCHAR(50), -- 'all', 'admin', 'student', or specific username/id
+                "from" VARCHAR(100), -- Sender
+                read_by TEXT[] DEFAULT '{}', -- Array of usernames who read it
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+
             -- Create schedules table if missing
             CREATE TABLE IF NOT EXISTS schedules (
                 id SERIAL PRIMARY KEY,
@@ -105,7 +116,7 @@ const initDb = async () => {
         }
 
         // Create default section admins
-        const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'ባች', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
+        const sections = ['እቅድ', 'ትምህርት', 'ልማት', 'bach', 'ሙያ', 'ቋንቋ', 'አባላት', 'ኦዲት', 'ሂሳብ', 'መዝሙር'];
         for (let i = 0; i < sections.length; i++) {
             const section = sections[i];
             const { rows: adminRows } = await query("SELECT * FROM users WHERE username = $1", [section]);
