@@ -200,7 +200,7 @@ const Register = () => {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">የተጠቃሚ ስም </label>
+                                <label className="block text-sm font-semibold text-black dark:text-gray-300 mb-2">የተጠቃሚ ስም </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <UserCircle size={20} className={`transition-colors ${usernameError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
@@ -229,7 +229,7 @@ const Register = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">የይለፍ ቃል</label>
+                                    <label className="block text-sm font-semibold text-black dark:text-gray-300 mb-2">የይለፍ ቃል</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <Lock size={20} className={`transition-colors ${passwordError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />
@@ -262,7 +262,7 @@ const Register = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">ይለፍ ቃል ያረጋግጡ</label>
+                                    <label className="block text-sm font-semibold text-black dark:text-gray-300 mb-2">ይለፍ ቃል ያረጋግጡ</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <Lock size={20} className={`transition-colors ${confirmPasswordError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600'}`} />

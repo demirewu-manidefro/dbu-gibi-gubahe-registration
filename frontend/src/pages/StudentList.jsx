@@ -510,7 +510,7 @@ const StudentList = ({ mode = 'Student' }) => {
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                         {isStudent ? 'የግል መረጃ' : (mode === 'Graduated' ? 'ተመርቀው የወጡ አባላት' : 'የተማሪዎች ዝርዝር')}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-gray-500 dark:text-slate-400 font-medium">
                         {isStudent ? 'የግል መረጃ ይመልከቱ' : (mode === 'Graduated' ? 'ሁሉንም ተመርቀው የወጡ የግቢ ጉባኤ አባላትን ያስተዳድሩ እና ይመልከቱ' : 'ሁሉንም የተመዘገቡ የግቢ ጉባኤ ተማሪዎችን ያስተዳድሩ እና ይመልከቱ')}
                     </p>
                 </div>
@@ -522,14 +522,14 @@ const StudentList = ({ mode = 'Student' }) => {
                 <div className="flex flex-wrap gap-3 pb-4">
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 rounded-xl font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 transition-all group"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 rounded-xl font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 transition-all group"
                     >
                         <Download size={18} className="text-emerald-500 group-hover:text-emerald-600" />
                         <span>ወደ Excel ላክ</span>
                     </button>
                     <button
                         onClick={handleImport}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 rounded-xl font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 transition-all group"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 rounded-xl font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 transition-all group"
                     >
                         <Upload size={18} className="text-blue-500 group-hover:text-blue-600" />
                         <span>መረጃ አስገባ</span>
@@ -544,17 +544,17 @@ const StudentList = ({ mode = 'Student' }) => {
                             <Key size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">የይለፍ ቃል ቀይር</h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                        <p className="text-gray-500 dark:text-slate-400 text-sm mb-4">
                             የተማሪውን የይለፍ ቃል ቀይር:
                         </p>
                         <div className="bg-gray-50 dark:bg-slate-700 rounded-xl p-4 mb-6">
                             <div className="font-bold text-gray-900 dark:text-white">{safeStudents.find(s => s.id === activeModal.replace('password-', ''))?.name || 'Unknown'}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-300">{activeModal.replace('password-', '')}</div>
+                            <div className="text-xs text-gray-500 dark:text-slate-300">{activeModal.replace('password-', '')}</div>
                         </div>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setActiveModal(null)}
-                                className="flex-1 py-3 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                                className="flex-1 py-3 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                             >
                                 ሰርዝ
                             </button>
@@ -593,7 +593,7 @@ const StudentList = ({ mode = 'Student' }) => {
                         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-700">
                             <div>
                                 <div className="text-lg font-bold text-gray-900 dark:text-white">የተማሪ መረጃ</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">{selectedStudent.id}</div>
+                                <div className="text-xs text-gray-500 dark:text-slate-400">{selectedStudent.id}</div>
                             </div>
                             <button onClick={closeModal} className="p-2 text-gray-400 hover:text-gray-600">
                                 <X size={18} />
@@ -614,7 +614,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                 </div>
                                 <div className="space-y-1">
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedStudent.name}</h2>
-                                    <div className="text-base text-gray-500 dark:text-gray-400 font-medium">{selectedStudent.id}</div>
+                                    <div className="text-base text-gray-500 dark:text-slate-400 font-medium">{selectedStudent.id}</div>
                                     {selectedStudent.username && ['admin', 'manager'].includes(user?.role) && (
                                         <div className="text-sm text-blue-600 dark:text-blue-400 font-mono bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded w-fit my-1">
                                             @{selectedStudent.username}
@@ -640,19 +640,19 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">እድሜ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.age || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.age || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የልደት ዘመን</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.birthYear || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-300">{selectedStudent.birthYear || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የአፍ መፍቻ ቋንቋ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.motherTongue || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.motherTongue || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ሌሎች ቋንቋዎች</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">
                                                 {[
                                                     selectedStudent.otherLanguages?.l1,
                                                     selectedStudent.otherLanguages?.l2,
@@ -671,15 +671,15 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
                                         <div className="col-span-2">
                                             <div className="text-xs text-gray-400 font-bold uppercase">የክርስትና ስም</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.baptismalName || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.baptismalName || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">መንፈሳዊ ማዕረግ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{getPriesthoodLabel(selectedStudent.priesthoodRank) || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{getPriesthoodLabel(selectedStudent.priesthoodRank) || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የአገልግሎት ክፍል</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.section || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.section || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -692,27 +692,27 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ስልክ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.phone || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.phone || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ክልል</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.region || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.region || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ዞን</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.zone || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.zone || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ወረዳ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.woreda || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.woreda || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ቀበሌ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.kebele || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.kebele || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">ማእከል</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.centerAndWoredaCenter || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.centerAndWoredaCenter || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -725,19 +725,19 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የግቢ ስም</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.gibiName || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.gibiName || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">አጥቢያ ቤተክርስቲያን</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.parishChurch || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.parishChurch || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የተጠሪ ስም</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.emergencyName || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.emergencyName || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የተጠሪ ስልክ</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.emergencyPhone || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.emergencyPhone || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -750,23 +750,23 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-4 text-sm">
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የትምህርት ክፍል</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.dept || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.dept || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-400 font-bold uppercase">የምረቃ ዓመት / ባች</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.year || '-'}</div>
+                                            <div className="text-xs text-gray-400 font-bold uppercase">የምረቃ ዓመት / bach</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.year || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">የሚመረቁበት ዓመት</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.graduationYear || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.graduationYear || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">አባል የሆኑበት ዓመት</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.membershipYear || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.membershipYear || '-'}</div>
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-400 font-bold uppercase">አጠቃላይ ውጤት (GPA)</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-200">{selectedStudent.cumulativeGPA || '-'}</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-200">{selectedStudent.cumulativeGPA || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -778,7 +778,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                     </h3>
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm text-left border border-gray-200 dark:border-slate-600 rounded-lg">
-                                            <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-gray-300 font-bold text-xs uppercase">
+                                            <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-300 font-bold text-xs uppercase">
                                                 <tr>
                                                     <th className="px-3 py-2 border-r border-b dark:border-slate-600">ዓመት</th>
                                                     <th className="px-3 py-2 border-r border-b dark:border-slate-600">GPA</th>
@@ -790,11 +790,11 @@ const StudentList = ({ mode = 'Student' }) => {
                                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                                 {[1, 2, 3, 4, 5, 6].map(year => (
                                                     <tr key={year} className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50">
-                                                        <td className="px-3 py-2 border-r dark:border-slate-600 font-medium text-gray-500 dark:text-gray-300">Year {year}</td>
-                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-gray-300">{selectedStudent.gpa?.[`y${year}`] || '-'}</td>
-                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-gray-300">{(selectedStudent.responsibility?.[`y${year}`]) || (selectedStudent.participation?.[`y${year}`]) || '-'}</td>
-                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-gray-300">{selectedStudent.attendance?.[`y${year}`] || '-'}</td>
-                                                        <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{selectedStudent.educationYearly?.[`y${year}`] || '-'}</td>
+                                                        <td className="px-3 py-2 border-r dark:border-slate-600 font-medium text-gray-500 dark:text-slate-300">Year {year}</td>
+                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-slate-300">{selectedStudent.gpa?.[`y${year}`] || '-'}</td>
+                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-slate-300">{(selectedStudent.responsibility?.[`y${year}`]) || (selectedStudent.participation?.[`y${year}`]) || '-'}</td>
+                                                        <td className="px-3 py-2 border-r dark:border-slate-600 text-gray-700 dark:text-slate-300">{selectedStudent.attendance?.[`y${year}`] || '-'}</td>
+                                                        <td className="px-3 py-2 text-gray-700 dark:text-slate-300">{selectedStudent.educationYearly?.[`y${year}`] || '-'}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -809,56 +809,56 @@ const StudentList = ({ mode = 'Student' }) => {
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                         <div className="bg-gray-50 dark:bg-slate-700/50 p-4 rounded-xl space-y-2">
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">የመምህር ስልጠና</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">የመምህር ስልጠና</div>
                                             <div className="space-y-1.5 mt-2">
                                                 <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 1</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level1 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 1</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.teacherTraining?.level1 || '-'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 2</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level2 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 2</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.teacherTraining?.level2 || '-'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 3</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.teacherTraining?.level3 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 3</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.teacherTraining?.level3 || '-'}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="bg-gray-50 dark:bg-slate-700/50 p-4 rounded-xl space-y-2">
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">የአመራር ስልጠና</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">የአመራር ስልጠና</div>
                                             <div className="space-y-1.5 mt-2">
                                                 <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 1</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level1 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 1</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.leadershipTraining?.level1 || '-'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-slate-600 pb-1">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 2</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level2 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 2</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.leadershipTraining?.level2 || '-'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
-                                                    <span className="text-gray-500 dark:text-gray-400">ደረጃ 3</span>
-                                                    <span className="font-bold text-gray-700 dark:text-gray-200">{selectedStudent.leadershipTraining?.level3 || '-'}</span>
+                                                    <span className="text-gray-500 dark:text-slate-400">ደረጃ 3</span>
+                                                    <span className="font-bold text-gray-700 dark:text-slate-200">{selectedStudent.leadershipTraining?.level3 || '-'}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-sm mt-4">
                                         <div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Other Trainings</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.otherTrainings || '-'}</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">Other Trainings</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-300">{selectedStudent.otherTrainings || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Abinet Education</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.abinetEducation || '-'}</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">Abinet Education</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-300">{selectedStudent.abinetEducation || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Special Need</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.specialNeed || '-'}</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">Special Need</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-300">{selectedStudent.specialNeed || '-'}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-200 font-bold uppercase">Additional Info</div>
-                                            <div className="font-medium text-gray-700 dark:text-gray-300">{selectedStudent.additionalInfo || '-'}</div>
+                                            <div className="text-xs text-gray-500 dark:text-slate-200 font-bold uppercase">Additional Info</div>
+                                            <div className="font-medium text-gray-700 dark:text-slate-300">{selectedStudent.additionalInfo || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -884,7 +884,7 @@ const StudentList = ({ mode = 'Student' }) => {
                         <div className="px-8 py-5 border-t border-gray-100 dark:border-slate-700 flex items-center justify-end gap-3 bg-gray-50/50 dark:bg-slate-900/50">
                             <button
                                 onClick={closeModal}
-                                className="px-6 py-2.5 rounded-xl font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                                className="px-6 py-2.5 rounded-xl font-bold text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                             >
                                 Close
                             </button>
@@ -910,7 +910,7 @@ const StudentList = ({ mode = 'Student' }) => {
                         {isManager && (
                             <div className="flex flex-wrap gap-2">
                                 <select
-                                    className="flex-1 min-w-[200px] bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
+                                    className="flex-1 min-w-[200px] bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm font-bold text-gray-600 dark:text-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
                                     value={filterSection}
                                     onChange={(e) => setFilterSection(e.target.value)}
                                 >
@@ -918,7 +918,7 @@ const StudentList = ({ mode = 'Student' }) => {
                                     <option value="እቅድ">እቅድ</option>
                                     <option value="ትምህርት">ትምህርት</option>
                                     <option value="ልማት">ልማት</option>
-                                    <option value="ባች">ባች</option>
+                                    <option value="bach">bach</option>
                                     <option value="ሙያ">ሙያ</option>
                                     <option value="ቋንቋ">ቋንቋ</option>
                                     <option value="አባላት">አባላት</option>
@@ -935,7 +935,7 @@ const StudentList = ({ mode = 'Student' }) => {
                     <div className="inline-block min-w-full align-middle">
                         <table className="min-w-full border-collapse">
                             <thead>
-                                <tr className="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
+                                <tr className="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-200 text-xs font-bold uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
                                     {excelHeaders.map((h, i) => (
                                         <th key={i} className="px-4 py-3 border-r border-gray-200 dark:border-slate-700 whitespace-nowrap min-w-[150px]">{h}</th>
                                     ))}
@@ -948,12 +948,12 @@ const StudentList = ({ mode = 'Student' }) => {
                                 {filteredStudents.map((student, idx) => (
                                     <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
                                         {getStudentExcelData(student, idx, false).map((val, i) => (
-                                            <td key={i} className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-slate-700 whitespace-nowrap">
+                                            <td key={i} className="px-4 py-3 text-sm text-gray-700 dark:text-slate-300 border-r border-gray-100 dark:border-slate-700 whitespace-nowrap">
                                                 {val}
                                             </td>
                                         ))}
                                         {!isStudent && (
-                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-slate-700 whitespace-nowrap text-right">
+                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-slate-300 border-r border-gray-100 dark:border-slate-700 whitespace-nowrap text-right">
                                                 <div className="flex items-center justify-end gap-1">
                                                     {user?.role === 'admin' && student.status === 'Pending' && (
                                                         <button
@@ -1075,7 +1075,7 @@ const StudentList = ({ mode = 'Student' }) => {
 
                 {!isStudent && (
                     <div className="p-6 bg-gray-50/50 dark:bg-slate-900/50 border-t border-gray-50 dark:border-slate-700 flex items-center justify-between">
-                        <div className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                        <div className="text-sm text-gray-500 dark:text-slate-400 font-medium">
                             Showing <span className="text-gray-900 dark:text-white font-bold">{filteredStudents.length}</span> of <span className="text-gray-900 dark:text-white font-bold">{
                                 safeStudents.filter(s =>
                                     s.status === mode &&

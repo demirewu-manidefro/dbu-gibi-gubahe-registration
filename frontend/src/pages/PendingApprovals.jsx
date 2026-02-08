@@ -234,7 +234,7 @@ const PendingApprovals = () => {
                                     <div className="space-y-4">
                                         <h4 className="font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2">የትምህርት መረጃ</h4>
                                         <InfoRow label="የትምህርት ክፍል" value={selectedStudent.dept || selectedStudent.department} />
-                                        <InfoRow label="አመት/ባች" value={selectedStudent.year || selectedStudent.batch} />
+                                        <InfoRow label="አመት/bach" value={selectedStudent.year || selectedStudent.batch} />
                                         <InfoRow label="የምረቃ አመት" value={selectedStudent.graduationYear || selectedStudent.graduation_year} />
                                     </div>
 
