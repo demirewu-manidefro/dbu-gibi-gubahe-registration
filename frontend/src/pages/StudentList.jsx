@@ -120,7 +120,7 @@ const StudentList = ({ mode = 'Student' }) => {
         'የትምህርት ክፍል',
         '1ኛ ዓመት GPA', '2ኛ ዓመት GPA', '3ኛ ዓመት GPA',
         '4ኛ ዓመት GPA', '5ኛ ዓመት GPA', '6ኛ ዓመት GPA',
-        'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የሚመረቁበት ዓ/ም',
+        'አጠቃላይ ውጤት (CGPA)', 'አባል የሆኑበት ዓመት', 'የሚመረቁበት ዓ/ም', 'መንፈሳዊ ትምህርት ደረጃ',
         '1ኛ ዓመት ክትትል', '2ኛ ዓመት ክትትል', '3ኛ ዓመት ክትትል',
         '4ኛ ዓመት ክትትል', '5ኛ ዓመት ክትትል', '6ኛ ዓመት ክትትል',
         '1ኛ ዓመት ትምህርት', '2ኛ ዓመት ትምህርት', '3ኛ ዓመት ትምህርት',
@@ -187,6 +187,7 @@ const StudentList = ({ mode = 'Student' }) => {
             r(s.cumulativeGPA),
             r(s.membershipYear),
             r(s.graduationYear),
+            q(s.specialEducation || s.traineeType),
 
 
             q(att.y1), q(att.y2), q(att.y3), q(att.y4), q(att.y5), q(att.y6),

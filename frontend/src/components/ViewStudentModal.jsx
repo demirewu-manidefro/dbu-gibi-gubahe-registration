@@ -122,6 +122,10 @@ const ViewStudentModal = ({ student, onClose, title = 'የተማሪ መረጃ' }
                                     <div className="text-xs text-gray-400 font-bold uppercase">የአገልግሎት ክፍል</div>
                                     <div className="font-medium text-gray-700 dark:text-gray-200">{student.section || '-'}</div>
                                 </div>
+                                <div className="col-span-2">
+                                    <div className="text-xs text-gray-400 font-bold uppercase">መንፈሳዊ ትምህርት ደረጃ</div>
+                                    <div className="font-medium text-gray-700 dark:text-gray-200">{student.specialEducation || student.traineeType || '-'}</div>
+                                </div>
                             </div>
                         </div>
 

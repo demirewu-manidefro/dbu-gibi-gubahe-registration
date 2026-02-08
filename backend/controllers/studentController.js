@@ -303,7 +303,7 @@ exports.updateStudent = async (req, res) => {
             if (k === 'photoUrl') k = 'photo_url';
             if (k === 'schoolInfo') k = 'school_info';
             if (k === 'serviceSection' || k === 'section') k = 'service_section';
-            if (k === 'centerAndWoreda') k = 'center_and_woreda';
+            if (k === 'centerAndWoreda' || k === 'centerAndWoredaCenter') k = 'center_and_woreda';
             if (k === 'educationYearly') k = 'education_yearly';
             if (k === 'participation') k = 'responsibility';
             if (k === 'teacherTraining') k = 'teacher_training';

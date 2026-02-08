@@ -22,10 +22,6 @@ export const normalizeStudent = (s) => {
     let teacherTraining = normalizeTraining(teacherTrainingRaw);
     let leadershipTraining = normalizeTraining(leadershipTrainingRaw);
 
-    let participation = normalizeYearly(parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation));
-    let attendance = normalizeYearly(parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly));
-    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses || s.education || schoolInfo.education);
-
     const normalizeYearly = (e) => {
         if (!e) return { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' };
         if (typeof e === 'string' && e.trim().length > 0 && !e.startsWith('{')) {
@@ -46,6 +42,10 @@ export const normalizeStudent = (s) => {
             y6: obj?.y6 || obj?.['6'] || obj?.[5] || obj?.['Year 6'] || obj?.['6th Year'] || ''
         };
     };
+
+    let participation = normalizeYearly(parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation));
+    let attendance = normalizeYearly(parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly));
+    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses || s.education || schoolInfo.education);
 
     let educationYearly = normalizeYearly(educationYearlyRaw);
     let gpa = normalizeYearly(parse(s.gpa || schoolInfo.gpa));
@@ -78,13 +78,13 @@ export const normalizeStudent = (s) => {
         woreda: s.woreda,
         kebele: s.kebele,
         phone: s.phone,
-        centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoredaCenter,
+        centerAndWoredaCenter: s.center_and_woreda || s.centerAndWoreda || s.centerAndWoredaCenter,
         gibiName: s.gibi_name || s.gibiName,
         emergencyName: s.emergency_name || s.emergencyName,
         emergencyPhone: s.emergency_phone || s.emergencyPhone,
         parishChurch: s.parish_church || s.parishChurch,
         section: s.service_section || s.section,
-        specialEducation: s.special_education || s.specialEducation || schoolInfo.specialEducation,
+        specialEducation: s.special_education || s.specialEducation || s.trainee_type || s.traineeType || schoolInfo.specialEducation,
 
         dept: s.department || s.dept,
         year: s.batch || s.year,
