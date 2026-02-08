@@ -586,11 +586,11 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                     <input name="age" value={formData.age} readOnly className="bg-gray-50 dark:bg-slate-700 dark:text-white border dark:border-slate-600 font-bold rounded-lg px-3 py-2" />
                                                 </div>
                                             </div>
-                                            <div>
+                                            <div className="col-span-1 sm:col-span-2">
                                                 <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
                                                 <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} />
                                             </div>
-                                            <div>
+                                            <div className="col-span-1 sm:col-span-2">
                                                 <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
                                                 <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange}>
                                                     <option value="">ምረጥ...</option>

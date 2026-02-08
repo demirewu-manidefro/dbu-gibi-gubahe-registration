@@ -526,12 +526,11 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                         <input name="age" value={formData.age} readOnly className="w-full bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white" />
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div className="col-span-1 md:col-span-2">
                                                     <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
                                                     <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
                                                 </div>
-                                                <br />
-                                                <div>
+                                                <div className="col-span-1 md:col-span-2">
                                                     <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
                                                     <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange} className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
                                                         <option value="">ምረጥ...</option>
