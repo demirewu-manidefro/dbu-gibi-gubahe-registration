@@ -24,8 +24,8 @@ app.use('/api/students', require('./routes/students'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/activity', require('./routes/activity'));
 app.use('/api/users', require('./routes/users'));
-
 app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/schedules', require('./routes/schedules'));
 
 // Maintenance Route (for migrations)
 app.get('/api/init-db', async (req, res) => {

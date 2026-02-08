@@ -113,6 +113,22 @@ export const AuthProvider = ({ children }) => {
 
     const [attendanceHistory, setAttendanceHistory] = useState([]);
     const [gallery, setGallery] = useState([]);
+    const [schedules, setSchedules] = useState([]);
+
+    const fetchSchedules = async () => {
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/schedules`, {
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setSchedules(Array.isArray(data) ? data : []);
+            }
+        } catch (err) {
+            console.error('Error fetching schedules:', err);
+        }
+    };
 
     const fetchGallery = async () => {
         const token = getToken();
@@ -287,6 +303,7 @@ export const AuthProvider = ({ children }) => {
             fetchNotifications();
             fetchAdmins();
             fetchGallery();
+            fetchSchedules();
 
             // Poll notifications every 30 seconds
             const notifInterval = setInterval(fetchNotifications, 30000);
@@ -885,6 +902,82 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const deleteAdmin = async (id) => {
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/admins/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setAdmins(prev => prev.filter(a => a.id !== id));
+                recordActivity('admin_deleted', { adminId: id });
+                return true;
+            } else {
+                const data = await res.json();
+                throw new Error(data.message || 'Failed to delete admin');
+            }
+        } catch (err) {
+            console.error('Delete admin error:', err);
+            throw err;
+        }
+    };
+
+    const addSchedule = async (data) => {
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/schedules`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                setSchedules(prev => [...prev, result]);
+                return true;
+            }
+            throw new Error(result.message || 'Failed to add schedule');
+        } catch (err) {
+            console.error('Add schedule error:', err);
+            throw err;
+        }
+    };
+
+    const deleteSchedule = async (id) => {
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setSchedules(prev => prev.filter(s => s.id !== id));
+                return true;
+            }
+        } catch (err) {
+            console.error('Delete schedule error:', err);
+        }
+    };
+
+    const clearSchedules = async () => {
+        const token = getToken();
+        try {
+            const res = await fetch(`${API_BASE_URL}/schedules`, {
+                method: 'DELETE',
+                headers: { 'x-auth-token': token }
+            });
+            if (res.ok) {
+                setSchedules([]);
+                return true;
+            }
+        } catch (err) {
+            console.error('Clear schedules error:', err);
+        }
+    };
+
     const value = {
         user,
         admins,
@@ -920,7 +1013,13 @@ export const AuthProvider = ({ children }) => {
         uploadGalleryItem,
         deleteGalleryItem,
         makeSuperManager,
-        demoteToStudent
+        demoteToStudent,
+        deleteAdmin,
+        schedules,
+        fetchSchedules,
+        addSchedule,
+        deleteSchedule,
+        clearSchedules
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
