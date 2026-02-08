@@ -24,7 +24,7 @@ export const normalizeStudent = (s) => {
 
     let participation = parse(s.responsibility || s.participation || schoolInfo.responsibility || schoolInfo.participation);
     let attendance = parse(s.attendance || s.attendance_yearly || schoolInfo.attendance || schoolInfo.attendance_yearly);
-    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly);
+    let educationYearlyRaw = parse(s.education_yearly || s.educationYearly || schoolInfo.education_yearly || schoolInfo.educationYearly || s.courses || schoolInfo.courses);
 
     const normalizeYearly = (e) => ({
         y1: e?.y1 || e?.['1'] || '',
