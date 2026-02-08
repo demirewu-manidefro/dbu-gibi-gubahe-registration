@@ -128,7 +128,7 @@ exports.registerStudent = async (req, res) => {
             'gibi_name', 'center_and_woreda', 'parish_church', 'emergency_name', 'emergency_phone',
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'responsibility', 'gpa', 'attendance', 'education_yearly',
-            'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
+            'teacher_training', 'leadership_training', 'other_trainings', 'additional_info', 'trainee_type',
             'filled_by', 'verified_by', 'status', 'photo_url', 'user_id'
         ];
 
@@ -182,6 +182,7 @@ exports.registerStudent = async (req, res) => {
 
                 if (!schoolObj.abinetEducation && studentData.abinetEducation) schoolObj.abinetEducation = studentData.abinetEducation;
                 if (!schoolObj.specialNeed && studentData.specialNeed) schoolObj.specialNeed = studentData.specialNeed;
+                if (!schoolObj.specialEducation && studentData.specialEducation) schoolObj.specialEducation = studentData.specialEducation;
                 if (!schoolObj.cumulativeGPA && studentData.cumulativeGPA) schoolObj.cumulativeGPA = studentData.cumulativeGPA;
                 if (!schoolObj.membershipYear && studentData.membershipYear) schoolObj.membershipYear = studentData.membershipYear;
 
@@ -198,6 +199,7 @@ exports.registerStudent = async (req, res) => {
             studentData.leadership_training || studentData.leadershipTraining ? JSON.stringify(studentData.leadership_training || studentData.leadershipTraining) : null,
             studentData.other_trainings || studentData.otherTrainings,
             studentData.additional_info || studentData.additionalInfo,
+            studentData.trainee_type || studentData.traineeType || studentData.specialEducation,
             studentData.filled_by || studentData.filledBy || fullName,
             studentData.verified_by || studentData.verifiedBy,
             studentData.status || 'Pending',
@@ -282,7 +284,7 @@ exports.updateStudent = async (req, res) => {
             'department', 'batch', 'school_info', 'is_graduated', 'graduation_year', 'service_section',
             'teacher_training', 'leadership_training', 'other_trainings', 'additional_info',
             'filled_by', 'verified_by', 'status', 'photo_url', 'gpa', 'attendance', 'education_yearly', 'responsibility',
-            'cumulative_gpa', 'membership_year'
+            'cumulative_gpa', 'membership_year', 'trainee_type', 'abinet_education', 'special_need'
         ];
 
         const processedUpdates = {};
@@ -315,6 +317,9 @@ exports.updateStudent = async (req, res) => {
             if (k === 'additionalInfo') k = 'additional_info';
             if (k === 'filledBy') k = 'filled_by';
             if (k === 'verifiedBy') k = 'verified_by';
+            if (k === 'traineeType' || k === 'specialEducation') k = 'trainee_type';
+            if (k === 'abinetEducation') k = 'abinet_education';
+            if (k === 'specialNeed') k = 'special_need';
 
             if (!validColumns.includes(k)) continue;
 
@@ -331,6 +336,26 @@ exports.updateStudent = async (req, res) => {
             }
 
             processedUpdates[k] = v;
+        }
+
+        // Special handling for legacy fields that might still be in school_info
+        const schoolInfoFields = ['cumulativeGPA', 'membershipYear'];
+        const hasExtraFields = schoolInfoFields.some(f => updates[f] !== undefined);
+
+        if (hasExtraFields) {
+            const { rows: currentRows } = await query('SELECT school_info FROM students WHERE id = $1', [id]);
+            if (currentRows.length > 0) {
+                let schoolInfo = currentRows[0].school_info || {};
+                if (typeof schoolInfo === 'string') {
+                    try { schoolInfo = JSON.parse(schoolInfo); } catch (e) { schoolInfo = {}; }
+                }
+
+                schoolInfoFields.forEach(f => {
+                    if (updates[f] !== undefined) schoolInfo[f] = updates[f];
+                });
+
+                processedUpdates.school_info = JSON.stringify(schoolInfo);
+            }
         }
 
         // Remove ID from updates if it's the same as the anchor ID to avoid unnecessary PK updates
@@ -517,7 +542,7 @@ exports.importStudents = async (req, res) => {
                     gpa: studentData.gpa,
                     participation: studentData.participation,
                     specialEducation: studentData.specialEducation,
-                    specialPlace: studentData.specialPlace,
+
                     attendance: studentData.attendance,
                     educationYearly: studentData.educationYearly,
                     abinetEducation: studentData.abinetEducation,

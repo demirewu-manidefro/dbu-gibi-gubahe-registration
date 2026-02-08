@@ -114,6 +114,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
         educationYearly: getVal(['educationYearly', 'school_info.educationYearly'], { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
         abinetEducation: getVal(['abinetEducation', 'school_info.abinetEducation']),
         specialNeed: getVal(['specialNeed', 'school_info.specialNeed']),
+        specialEducation: getVal(['specialEducation', 'trainee_type', 'school_info.specialEducation', 'school_info.trainee_type']),
     });
 
     // Special handling for birthYear if it's a full ISO date string from DB
@@ -128,7 +129,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
     useEffect(() => {
         const fieldsToJSON = [
             'otherLanguages', 'gpa', 'responsibility', 'teacherTraining',
-            'leadershipTraining', 'attendance', 'educationYearly'
+            'leadershipTraining', 'attendance', 'educationYearly', 'specialEducation'
         ];
 
         setFormData(prev => {
@@ -282,6 +283,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
 
         // Tab 3: Spiritual
         if (!formData.serviceSection) return validationError("የአገልግሎት ክፍል መመረጥ አለበት", 3);
+        if (!formData.specialEducation) return validationError("የመንፈሳዊ ትምህርት ደረጃ ያስፈልጋል", 3);
         if (!formData.filledBy) return validationError("መረጃውን የሞላው አካል ሥም ያስፈልጋል", 3);
         if (!formData.verifiedBy) return validationError("መረጃውን ያረጋገጠው አካል ሥም ያስፈልጋል", 3);
 
@@ -327,8 +329,10 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
             other_trainings: formData.otherTrainings,
 
             // Additional fields
-            abinet_education: formData.abinetEducation,
-            special_need: formData.specialNeed,
+            abinetEducation: formData.abinetEducation,
+            specialNeed: formData.specialNeed,
+            specialEducation: formData.specialEducation,
+            trainee_type: formData.specialEducation,
             additional_info: formData.additionalInfo,
             filled_by: formData.filledBy,
             verified_by: formData.verifiedBy,
@@ -464,7 +468,7 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-bold"
                                                             />
                                                         </div>
-                                                        <br />
+
                                                         <div>
                                                             <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                             <div className="relative">
@@ -1016,6 +1020,23 @@ const EditStudentModal = ({ student, onClose, onSave }) => {
                                                                 className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
                                                                 placeholder="ልዩ ፍላጎት..."
                                                             />
+                                                        </div>
+                                                        <div>
+                                                            <label className="label-amharic">የመንፈሳዊ ትምህርት ደረጃ <span className="text-red-500">*</span></label>
+                                                            <select
+                                                                name="specialEducation"
+                                                                value={formData.specialEducation}
+                                                                onChange={handleInputChange}
+                                                                required
+                                                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                            >
+                                                                <option value="">ምረጥ...</option>
+                                                                <option value="ደረጃ 1">ደረጃ 1</option>
+                                                                <option value="ደረጃ 2">ደረጃ 2</option>
+                                                                <option value="ደረጃ 3">ደረጃ 3</option>
+                                                                <option value="መደበኛ">መደበኛ</option>
+                                                                <option value="ልዩ">ልዩ</option>
+                                                            </select>
                                                         </div>
                                                     </div>
 

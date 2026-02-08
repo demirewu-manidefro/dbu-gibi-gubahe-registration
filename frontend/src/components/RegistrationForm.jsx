@@ -101,6 +101,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
         educationYearly: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         responsibility: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
         attendance: { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+        specialEducation: '',
 
         // New Training Sections
         teacherTraining: { level1: '', level2: '', level3: '' },
@@ -152,13 +153,29 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                     abinetEducation: user.abinet_education || user.abinetEducation || schoolInfo.abinetEducation || '',
                     specialNeed: user.special_need || user.specialNeed || schoolInfo.specialNeed || '',
                     cumulativeGPA: user.cumulative_gpa || user.cumulativeGPA || schoolInfo.cumulativeGPA || '',
-                    attendance: schoolInfo.attendance || user.attendance || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    educationYearly: schoolInfo.educationYearly || user.education_yearly || user.educationYearly || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    responsibility: schoolInfo.responsibility || user.responsibility || schoolInfo.participation || user.participation || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
-                    gpa: schoolInfo.gpa || user.gpa || { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    attendance: (typeof schoolInfo.attendance === 'string' ? JSON.parse(schoolInfo.attendance) : schoolInfo.attendance) ||
+                        (typeof user.attendance === 'string' ? JSON.parse(user.attendance) : user.attendance) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    educationYearly: (typeof schoolInfo.educationYearly === 'string' ? JSON.parse(schoolInfo.educationYearly) : schoolInfo.educationYearly) ||
+                        (typeof user.education_yearly === 'string' ? JSON.parse(user.education_yearly) : user.education_yearly) ||
+                        (typeof user.educationYearly === 'string' ? JSON.parse(user.educationYearly) : user.educationYearly) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    responsibility: (typeof schoolInfo.responsibility === 'string' ? JSON.parse(schoolInfo.responsibility) : schoolInfo.responsibility) ||
+                        (typeof user.responsibility === 'string' ? JSON.parse(user.responsibility) : user.responsibility) ||
+                        (typeof schoolInfo.participation === 'string' ? JSON.parse(schoolInfo.participation) : schoolInfo.participation) ||
+                        (typeof user.participation === 'string' ? JSON.parse(user.participation) : user.participation) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
+                    gpa: (typeof schoolInfo.gpa === 'string' ? JSON.parse(schoolInfo.gpa) : schoolInfo.gpa) ||
+                        (typeof user.gpa === 'string' ? JSON.parse(user.gpa) : user.gpa) ||
+                        { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' },
                     otherTrainings: user.other_trainings || user.otherTrainings || '',
-                    teacherTraining: user.teacher_training || user.teacherTraining || { level1: '', level2: '', level3: '' },
-                    leadershipTraining: user.leadership_training || user.leadershipTraining || { level1: '', level2: '', level3: '' },
+                    teacherTraining: (typeof user.teacher_training === 'string' ? JSON.parse(user.teacher_training) : user.teacher_training) ||
+                        (typeof user.teacherTraining === 'string' ? JSON.parse(user.teacherTraining) : user.teacherTraining) ||
+                        { level1: '', level2: '', level3: '' },
+                    leadershipTraining: (typeof user.leadership_training === 'string' ? JSON.parse(user.leadership_training) : user.leadership_training) ||
+                        (typeof user.leadershipTraining === 'string' ? JSON.parse(user.leadershipTraining) : user.leadershipTraining) ||
+                        { level1: '', level2: '', level3: '' },
+                    specialEducation: user.special_education || user.specialEducation || schoolInfo.specialEducation || '',
                     additionalInfo: user.additional_info || user.additionalInfo || '',
                     photoUrl: user.photo_url || user.photoUrl || ''
                 };
@@ -370,7 +387,10 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                 membership_year: formData.membershipYear,
                 education_yearly: formData.educationYearly,
                 responsibility: formData.responsibility,
+                participation: formData.responsibility,
                 attendance: formData.attendance,
+                special_education: formData.specialEducation,
+                specialEducation: formData.specialEducation,
                 teacher_training: formData.teacherTraining,
                 leadership_training: formData.leadershipTraining,
                 other_trainings: formData.otherTrainings,
@@ -526,8 +546,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                             className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
                                                         />
                                                     </div>
-                                                    <div>
-                                                        <br />
+                                                    <div className="space-y-2">
                                                         <label className="label-amharic">የይለፍ ቃል <span className="text-red-500">*</span></label>
                                                         <div className="relative">
                                                             <input
@@ -558,11 +577,18 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                     value={formData.fullName}
                                                     onChange={handleInputChange}
                                                     required
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="label-amharic">ፆታ <span className="text-red-500">*</span></label>
-                                                <select name="sex" value={formData.sex} onChange={handleInputChange} required>
+                                                <select
+                                                    name="sex"
+                                                    value={formData.sex}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="male">ወንድ</option>
                                                     <option value="female">ሴት</option>
@@ -579,6 +605,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         onChange={handleInputChange}
                                                         required
                                                         min="1990" max={currentEthYear}
+                                                        className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
@@ -586,13 +613,26 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                     <input name="age" value={formData.age} readOnly className="bg-gray-50 dark:bg-slate-700 dark:text-white border dark:border-slate-600 font-bold rounded-lg px-3 py-2" />
                                                 </div>
                                             </div>
-                                            <div className="col-span-1 sm:col-span-2">
+                                            <div className="col-span-2">
                                                 <label className="label-amharic">ክርስትና ስም <span className="text-red-500">*</span></label>
-                                                <input name="baptismalName" placeholder="G/Michael" value={formData.baptismalName} required onChange={handleInputChange} />
+                                                <input
+                                                    name="baptismalName"
+                                                    placeholder="G/Michael"
+                                                    value={formData.baptismalName}
+                                                    required
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
                                             </div>
-                                            <div className="col-span-1 sm:col-span-2">
+                                            <div className="col-span-2">
                                                 <label className="label-amharic">ሥልጣነ ክህነት <span className="text-red-500">*</span></label>
-                                                <select name="priesthoodRank" value={formData.priesthoodRank} required onChange={handleInputChange}>
+                                                <select
+                                                    name="priesthoodRank"
+                                                    value={formData.priesthoodRank}
+                                                    required
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
                                                     <option value="">ምረጥ...</option>
                                                     <option value="mimen">ምእመን</option>
                                                     <option value="diakon">ዲያቆን</option>
@@ -611,29 +651,37 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
-                                                <div>
-                                                    <label className="label-amharic">የአፍ መፍቻ ቋንቋ 1</label>
-                                                    <input
-                                                        name="lang-l1"
-                                                        value={formData.otherLanguages.l1}
-                                                        onChange={handleInputChange}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="label-amharic">የአፍ መፍቻ ቋንቋ 2</label>
-                                                    <input
-                                                        name="lang-l2"
-                                                        value={formData.otherLanguages.l2}
-                                                        onChange={handleInputChange}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="label-amharic">የአፍ መፍቻ ቋንቋ 3</label>
-                                                    <input
-                                                        name="lang-l3"
-                                                        value={formData.otherLanguages.l3}
-                                                        onChange={handleInputChange}
-                                                    />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                                    <div>
+                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 1</label>
+                                                        <input
+                                                            name="lang-l1"
+                                                            value={formData.otherLanguages.l1}
+                                                            onChange={handleInputChange}
+                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            placeholder="ቋንቋ 1"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 2</label>
+                                                        <input
+                                                            name="lang-l2"
+                                                            value={formData.otherLanguages.l2}
+                                                            onChange={handleInputChange}
+                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            placeholder="ቋንቋ 2"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs font-bold text-gray-500 uppercase">ቋንቋ 3</label>
+                                                        <input
+                                                            name="lang-l3"
+                                                            value={formData.otherLanguages.l3}
+                                                            onChange={handleInputChange}
+                                                            className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            placeholder="ቋንቋ 3"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -867,7 +915,14 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                         <div className="space-y-4">
                                             <div>
                                                 <label className="label-amharic">የተጠሪ ስም <span className="text-red-500">*</span></label>
-                                                <input name="emergencyName" value={formData.emergencyName} onChange={handleInputChange} required />
+                                                <input
+                                                    name="emergencyName"
+                                                    value={formData.emergencyName}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                                                    placeholder="የተጠሪ ስም ያስገቡ"
+                                                />
                                             </div>
                                             <div>
                                                 <label className="label-amharic">የተጠሪ ስልክ <span className="text-red-500">*</span></label>
@@ -1063,10 +1118,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                 <label className="label-amharic">የተማረውና አሁን የደረሰበት (Spiritual Education Level)</label>
                                                 <input name="specialEducation" value={formData.specialEducation} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                             </div>
-                                            <div>
-                                                <label className="label-amharic">የተማረው ልዩ ተሰጥኦ (Special Talent)</label>
-                                                <input name="specialPlace" value={formData.specialPlace} onChange={handleInputChange} className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                            </div>
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="label-amharic">የአብነት ትምህርት (General)</label>
@@ -1104,7 +1156,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         value={formData.educationYearly[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="ኮርስ..."
-                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             ))}
@@ -1123,7 +1175,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         value={formData.responsibility[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="የአገልግሎት ክፍልና ሃላፊነት..."
-                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             ))}
@@ -1142,7 +1194,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                         value={formData.attendance[year]}
                                                         onChange={handleInputChange}
                                                         placeholder="ክትትል..."
-                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500 rounded-md px-2 py-1"
+                                                        className="flex-1 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             ))}
@@ -1167,7 +1219,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                                 name={`teacherTraining-${level}`}
                                                                 value={formData.teacherTraining[level]}
                                                                 onChange={handleInputChange}
-                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500"
+                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                placeholder="የቀን ብዛት..."
                                                             />
                                                         </div>
                                                     ))}
@@ -1186,7 +1239,8 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                                 name={`leadershipTraining-${level}`}
                                                                 value={formData.leadershipTraining[level]}
                                                                 onChange={handleInputChange}
-                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border-blue-100 dark:border-blue-900 focus:border-blue-500"
+                                                                className="flex-1 bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                placeholder="የቀን ብዛት..."
                                                             />
                                                         </div>
                                                     ))}
@@ -1200,7 +1254,7 @@ const RegistrationForm = ({ initialData = null, onComplete = null, onSubmit = nu
                                                 value={formData.otherTrainings}
                                                 onChange={handleInputChange}
                                                 placeholder="ሌላ የወሰዱት ስልጠና ካለ ይጥቀሱ..."
-                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-blue-100 dark:border-blue-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full bg-white dark:bg-slate-700 dark:text-white border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                     </div>

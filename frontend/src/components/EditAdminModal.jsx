@@ -98,7 +98,30 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
         educationYearly: getVal(['educationYearly', 'school_info.educationYearly'], { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
         abinetEducation: getVal(['abinetEducation', 'school_info.abinetEducation']),
         specialNeed: getVal(['specialNeed', 'school_info.specialNeed']),
+        specialEducation: getVal(['specialEducation', 'trainee_type', 'school_info.specialEducation', 'school_info.trainee_type']),
     });
+
+    // Also handle possible stringified JSON fields from DB
+    useEffect(() => {
+        const fieldsToJSON = [
+            'otherLanguages', 'gpa', 'responsibility', 'teacherTraining',
+            'leadershipTraining', 'attendance', 'educationYearly', 'specialEducation'
+        ];
+
+        setFormData(prev => {
+            const updates = {};
+            fieldsToJSON.forEach(field => {
+                if (typeof prev[field] === 'string') {
+                    try {
+                        updates[field] = JSON.parse(prev[field]);
+                    } catch (e) {
+                        console.error(`Failed to parse ${field}`, e);
+                    }
+                }
+            });
+            return Object.keys(updates).length > 0 ? { ...prev, ...updates } : prev;
+        });
+    }, []);
 
     // Auto-calculate age
     useEffect(() => {
@@ -688,6 +711,23 @@ const EditAdminModal = ({ admin, onClose, onSubmit, isEditing }) => {
                                                 </select>
                                             </div>
 
+                                            <div>
+                                                <label className="label-amharic">የመንፈሳዊ ትምህርት ደረጃ <span className="text-red-500">*</span></label>
+                                                <select
+                                                    name="specialEducation"
+                                                    value={formData.specialEducation}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                                                >
+                                                    <option value="">ምረጥ...</option>
+                                                    <option value="ደረጃ 1">ደረጃ 1</option>
+                                                    <option value="ደረጃ 2">ደረጃ 2</option>
+                                                    <option value="ደረጃ 3">ደረጃ 3</option>
+                                                    <option value="መደበኛ">መደበኛ</option>
+                                                    <option value="ልዩ">ልዩ</option>
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div className="p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl mb-6">

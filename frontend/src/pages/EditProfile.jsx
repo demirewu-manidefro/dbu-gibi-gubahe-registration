@@ -72,8 +72,8 @@ const EditProfile = () => {
             membershipYear: getVal(['membershipYear', 'school_info.membershipYear']),
 
             responsibility: safeParse(getVal(['responsibility', 'participation', 'school_info.responsibility', 'school_info.participation']), { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
-            teacherTraining: safeParse(getVal(['teacherTraining', 'teacher_training']), { level1: '', level2: '', level3: '' }),
-            leadershipTraining: safeParse(getVal(['leadershipTraining', 'leadership_training']), { level1: '', level2: '', level3: '' }),
+            teacherTraining: safeParse(getVal(['teacher_training', 'teacherTraining']), { level1: '', level2: '', level3: '' }),
+            leadershipTraining: safeParse(getVal(['leadership_training', 'leadershipTraining']), { level1: '', level2: '', level3: '' }),
 
             otherTrainings: getVal(['otherTrainings', 'other_trainings']),
             additionalInfo: getVal(['additionalInfo', 'additional_info']),
@@ -82,7 +82,7 @@ const EditProfile = () => {
             submissionDate: getVal(['submissionDate', 'submission_date']),
 
             attendance: safeParse(getVal(['attendance', 'school_info.attendance']), { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
-            educationYearly: safeParse(getVal(['educationYearly', 'school_info.educationYearly']), { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
+            educationYearly: safeParse(getVal(['education_yearly', 'educationYearly', 'school_info.educationYearly']), { y1: '', y2: '', y3: '', y4: '', y5: '', y6: '' }),
             abinetEducation: getVal(['abinetEducation', 'school_info.abinetEducation']),
             specialNeed: getVal(['specialNeed', 'school_info.specialNeed']),
 

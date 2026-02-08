@@ -13,21 +13,18 @@
             }
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "backend/index.js"
+            "src": "/api/(.*)",
+            "dest": "backend/index.js"
         },
         {
-            "source": "/(.*)",
-            "destination": "frontend/$1"
-        }
-    ],
-    "redirects": [
+            "src": "/(.*\\..*)",
+            "dest": "/$1"
+        },
         {
-            "source": "/(.*)/",
-            "destination": "/$1",
-            "permanent": true
+            "src": "/(.*)",
+            "dest": "/index.html"
         }
     ],
     "crons": [
