@@ -35,7 +35,6 @@ const Layout = ({ children }) => {
     const [broadcastMessage, setBroadcastMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
-    const [previousNotificationCount, setPreviousNotificationCount] = useState(0);
 
     const isManager = user?.role === 'manager';
     const isStudent = user?.role === 'student';
@@ -130,11 +129,24 @@ const Layout = ({ children }) => {
         }
     };
 
+    // Use refs to track notification state without triggering re-renders
+    const previousNotificationCountRef = React.useRef(0);
+    const isFirstRun = React.useRef(true);
+
     // Monitor for new notifications
     React.useEffect(() => {
         const totalNotifications = userNotifications.length;
+        const prevCount = previousNotificationCountRef.current;
 
-        if (totalNotifications > previousNotificationCount && previousNotificationCount > 0) {
+        // Skip sound on initial load/mount to avoid noise
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            previousNotificationCountRef.current = totalNotifications;
+            return;
+        }
+
+        // If count increased, it means a NEW notification arrived
+        if (totalNotifications > prevCount) {
             const latestNotification = userNotifications[0];
 
             // Play sound
@@ -152,7 +164,8 @@ const Layout = ({ children }) => {
             );
         }
 
-        setPreviousNotificationCount(totalNotifications);
+        // Update ref for next run
+        previousNotificationCountRef.current = totalNotifications;
     }, [userNotifications.length]);
 
     const handleSendBroadcast = async () => {
